@@ -23,7 +23,9 @@ The checkpoints of the model are divided into two modules: cell encoder and SE(2
 
 # Pre-training Dataset
 
-To train SToFM, we construct **SToCorpus-88M**, the largest high-resolution ST pretraining corpus to date. This corpus includes approximately 2,000 high-resolution ST slices obtained by 6 different ST technologies, totaling 88 million cells. **SToCorpus-88M will be publicly released soon.**
+To train SToFM, we construct **SToCorpus-88M**, the largest high-resolution ST pretraining corpus to date. This corpus includes approximately 2,000 high-resolution ST slices obtained by 6 different ST technologies, totaling 88 million cells. **SToCorpus-88M has been publicly released.**
+
+[Download SToCorpus-88M](https://huggingface.co/datasets/Toycat/SToCorpus-88M/tree/main)
 
 
 # Usage
