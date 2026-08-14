@@ -40,10 +40,11 @@ class GaussianModule(nn.Module):
             nn.ReLU(),
             nn.Linear(K, config.num_attention_heads),
         )
-    def forward(
-        self,
-        x: torch.Tensor, # [bs, n_node, n_node]
-    ) -> torch.Tensor:
+        self.flagos_backend = getattr(config, "flagos_backend", "torch")
+        self.last_flagos_dispatch = None
+
+    def _forward_torch(self, x: torch.Tensor) -> torch.Tensor:
+        """Original SToFM implementation retained as the semantic fallback."""
         zero_mask = x.eq(0.)
         x = self.linear(x.unsqueeze(-1))
         x = x.expand(-1, -1, -1, self.K) # [bs, n_node, n_node, K]
@@ -54,7 +55,21 @@ class GaussianModule(nn.Module):
         x = self.proj(x) # [bs, n_node, n_node, num_heads]
         x = x.permute(0, 3, 1, 2).contiguous() # [bs, num_heads, n_node, n_node]
         x = x.masked_fill(zero_mask.unsqueeze(1).expand_as(x), 0.)
-        return x # [bs, num_heads, n_node, n_node]
+        return x
+
+    def forward(
+        self,
+        x: torch.Tensor, # [bs, n_node, n_node]
+    ) -> torch.Tensor:
+        if self.flagos_backend != "torch":
+            from .flagos_backend import gaussian_pair_bias
+
+            result = gaussian_pair_bias(self, x, self.flagos_backend)
+            if result is not None:
+                output, self.last_flagos_dispatch = result
+                return output
+        self.last_flagos_dispatch = None
+        return self._forward_torch(x) # [bs, num_heads, n_node, n_node]
 
 
 class MultiheadAttention(nn.Module):
@@ -83,6 +98,8 @@ class MultiheadAttention(nn.Module):
         self.out_proj = nn.Linear(config.embedding_dim, config.embedding_dim, bias=config.bias)
 
         self.onnx_trace = False
+        self.flagos_backend = getattr(config, "flagos_attention_backend", "torch")
+        self.last_flagos_dispatch = None
 
     def reset_parameters(self):
         if self.qkv_same_dim:
@@ -152,6 +169,35 @@ class MultiheadAttention(nn.Module):
                 raise AssertionError(
                     "The shape of the generated padding mask for the key does not match expected dimensions."
                 )
+        direct_result = None
+        if self.flagos_backend != "torch" and attn_bias is not None and not before_softmax:
+            from .flagos_backend import pair_attention
+
+            direct_result = pair_attention(
+                q.view(bsz, self.num_heads, tgt_len, self.head_dim),
+                k.view(bsz, self.num_heads, src_len, self.head_dim),
+                v.view(bsz, self.num_heads, src_len, self.head_dim),
+                attn_bias.contiguous().view(bsz, self.num_heads, tgt_len, src_len),
+                key_padding_mask=key_padding_mask,
+                dropout_p=self.attention_dropout_module.p,
+                training=self.training,
+                return_pair=return_pair_rep,
+                return_weights=need_weights,
+                backend=self.flagos_backend,
+            )
+
+        if direct_result is not None:
+            (attn, pair_rep, attn_weights_float), self.last_flagos_dispatch = direct_result
+            attn = attn.permute(2, 0, 1, 3).contiguous().view(tgt_len, bsz, embedding_dim)
+            attn: torch.Tensor = self.out_proj(attn)
+            attn_weights = None
+            if need_weights:
+                attn_weights = attn_weights_float.transpose(1, 0)
+                if not need_head_weights:
+                    attn_weights = attn_weights.mean(dim=0)
+            return attn, attn_weights, pair_rep
+
+        self.last_flagos_dispatch = None
         attn_weights = torch.bmm(q, k.transpose(1, 2)) # [bs * num_heads, n_node, n_node]
         attn_weights = self.apply_sparse_mask(attn_weights, tgt_len, src_len, bsz)
 
@@ -243,6 +289,7 @@ class TransformerEncoderLayer(nn.Module):
         self_attn_padding_mask: Optional[torch.Tensor] = None, # [bs, n_node]
         need_weights: bool = False,
         no_attn_bias: bool = False,
+        return_pair_rep: bool = True,
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
         residual = input_nodes
         if self.pre_layernorm:
@@ -258,7 +305,7 @@ class TransformerEncoderLayer(nn.Module):
             attn_bias=self_attn_bias,
             key_padding_mask=self_attn_padding_mask,
             need_weights=need_weights,
-            return_pair_rep=True
+            return_pair_rep=return_pair_rep,
         )
         input_nodes = self.dropout_module(input_nodes)
         input_nodes = residual + input_nodes
@@ -314,6 +361,7 @@ class TransformerEncoder(nn.Module):
         padding_token_type: int = 3,
         no_attn_bias = False,
         need_attn = False,
+        return_pair_rep: bool = True,
     ) -> Tuple[Union[torch.Tensor, List[torch.LongTensor]], torch.Tensor]:
         # compute padding mask. This is needed for multi-head attention
         input_nodes = token_embeddings # [bs, n_node, dim]
@@ -326,7 +374,7 @@ class TransformerEncoder(nn.Module):
         if not last_state_only:
             inner_states.append(input_nodes)
         
-        for layer in self.layers:
+        for layer_index, layer in enumerate(self.layers):
             input_nodes, attn, pair_rep = layer(
                 input_nodes,
                 self_attn_padding_mask=padding_mask,
@@ -334,8 +382,10 @@ class TransformerEncoder(nn.Module):
                 self_attn_bias=attn_bias,
                 need_weights=need_attn,
                 no_attn_bias=no_attn_bias,
+                return_pair_rep=return_pair_rep or layer_index < len(self.layers) - 1,
             )
-            attn_bias = pair_rep
+            if pair_rep is not None:
+                attn_bias = pair_rep
             if not last_state_only:
                 inner_states.append(input_nodes)
             if need_attn:
@@ -435,6 +485,7 @@ class SToFMModel(SToFMPreTrainedModel):
         token_types: Optional[torch.LongTensor], # [bs, n_node]
         need_attn: Optional[bool] = False,
         no_attn_bias: Optional[bool] = False,
+        return_pair_rep: bool = True,
         **unused,
     ) -> Union[Tuple[torch.LongTensor], BaseModelOutputWithNoAttention]:
 
@@ -446,12 +497,14 @@ class SToFMModel(SToFMPreTrainedModel):
 
         inner_states, attns, pair_rep = self.encoder(
             token_embeddings=token_embeddings, token_types=token_types, attn_bias=attn_bias,
-            no_attn_bias=no_attn_bias, need_attn=need_attn
+            no_attn_bias=no_attn_bias, need_attn=need_attn, return_pair_rep=return_pair_rep
         ) # inner_states: [(n_node, bs, dim)]
 
         input_nodes = inner_states[-1].transpose(0, 1) # [bs, n_node, dim]
-        pair_rep = pair_rep.permute(0, 2, 3, 1).contiguous() # [bs, n_node, n_node, num_heads]
-        result = {'last_hidden_state': input_nodes, 'hidden_states': inner_states, 'pair_rep': pair_rep}
+        result = {'last_hidden_state': input_nodes, 'hidden_states': inner_states}
+        if pair_rep is not None:
+            pair_rep = pair_rep.permute(0, 2, 3, 1).contiguous() # [bs, n_node, n_node, num_heads]
+            result['pair_rep'] = pair_rep
         if need_attn:
             result['attentions'] = attns
         return result

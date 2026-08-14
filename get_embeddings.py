@@ -20,6 +20,12 @@ parser.add_argument("--split_num", type=int, default=1000)
 parser.add_argument("--leiden_res", type=float, default=1.0)
 parser.add_argument("--leiden_alpha", type=float, default=0.2)
 parser.add_argument("--seed", type=int, default=42)
+parser.add_argument("--flagos_backend", choices=["torch", "auto", "flaggems"], default="torch")
+parser.add_argument(
+    "--flagos_attention_backend",
+    choices=["inherit", "torch", "auto", "flaggems"],
+    default="inherit",
+)
 args = parser.parse_args()
 
 local_rank = 0
@@ -43,10 +49,17 @@ torch.cuda.manual_seed(seed)
 np.random.seed(seed)
 
 config = SToFMConfig.from_pretrained(config_path)
+config.flagos_backend = args.flagos_backend
+config.flagos_attention_backend = (
+    config.flagos_backend
+    if args.flagos_attention_backend == "inherit"
+    else args.flagos_attention_backend
+)
 model = SToFMModel(config).to(device)
 state_dict = torch.load(model_path)
 # state_dict = {'.'.join(k.split('.')[1:]): v for k, v in state_dict.items()}
 model.load_state_dict(state_dict)
+model.eval()
 
 class Pooler(nn.Module):
     def __init__(self, config, pretrained_proj, proj_dim):
@@ -107,14 +120,12 @@ for data_info in data_infos:
         step += 1
         indices = graph['indices']
         graph = {k: v.to(device) for k, v in graph.items()}
-        model.eval()
-        torch.cuda.empty_cache()
-        output = model(**graph)
+        with torch.inference_mode():
+            output = model(**graph, return_pair_rep=False)
         node_rep = output['last_hidden_state']
         embeddings[indices[indices != -1]] = node_rep[indices != -1].clone().detach().cpu()
 
         del graph, output, node_rep
     del dataloader, graphs
-    torch.cuda.empty_cache()
 
     np.save(f"{data_info['data_root']}/{output_filename}", embeddings.cpu().numpy())
