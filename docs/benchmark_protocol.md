@@ -14,7 +14,7 @@ cannot turn an unverified estimate into a performance claim.
 | O1 | Gaussian bias | FlagGems `stofm_gaussian_pair_bias` | Inductor dense fusion on CUDA; tiled reference elsewhere |
 | O2 | Pair-state attention | FlagGems `stofm_pair_attention` | `baddbmm` score construction and no clone when pair state is unused |
 | O3 | End-to-end | O1 + B1 + native attention | End-to-end comparator reported against B1 |
-| O4 | End-to-end | O1 + O2 + B1 | End-to-end comparator reported against B1 |
+| O4 | End-to-end | O1 + O2 + B1 | Selected V100 deployment result reported against B1 |
 
 The V100 report must use `B0` as the baseline for O1 and O2, and `B1` as the
 baseline for O3.  B2 is listed only to make its exclusion auditable.
@@ -58,12 +58,13 @@ count, and the exact commit IDs.  A speedup is `baseline_p50 / candidate_p50`.
 
 ## Acceptance Targets, Not Results
 
-Before measurement, the engineering targets on a V100 are O1 >= 1.30x versus
-B0 Gaussian and at least one of O3/O4 >= 1.10x versus B1 end-to-end at p50.
-O2 must be assessed both in isolation and as part of O4; the selected default
-is the faster end-to-end candidate after correctness validation.  These targets
-are decision thresholds, not performance claims.  The generated report is the
-only source for measured values.
+Before measurement on a new target, the engineering targets are O1 >= 1.30x
+versus B0 Gaussian and at least one of O3/O4 >= 1.10x versus B1 end-to-end at
+p50.  O2 must be assessed both in isolation and as part of O4; the selected
+default is the faster end-to-end candidate after correctness validation.  The
+V100 result selected O4; see `v100_optimization_report.md`.  These targets are
+decision thresholds, not performance claims.  The generated report is the only
+source for measured values.
 
 ## Deferred Ascend 310 and MTT S4000 Validation
 

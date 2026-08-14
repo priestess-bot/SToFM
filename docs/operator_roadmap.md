@@ -7,7 +7,7 @@ code from deferred hardware work.
 | Operation | Torch / ecosystem limitation | CUDA V100 implementation | Ascend 310 implementation state | MTT S4000 implementation state |
 | --- | --- | --- | --- | --- |
 | Gaussian pair bias `[B,N,N,K]` | Eager PyTorch materializes a large expanded RBF activation; generic graph rewriting cannot recognize this SToFM-specific formula | O1 uses a compiler-friendly dense formulation through `torch.compile`; the portable fallback tiles pairs | Correctness-first tiled adapter; profile and replace with CANN fused/vector kernel after runtime validation | Correctness-first tiled adapter; profile and replace with MUSA/TLE fused kernel after runtime validation |
-| Pair-state attention score and update | Eager path performs BMM, separate bias addition, and a clone solely to expose next `pair_rep` | O2 offers `baddbmm`; it is an explicit opt-in until its target-specific benchmark wins | Correctness-first `baddbmm -> softmax -> bmm`; future fused score/update kernel | Correctness-first `baddbmm -> softmax -> bmm`; future fused score/update kernel |
+| Pair-state attention score and update | Eager path performs BMM, separate bias addition, and a clone solely to expose next `pair_rep` | O2 uses `baddbmm`; O4 is the measured V100 winner | Correctness-first `baddbmm -> softmax -> bmm`; future fused score/update kernel | Correctness-first `baddbmm -> softmax -> bmm`; future fused score/update kernel |
 | Final pair-state materialization | The original model always materializes a final `[B,H,N,N]` state even in embedding extraction | B1 adds explicit `return_pair_rep=False` propagation | Same source path, subject to runtime correctness test | Same source path, subject to runtime correctness test |
 
 ## Architecture-Specific Gaps to Close
@@ -17,9 +17,13 @@ code from deferred hardware work.
 - O1 currently relies on Inductor graph fusion rather than a custom CUDA/Triton
   kernel.  Benchmark generated code and peak memory before deciding whether a
   custom kernel is justified.
-- O2 is an operator-expression improvement, not a FlashAttention replacement:
-  pair-state preservation changes the data dependency and must remain covered
-  by a pair-state regression test.
+- The committed `N=1050` measurement selected O4 (O1 + O2 + B1): it is faster
+  than the native-attention O3 comparator while preserving pair-state tests.
+- FlagGems has no Volta architecture-specialized registry for this device, so
+  the result uses the generic CUDA/Inductor route.  A Volta-specific tuning or
+  fused kernel remains a separate optimization opportunity.
+- O2 is not a FlashAttention replacement: pair-state preservation changes the
+  data dependency and must remain covered by a pair-state regression test.
 
 ### Huawei Ascend 310
 

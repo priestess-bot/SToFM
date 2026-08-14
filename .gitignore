@@ -1,5 +1,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
-benchmark-results/
+benchmark-results/*
+!benchmark-results/v100-20260815-v100-sxm2-16gb-committed/
+!benchmark-results/v100-20260815-v100-sxm2-16gb-committed/**
 reports/
