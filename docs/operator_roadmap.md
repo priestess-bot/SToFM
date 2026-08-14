@@ -1,5 +1,9 @@
 # SToFM Operator Roadmap
 
+For the cross-model, cross-framework, and architecture-specific gap matrix
+(including Uni2 and KRONOS), see
+[`operator_gap_analysis.md`](operator_gap_analysis.md).
+
 The integration narrows the optimization surface to the two operations that
 dominate SToFM's pair-state path.  The stages below distinguish implemented
 code from deferred hardware work.
