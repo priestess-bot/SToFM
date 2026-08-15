@@ -55,27 +55,46 @@ external rental hardware.
   Evidence: FlagGems `tests/test_stofm_experimental.py` (10 passed): padded
   and unpadded rows, optional pair output, native inference, and gradient/
   non-contiguous reference fallback.
-- [ ] V100-5. Extend the V100 benchmark with individual native stages and
+- [x] V100-5. Extend the V100 benchmark with individual native stages and
   rerun a full end-to-end comparison. Select a default only from measured
   p50 and memory results; record a rejection when a native candidate loses.
-- [ ] V100-6. Profile remaining SToFM LayerNorm/residual/FFN work and record
+  Evidence: `benchmark-results/v100-native-epilogue-20260815/` at SToFM
+  `960dda12b98cb2a4fd60c03929ecaa0a6acfc1a7` and FlagGems
+  `567297236ddc2db6fee498854fd0e493c6f4ea03`. O2n p50 is `0.6605 ms`
+  versus O2 `0.9140 ms` (`1.384x`); O5 p50 is `8.8122 ms` versus O4
+  `10.8573 ms` (`1.232x`) at unchanged peak allocation. O5 is selected;
+  O1n Gaussian remains rejected.
+- [x] V100-6. Profile remaining SToFM LayerNorm/residual/FFN work and record
   whether existing FlagGems fused primitives are sufficient or a new kernel
   is justified. This is a decision task, not permission to count a wrapper as
   a new operator.
+  Evidence: V100 post-LayerNorm microbenchmark at `N=1050,D=256` measured
+  PyTorch residual+LayerNorm p50 `0.0351 ms` versus FlagGems
+  `skip_layer_norm` p50 `0.1053 ms`. The existing primitive is rejected for
+  this path; its potential share is too small to justify a new V100 kernel.
 
 ## 2. Vision Operator Work for Uni2 and KRONOS
 
-- [ ] VIS-0. Add a versioned experimental vision API with narrow, testable
+- [x] VIS-0. Add a versioned experimental vision API with narrow, testable
   operator boundaries rather than importing complete `timm` models.
-- [ ] VIS-1. Implement and test marker-aware token assembly for KRONOS:
+  Evidence: FlagGems `experimental_ops/vision.py`, API version `1`.
+- [x] VIS-1. Implement and test marker-aware token assembly for KRONOS:
   marker embedding gather, positional/token addition, optional CLS prepend,
   and padding-safe variable marker counts.
-- [ ] VIS-2. Add a ViT residual-LayerNorm inference path that uses an existing
+  Evidence: native NVIDIA inference implementation in
+  `vision_backends/nvidia.py` plus portable adapters; tests cover padded and
+  variable marker counts, optional CLS, and marker permutations.
+- [x] VIS-2. Add a ViT residual-LayerNorm inference path that uses an existing
   FlagGems fused primitive only where its semantics and gradient policy match;
   otherwise retain PyTorch reference behavior.
-- [ ] VIS-3. Add Uni2/KRONOS operator-level reference tests for dynamic image
+  Evidence: `vit_residual_layer_norm` retains reference behavior because the
+  measured V100 `skip_layer_norm` candidate is slower and lacks a verified
+  backward; `vit_swiglu` uses the existing CUDA inference primitive.
+- [x] VIS-3. Add Uni2/KRONOS operator-level reference tests for dynamic image
   shape metadata, marker permutations, padded batches, and dtype/layout
   behavior.
+  Evidence: FlagGems `tests/test_vision_experimental.py` (5 passed), including
+  dynamic token count, non-contiguous fallback, gradients, and static adapters.
 - [ ] VIS-4. Add V100 microbenchmarks for the implemented vision operators.
   Do not claim a full Uni2/KRONOS model speedup without model weights and an
   end-to-end reproducible workload.
@@ -86,11 +105,15 @@ external rental hardware.
   SToFM Gaussian and pair-attention APIs.
   Evidence: FlagGems `experimental_ops/stofm_backends/ascend.py` and the AST
   checker.
-- [ ] ASC-1. Extend static backend contracts for every new SToFM/Vision API
+- [x] ASC-1. Extend static backend contracts for every new SToFM/Vision API
   introduced in sections 1 and 2; use portable reference semantics when CANN
   runtime is absent.
-- [ ] ASC-2. Run source syntax/AST/API tests for all Ascend adapters and save
+  Evidence: FlagGems `vision_backends/ascend.py`; marker-token assembly,
+  residual-LayerNorm, and SwiGLU all use explicit reference contracts.
+- [x] ASC-2. Run source syntax/AST/API tests for all Ascend adapters and save
   the deferred device test commands.
+  Evidence: expanded `tools/check_stofm_target_backends.py` reports passed
+  SToFM and vision Ascend contracts with no `torch_npu` import.
 - [!] ASC-3. On rented Ascend 310 hardware: establish B0/B1, run forward and
   gradient matrices, then measure each promoted operator and full model.
 
@@ -100,11 +123,15 @@ external rental hardware.
   SToFM Gaussian and pair-attention APIs.
   Evidence: FlagGems `experimental_ops/stofm_backends/mthreads.py` and the
   AST checker.
-- [ ] MTT-1. Extend static backend contracts for every new SToFM/Vision API
+- [x] MTT-1. Extend static backend contracts for every new SToFM/Vision API
   introduced in sections 1 and 2; use portable reference semantics when MUSA
   runtime is absent.
-- [ ] MTT-2. Run source syntax/AST/API tests for all MTT adapters and save the
+  Evidence: FlagGems `vision_backends/mthreads.py`; marker-token assembly,
+  residual-LayerNorm, and SwiGLU all use explicit reference contracts.
+- [x] MTT-2. Run source syntax/AST/API tests for all MTT adapters and save the
   deferred device test commands.
+  Evidence: expanded `tools/check_stofm_target_backends.py` reports passed
+  SToFM and vision MTT contracts with no `torch_musa` import.
 - [!] MTT-3. On rented MTT S4000 hardware: establish B0/B1, run forward and
   gradient matrices, then measure each promoted operator and full model.
 
