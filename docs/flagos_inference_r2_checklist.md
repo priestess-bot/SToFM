@@ -92,6 +92,9 @@ required and is not a completed item.
   Evidence: `benchmark-results/r2-v100-fp16-20260815/` and
   `r2-vision-v100-fp16-20260815/`, with the same independent-process and raw
   evidence rules.
+- [ ] V100-9 Add an independent frozen-FlagOS F0 worker for every Vision
+  boundary, then rerun the FP32/FP16 operator suites so Torch, stock FlagOS,
+  and optimized FlagOS have separate raw measurements.
 
 ## 3. Target-Device Preparation
 

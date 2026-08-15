@@ -1,4 +1,4 @@
-"""One isolated R2 V100 benchmark process for Uni2/KRONOS operator boundaries."""
+"""Measure Vision/KRONOS boundaries in the immutable frozen-FlagOS environment."""
 
 from __future__ import annotations
 
@@ -17,159 +17,56 @@ import torch
 ROOT = Path(__file__).parents[1]
 sys.path.insert(0, str(ROOT))
 
-from flag_gems.experimental_ops import marker_token_embed, vit_residual_layer_norm, vit_swiglu
 from model.flagos_runtime import flagos_inference_scope
 from r2_benchmark_common import benchmark_cuda, git_sha, jsonable, runtime_capture, tensor_sha256
-from vision_r2_common import _dtype, _inputs, _tolerance
+from vision_r2_common import _dtype, _inputs, _tolerance, torch_invoke
 
 
 @dataclass(frozen=True)
-class StageSpec:
+class StockStageSpec:
     name: str
-    comparison_baseline: str
     operation: str
-    backend: str
-    use_flagos_scope: bool
-    gain_kind: str
     description: str
-    status: str = "measured"
-    reason: str = ""
 
 
-STAGES = (
-    StageSpec(
-        "V0_marker_token_torch",
-        "V0_marker_token_torch",
-        "marker_token_embed",
-        "torch",
-        False,
-        "reference",
-        "KRONOS marker-aware token assembly through the public Torch reference API.",
-    ),
-    StageSpec(
-        "V1_marker_token_nvidia",
+STOCK_STAGES = (
+    StockStageSpec(
         "V0s_marker_token_stock_flagos",
         "marker_token_embed",
-        "nvidia",
-        True,
-        "custom_kernel",
-        "FlagGems NVIDIA marker-token Triton candidate versus the frozen scoped-FlagOS baseline.",
+        "Frozen FlagOS scoped ATen baseline for KRONOS marker-token assembly.",
     ),
-    StageSpec(
-        "V2_swiglu_torch",
-        "V2_swiglu_torch",
-        "swiglu",
-        "torch",
-        False,
-        "reference",
-        "Uni2 packed SwiGLU through the public Torch reference API.",
-    ),
-    StageSpec(
-        "V3_swiglu_nvidia",
+    StockStageSpec(
         "V2s_swiglu_stock_flagos",
         "swiglu",
-        "nvidia",
-        True,
-        "existing_flaggems_kernel",
-        "Existing FlagGems SwiGLU candidate versus the frozen scoped-FlagOS baseline.",
+        "Frozen FlagOS scoped ATen baseline for Uni2 packed SwiGLU.",
     ),
-    StageSpec(
-        "V4_residual_layer_norm_torch",
-        "V4_residual_layer_norm_torch",
-        "residual_layer_norm",
-        "torch",
-        False,
-        "reference",
-        "Uni2 residual-LayerNorm reference boundary.",
-    ),
-    StageSpec(
-        "V5_residual_layer_norm_rejected",
+    StockStageSpec(
         "V4s_residual_layer_norm_stock_flagos",
         "residual_layer_norm",
-        "nvidia",
-        False,
-        "rejected",
-        "No NVIDIA residual-LayerNorm native candidate is timed in R2.",
-        status="rejected",
-        reason="The existing FlagGems skip-LayerNorm candidate lost on the V100 R1 shape and has no verified backward contract.",
+        "Frozen FlagOS scoped ATen baseline for Uni2 residual LayerNorm.",
     ),
 )
 
 
-def _invoke(
-    operation: str,
-    backend: str,
-    tensors: Dict[str, torch.Tensor],
-) -> Tuple[torch.Tensor, Any, Any]:
-    if operation == "marker_token_embed":
-        (output, mask), dispatch = marker_token_embed(
-            tensors["patch_tokens"],
-            tensors["marker_ids"],
-            tensors["marker_weight"],
-            position_embedding=tensors["position"],
-            token_embedding=tensors["token"],
-            marker_padding_mask=tensors["marker_padding"],
-            backend=backend,
-            return_dispatch=True,
-        )
-        return output, dispatch, mask
-    if operation == "swiglu":
-        output, dispatch = vit_swiglu(tensors["packed_swiglu"], backend=backend, return_dispatch=True)
-        return output, dispatch, None
-    if operation == "residual_layer_norm":
-        output, dispatch = vit_residual_layer_norm(
-            tensors["residual_input"],
-            tensors["residual"],
-            (tensors["residual_input"].shape[-1],),
-            tensors["norm_weight"],
-            tensors["norm_bias"],
-            backend=backend,
-            return_dispatch=True,
-        )
-        return output, dispatch, None
-    raise ValueError(f"unsupported operation: {operation}")
+def _invoke(operation: str, tensors: Dict[str, torch.Tensor]) -> Tuple[torch.Tensor, Any]:
+    return torch_invoke(operation, tensors)
 
 
 def _run_stage(
-    spec: StageSpec,
+    spec: StockStageSpec,
     args: argparse.Namespace,
     tensors: Dict[str, torch.Tensor],
     references: Dict[str, Tuple[torch.Tensor, Any]],
     dtype: torch.dtype,
 ) -> Dict[str, Any]:
-    if spec.status != "measured":
-        return {
-            "stage": spec.name,
-            "scope": "vision_operator",
-            "status": spec.status,
-            "comparison_baseline": spec.comparison_baseline,
-            "gain_kind": spec.gain_kind,
-            "description": spec.description,
-            "reason": spec.reason,
-            "samples_ms": [],
-        }
-
     expected, expected_mask = references[spec.operation]
     tolerance = _tolerance(dtype)
 
     def invoke():
-        return _invoke(spec.operation, spec.backend, tensors)
+        return _invoke(spec.operation, tensors)
 
-    if spec.use_flagos_scope:
-        with flagos_inference_scope("optimized") as scope_dispatch:
-            output, dispatch, mask = invoke()
-            torch.testing.assert_close(output, expected, **tolerance)
-            if expected_mask is not None and not torch.equal(mask, expected_mask):
-                raise AssertionError(f"{spec.name} changed the marker padding mask")
-            measured = benchmark_cuda(
-                invoke,
-                warmup=args.warmup,
-                repetitions=args.repetitions,
-                calls_per_sample=args.calls_per_sample,
-            )
-            runtime = jsonable(scope_dispatch)
-    else:
-        output, dispatch, mask = invoke()
+    with flagos_inference_scope("stock") as scope_dispatch:
+        output, mask = invoke()
         torch.testing.assert_close(output, expected, **tolerance)
         if expected_mask is not None and not torch.equal(mask, expected_mask):
             raise AssertionError(f"{spec.name} changed the marker padding mask")
@@ -179,17 +76,26 @@ def _run_stage(
             repetitions=args.repetitions,
             calls_per_sample=args.calls_per_sample,
         )
-        runtime = None
+        runtime = jsonable(scope_dispatch)
 
     return {
         "stage": spec.name,
         "scope": "vision_operator",
         "status": "measured",
-        "comparison_baseline": spec.comparison_baseline,
-        "gain_kind": spec.gain_kind,
+        "comparison_baseline": spec.name,
+        "gain_kind": "stock_aten_reference",
         "description": spec.description,
         "validation": {"status": "passed", "output_sha256": tensor_sha256(output), **tolerance},
-        "dispatch": {"public": jsonable(dispatch), "flagos_scope": runtime},
+        "dispatch": {
+            "public": {
+                "operator": spec.operation,
+                "requested": "stock",
+                "selected": "torch",
+                "precision": args.precision,
+                "reason": "frozen FlagOS has no Vision composite API; Torch reference executes inside scoped ATen dispatch",
+            },
+            "flagos_scope": runtime,
+        },
         **measured,
     }
 
@@ -245,15 +151,15 @@ def main() -> None:
 
     with torch.inference_mode():
         references = {
-            operation: _invoke(operation, "torch", tensors)[::2]
+            operation: _invoke(operation, tensors)
             for operation in ("marker_token_embed", "swiglu", "residual_layer_norm")
         }
-        results = [_run_stage(spec, args, tensors, references, dtype) for spec in STAGES]
+        results = [_run_stage(spec, args, tensors, references, dtype) for spec in STOCK_STAGES]
 
     result = {
         "schema_version": 2,
-        "role": "optimized",
-        "run_id": f"vision-r2-{args.precision}-{args.run_index:02d}",
+        "role": "stock",
+        "run_id": f"vision-r2-stock-{args.precision}-{args.run_index:02d}",
         "precision": args.precision,
         "runtime": runtime_capture(device),
         "commits": {"stofm": git_sha(ROOT), "flaggems": git_sha(args.flaggems_source_root)},

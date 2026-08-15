@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import random
 import statistics
@@ -14,7 +15,8 @@ from typing import Any, Dict, Iterable, List
 
 
 ROOT = Path(__file__).parents[1]
-WORKER = ROOT / "benchmarks" / "vision_r2_v100_worker.py"
+OPTIMIZED_WORKER = ROOT / "benchmarks" / "vision_r2_v100_worker.py"
+STOCK_WORKER = ROOT / "benchmarks" / "vision_r2_v100_stock_worker.py"
 DEFAULT_WORKSPACE = ROOT.parent
 
 
@@ -57,6 +59,98 @@ def _validate_trial(result: Dict[str, Any], precision: str, workload: Dict[str, 
         raise ValueError("Vision worker precision or workload drifted between independent trials")
     if result["reference_hashes"] != references:
         raise ValueError("Vision Torch reference checksum drifted between independent trials")
+
+
+def _validate_cross_environment_trial(
+    stock: Dict[str, Any],
+    optimized: Dict[str, Any],
+    precision: str,
+    workload: Dict[str, Any],
+    references: Dict[str, str],
+) -> None:
+    """Reject any cross-environment baseline that is not directly comparable."""
+    _validate_trial(stock, precision, workload, references)
+    _validate_trial(optimized, precision, workload, references)
+    if stock.get("role") != "stock" or optimized.get("role") != "optimized":
+        raise ValueError("Vision worker roles must be explicit stock and optimized environments")
+    if stock["measurement"] != optimized["measurement"]:
+        raise ValueError("Vision worker measurement settings drifted across environments")
+    runtime_keys = ("torch", "cuda", "device", "capability", "torch_backend")
+    for key in runtime_keys:
+        if stock["runtime"].get(key) != optimized["runtime"].get(key):
+            raise ValueError(f"Vision worker runtime drifted across environments: {key}")
+
+
+def _worker_environment(flaggems_source_root: Path) -> Dict[str, str]:
+    """Put the audited source tree before any editable/site package install."""
+    environment = os.environ.copy()
+    paths = [str(flaggems_source_root / "src"), str(ROOT)]
+    inherited = environment.get("PYTHONPATH")
+    if inherited:
+        paths.append(inherited)
+    environment["PYTHONPATH"] = os.pathsep.join(paths)
+    return environment
+
+
+def _run_worker(
+    *,
+    python: Path,
+    worker: Path,
+    role: str,
+    flaggems_source_root: Path,
+    output_dir: Path,
+    run_index: int,
+    args: argparse.Namespace,
+) -> Dict[str, Any]:
+    command = [
+        str(python),
+        str(worker),
+        "--precision",
+        args.precision,
+        "--output-dir",
+        str(output_dir),
+        "--run-index",
+        str(run_index),
+        "--flaggems-source-root",
+        str(flaggems_source_root),
+    ]
+    for name in (
+        "device_index",
+        "batch_size",
+        "markers",
+        "tokens_per_marker",
+        "embedding_dim",
+        "marker_vocab",
+        "swiglu_sequence",
+        "swiglu_hidden",
+        "warmup",
+        "repetitions",
+        "calls_per_sample",
+        "seed",
+    ):
+        command.extend([f"--{name.replace('_', '-')}", str(getattr(args, name))])
+    completed = subprocess.run(
+        command,
+        cwd=ROOT,
+        env=_worker_environment(flaggems_source_root),
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    output_dir.mkdir(parents=True, exist_ok=True)
+    log_path = output_dir / "worker.log"
+    log_path.write_text(completed.stdout, encoding="utf-8")
+    if completed.returncode:
+        raise RuntimeError(f"Vision {role} worker failed ({completed.returncode}); inspect {log_path}")
+    result_path = output_dir / "result.json"
+    result = _read_json(result_path)
+    return {
+        "result": result,
+        "result_path": result_path,
+        "result_sha256": _sha256(result_path),
+        "commits": result["commits"],
+    }
 
 
 def _aggregate(trials: List[Dict[str, Any]], *, resamples: int) -> Dict[str, Any]:
@@ -140,8 +234,12 @@ def main() -> None:
     parser.add_argument("--precision", choices=["fp32", "fp16"], required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--runs", type=int, default=3)
-    parser.add_argument("--python", type=Path, default=DEFAULT_WORKSPACE / ".venv-flagos-r2" / "bin" / "python")
-    parser.add_argument("--flaggems-source-root", type=Path, default=DEFAULT_WORKSPACE / "FlagGems-stofm")
+    parser.add_argument("--stock-python", type=Path, default=DEFAULT_WORKSPACE / ".venv-flagos-stock-r2" / "bin" / "python")
+    parser.add_argument("--stock-flaggems-source-root", type=Path, default=DEFAULT_WORKSPACE / "FlagGems-stock-r2")
+    parser.add_argument("--optimized-python", type=Path, default=DEFAULT_WORKSPACE / ".venv-flagos-r2" / "bin" / "python")
+    parser.add_argument("--optimized-flaggems-source-root", type=Path, default=DEFAULT_WORKSPACE / "FlagGems-stofm")
+    parser.add_argument("--python", dest="legacy_python", type=Path, help=argparse.SUPPRESS)
+    parser.add_argument("--flaggems-source-root", dest="legacy_flaggems_source_root", type=Path, help=argparse.SUPPRESS)
     parser.add_argument("--device-index", type=int, default=0)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--markers", type=int, default=32)
@@ -156,65 +254,77 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=20260815)
     parser.add_argument("--bootstrap-resamples", type=int, default=10000)
     args = parser.parse_args()
+    if args.legacy_python is not None:
+        args.optimized_python = args.legacy_python
+    if args.legacy_flaggems_source_root is not None:
+        args.optimized_flaggems_source_root = args.legacy_flaggems_source_root
     if args.runs < 3:
         raise ValueError("R2 reporting requires at least three independent processes")
-    if not args.python.is_file() or not args.flaggems_source_root.is_dir():
-        raise FileNotFoundError("Vision R2 requires the pinned optimized interpreter and FlagGems checkout")
+    for label, python, source_root in (
+        ("stock", args.stock_python, args.stock_flaggems_source_root),
+        ("optimized", args.optimized_python, args.optimized_flaggems_source_root),
+    ):
+        if not python.is_file() or not source_root.is_dir():
+            raise FileNotFoundError(f"Vision R2 requires the pinned {label} interpreter and FlagGems checkout")
 
     trials = []
     workload: Dict[str, Any] = {}
     references: Dict[str, str] = {}
     for run_index in range(1, args.runs + 1):
         run_dir = args.output_dir / f"run-{run_index:02d}"
-        command = [
-            str(args.python),
-            str(WORKER),
-            "--precision",
-            args.precision,
-            "--output-dir",
-            str(run_dir),
-            "--run-index",
-            str(run_index),
-            "--flaggems-source-root",
-            str(args.flaggems_source_root),
-        ]
-        for name in (
-            "device_index",
-            "batch_size",
-            "markers",
-            "tokens_per_marker",
-            "embedding_dim",
-            "marker_vocab",
-            "swiglu_sequence",
-            "swiglu_hidden",
-            "warmup",
-            "repetitions",
-            "calls_per_sample",
-            "seed",
-        ):
-            command.extend([f"--{name.replace('_', '-')}", str(getattr(args, name))])
-        completed = subprocess.run(command, cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        run_dir.mkdir(parents=True, exist_ok=True)
-        (run_dir / "worker.log").write_text(completed.stdout, encoding="utf-8")
-        if completed.returncode:
-            raise RuntimeError(f"Vision worker failed ({completed.returncode}); inspect {run_dir / 'worker.log'}")
-        result = _read_json(run_dir / "result.json")
+        stock = _run_worker(
+            python=args.stock_python,
+            worker=STOCK_WORKER,
+            role="stock",
+            flaggems_source_root=args.stock_flaggems_source_root,
+            output_dir=run_dir / "stock",
+            run_index=run_index,
+            args=args,
+        )
+        optimized = _run_worker(
+            python=args.optimized_python,
+            worker=OPTIMIZED_WORKER,
+            role="optimized",
+            flaggems_source_root=args.optimized_flaggems_source_root,
+            output_dir=run_dir / "optimized",
+            run_index=run_index,
+            args=args,
+        )
+        stock_result = stock["result"]
+        optimized_result = optimized["result"]
         if not trials:
-            workload, references = result["workload"], result["reference_hashes"]
-        _validate_trial(result, args.precision, workload, references)
+            workload, references = stock_result["workload"], stock_result["reference_hashes"]
+        _validate_cross_environment_trial(stock_result, optimized_result, args.precision, workload, references)
         trials.append(
             {
                 "run_index": run_index,
-                "result": str((run_dir / "result.json").relative_to(args.output_dir)),
-                "result_sha256": _sha256(run_dir / "result.json"),
-                "commits": result["commits"],
-                "results": result["results"],
+                "stock": {
+                    "result": str(stock["result_path"].relative_to(args.output_dir)),
+                    "result_sha256": stock["result_sha256"],
+                    "commits": stock["commits"],
+                },
+                "optimized": {
+                    "result": str(optimized["result_path"].relative_to(args.output_dir)),
+                    "result_sha256": optimized["result_sha256"],
+                    "commits": optimized["commits"],
+                },
+                "results": stock_result["results"] + optimized_result["results"],
             }
         )
     suite = {
-        "schema_version": 1,
+        "schema_version": 2,
         "precision": args.precision,
         "run_count": args.runs,
+        "environments": {
+            "stock": {
+                "python": str(args.stock_python),
+                "flaggems_source_root": str(args.stock_flaggems_source_root),
+            },
+            "optimized": {
+                "python": str(args.optimized_python),
+                "flaggems_source_root": str(args.optimized_flaggems_source_root),
+            },
+        },
         "workload": workload,
         "reference_hashes": references,
         "trials": trials,
