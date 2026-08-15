@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, is_dataclass
 import hashlib
+import os
 import platform
 from pathlib import Path
 import statistics
@@ -150,6 +151,22 @@ def runtime_capture(device: torch.device) -> Dict[str, Any]:
         "cuda": torch.version.cuda,
         "device": torch.cuda.get_device_name(device),
         "capability": list(torch.cuda.get_device_capability(device)),
+        "torch_backend": {
+            "allow_tf32_matmul": torch.backends.cuda.matmul.allow_tf32,
+            "allow_tf32_cudnn": torch.backends.cudnn.allow_tf32,
+            "cudnn_benchmark": torch.backends.cudnn.benchmark,
+            "float32_matmul_precision": torch.get_float32_matmul_precision(),
+        },
+        "environment": {
+            name: os.getenv(name)
+            for name in (
+                "CUDA_VISIBLE_DEVICES",
+                "TORCHINDUCTOR_COMPILE_THREADS",
+                "TORCHINDUCTOR_CACHE_DIR",
+                "PYTORCH_CUDA_ALLOC_CONF",
+                "CUBLAS_WORKSPACE_CONFIG",
+            )
+        },
         "nvidia_smi": nvidia_smi(),
         "pip_freeze": pip_freeze(),
     }
