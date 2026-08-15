@@ -34,11 +34,15 @@ def _load_experimental_ops(required: bool):
 
 
 def _get_ops(backend: str):
-    if backend not in {"torch", "auto", "flaggems"}:
-        raise ValueError("flagos_backend must be one of: torch, auto, flaggems")
+    if backend not in {"torch", "auto", "flaggems", "nvidia"}:
+        raise ValueError("flagos_backend must be one of: torch, auto, flaggems, nvidia")
     if backend == "torch":
         return None
-    return _load_experimental_ops(required=backend == "flaggems")
+    return _load_experimental_ops(required=backend in {"flaggems", "nvidia"})
+
+
+def _operator_backend(backend: str) -> str:
+    return "nvidia" if backend == "nvidia" else "auto"
 
 
 def gaussian_pair_bias(module, distances: torch.Tensor, backend: str) -> Optional[Tuple[torch.Tensor, FlagOSDispatch]]:
@@ -46,8 +50,9 @@ def gaussian_pair_bias(module, distances: torch.Tensor, backend: str) -> Optiona
     ops = _get_ops(backend)
     if ops is None:
         return None
-    resolution = ops.resolve_stofm_backend(distances, "auto")
-    if backend == "flaggems" and resolution.selected == "torch":
+    operator_backend = _operator_backend(backend)
+    resolution = ops.resolve_stofm_backend(distances, operator_backend)
+    if backend in {"flaggems", "nvidia"} and resolution.selected == "torch":
         raise RuntimeError(f"FlagGems has no accelerated backend for this input: {resolution.reason}")
     output = ops.stofm_gaussian_pair_bias(
         distances,
@@ -59,7 +64,7 @@ def gaussian_pair_bias(module, distances: torch.Tensor, backend: str) -> Optiona
         module.proj[0].bias,
         module.proj[2].weight,
         module.proj[2].bias,
-        backend="auto",
+        backend=operator_backend,
     )
     return output, FlagOSDispatch(resolution.selected, resolution.reason)
 
@@ -81,8 +86,9 @@ def pair_attention(
     ops = _get_ops(backend)
     if ops is None:
         return None
-    resolution = ops.resolve_stofm_backend(query, "auto")
-    if backend == "flaggems" and resolution.selected == "torch":
+    operator_backend = _operator_backend(backend)
+    resolution = ops.resolve_stofm_backend(query, operator_backend)
+    if backend in {"flaggems", "nvidia"} and resolution.selected == "torch":
         raise RuntimeError(f"FlagGems has no accelerated backend for this input: {resolution.reason}")
     result = ops.stofm_pair_attention(
         query,
@@ -97,6 +103,6 @@ def pair_attention(
         return_pair=return_pair,
         return_weights=return_weights,
         assume_finite_pair_bias=key_padding_mask is None,
-        backend="auto",
+        backend=operator_backend,
     )
     return result, FlagOSDispatch(resolution.selected, resolution.reason)
