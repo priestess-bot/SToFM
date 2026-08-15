@@ -159,7 +159,9 @@ required and is not a completed item.
   decision. Do not reuse R1 speedups as R2 results.
   Evidence: `docs/flagos_inference_r2_report.md` contains the framework and
   architecture matrix, V100 promotion/rejection decisions, and explicit
-  CANN/MUSA no-hardware limitations.
+  CANN/MUSA no-hardware limitations. The companion
+  `docs/flagos_inference_r2_report.html` links all code and evidence references
+  only to the pushed SToFM and FlagGems fork branches.
 - [x] GIT-0 Commit and push FlagGems first; advance the SToFM optimized lock only
   after the matching FlagGems SHA is tested and pushed.
   Evidence: FlagGems `r2/stofm-flagos-inference` is pushed at
