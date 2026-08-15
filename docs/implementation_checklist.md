@@ -176,8 +176,12 @@ external rental hardware.
   operator decisions and no unmeasured performance claims.
   Evidence: `docs/operator_gap_analysis.md`, `docs/benchmark_protocol.md`,
   and `docs/target_device_acceptance.md`.
-- [ ] E3. Commit and push each repository only after its checklist entries,
+- [x] E3. Commit and push each repository only after its checklist entries,
   tests, locks, and reports agree.
+  Evidence: pushed `priestess-bot/FlagGems:integration/stofm` at
+  `2e0ab4ffa5447e2647383faf22d2bb93590f519c` and the matching locked
+  `priestess-bot/SToFM:integration/flagos` integration history, including all
+  reports and raw benchmark artifacts.
 
 ## External-Hardware Completion Rule
 
