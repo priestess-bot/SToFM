@@ -21,17 +21,47 @@ from model.utils import SToFMConfig
 from r2_benchmark_common import git_sha, jsonable, runtime_capture
 
 
-ATEN_CLASSIFICATION = {
-    "aten::addmm": "stock_flagos_aten",
-    "aten::baddbmm": "stock_flagos_aten",
-    "aten::bmm": "stock_flagos_aten",
-    "aten::_softmax": "stock_flagos_aten",
-    "aten::softmax": "stock_flagos_aten",
-    "aten::layer_norm": "torch_retained_candidate_rejected_pending_profile",
-    "aten::native_layer_norm": "torch_retained_candidate_rejected_pending_profile",
-    "aten::gelu": "torch_retained",
-    "aten::silu": "vision_swiglu_candidate",
+FLAGOS_ATEN_OPS = {
+    "aten::addmm",
+    "aten::baddbmm",
+    "aten::bmm",
+    "aten::_softmax",
+    "aten::softmax",
 }
+
+GAUSSIAN_REFERENCE_OPS = {
+    "aten::abs",
+    "aten::add",
+    "aten::clamp_min",
+    "aten::div",
+    "aten::exp",
+    "aten::mul",
+    "aten::pow",
+    "aten::relu",
+    "aten::sub",
+}
+
+
+def classify_event(stage: str, name: str) -> str:
+    if name in FLAGOS_ATEN_OPS:
+        return {
+            "p1": "torch_reference_aten",
+            "f0": "stock_flagos_aten",
+            "final": "optimized_flagos_aten",
+        }[stage]
+    if stage == "final" and name.startswith("Torch-Compiled Region"):
+        return "gaussian_compiler_region"
+    if stage == "final" and "triton_poi_fused_abs_add_div_exp_mul_pow_sub" in name:
+        return "gaussian_compiler_kernel"
+    if stage == "final" and "_pair_score_epilogue_kernel" in name:
+        return "nvidia_custom_pair_score_kernel"
+    if name in GAUSSIAN_REFERENCE_OPS:
+        return "torch_reference_gaussian" if stage != "final" else "torch_retained"
+    if name in {"aten::layer_norm", "aten::native_layer_norm"} or "layer_norm_kernel" in name:
+        return "torch_retained_candidate_rejected"
+    if name == "aten::gelu":
+        return "torch_retained"
+    return "unclassified"
 
 
 def _stage_config(stage: str, args: argparse.Namespace) -> SToFMConfig:
@@ -61,7 +91,7 @@ def _event_value(event: Any, attribute: str) -> float:
     return float(value) if value is not None else 0.0
 
 
-def _profile_rows(profile, limit: int) -> List[Dict[str, Any]]:
+def _profile_rows(profile, limit: int, stage: str) -> List[Dict[str, Any]]:
     rows = []
     for event in profile.key_averages():
         cuda_us = _event_value(event, "self_device_time_total")
@@ -74,7 +104,7 @@ def _profile_rows(profile, limit: int) -> List[Dict[str, Any]]:
                 "count": int(getattr(event, "count", 0)),
                 "self_cuda_us": cuda_us,
                 "self_cpu_us": cpu_us,
-                "classification": ATEN_CLASSIFICATION.get(event.key, "unclassified"),
+                "classification": classify_event(stage, event.key),
             }
         )
     rows.sort(key=lambda row: (row["self_cuda_us"], row["self_cpu_us"]), reverse=True)
@@ -158,7 +188,7 @@ def main() -> None:
             "return_pair_rep": False,
         },
         "dispatch": jsonable(dispatch),
-        "events": _profile_rows(profile, args.top),
+        "events": _profile_rows(profile, args.top, args.stage),
         "trace": "trace.json",
     }
     (args.output_dir / "profile.json").write_text(
