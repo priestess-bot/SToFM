@@ -1,0 +1,2101 @@
+{
+  "aggregate": {
+    "bootstrap_resamples": 10000,
+    "stages": [
+      {
+        "comparison_baseline": "V0_marker_token_torch",
+        "gain_kind": "reference",
+        "p50_ms": {
+          "max": 0.31651840209960935,
+          "mean": 0.30132906436920165,
+          "median": 0.2973695993423462,
+          "min": 0.2900991916656494
+        },
+        "peak_delta_allocated_mib": {
+          "max": 12.02392578125,
+          "mean": 12.02392578125,
+          "median": 12.02392578125,
+          "min": 12.02392578125
+        },
+        "run_count": 3,
+        "stage": "V0_marker_token_torch",
+        "status": "measured",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "V0s_marker_token_stock_flagos",
+        "gain_kind": "stock_aten_reference",
+        "p50_ms": {
+          "max": 0.27340800762176515,
+          "mean": 0.2700287977854411,
+          "median": 0.2713599920272827,
+          "min": 0.2653183937072754
+        },
+        "peak_delta_allocated_mib": {
+          "max": 12.02392578125,
+          "mean": 12.02392578125,
+          "median": 12.02392578125,
+          "min": 12.02392578125
+        },
+        "run_count": 3,
+        "stage": "V0s_marker_token_stock_flagos",
+        "status": "measured",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "V0s_marker_token_stock_flagos",
+        "gain_kind": "custom_kernel",
+        "p50_ms": {
+          "max": 0.3244032025337219,
+          "mean": 0.27190613746643066,
+          "median": 0.24586240053176878,
+          "min": 0.24545280933380126
+        },
+        "peak_delta_allocated_mib": {
+          "max": 6.00830078125,
+          "mean": 6.00830078125,
+          "median": 6.00830078125,
+          "min": 6.00830078125
+        },
+        "run_count": 3,
+        "speedup": {
+          "bootstrap_95_ci": {
+            "lower": 1.0493042274963738,
+            "upper": 1.0952969844110092
+          },
+          "point_estimate": 1.0758564502253292,
+          "resamples": 10000
+        },
+        "stage": "V1_marker_token_nvidia",
+        "status": "measured",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "V2_swiglu_torch",
+        "gain_kind": "reference",
+        "p50_ms": {
+          "max": 0.06328319907188415,
+          "mean": 0.059596799810727435,
+          "median": 0.05867519974708557,
+          "min": 0.056832000613212585
+        },
+        "peak_delta_allocated_mib": {
+          "max": 4.125,
+          "mean": 4.125,
+          "median": 4.125,
+          "min": 4.125
+        },
+        "run_count": 3,
+        "stage": "V2_swiglu_torch",
+        "status": "measured",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "V2s_swiglu_stock_flagos",
+        "gain_kind": "stock_aten_reference",
+        "p50_ms": {
+          "max": 0.056729599833488464,
+          "mean": 0.05556906561056773,
+          "median": 0.05529599785804749,
+          "min": 0.054681599140167236
+        },
+        "peak_delta_allocated_mib": {
+          "max": 4.125,
+          "mean": 4.125,
+          "median": 4.125,
+          "min": 4.125
+        },
+        "run_count": 3,
+        "stage": "V2s_swiglu_stock_flagos",
+        "status": "measured",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "V2s_swiglu_stock_flagos",
+        "gain_kind": "existing_flaggems_kernel",
+        "p50_ms": {
+          "max": 0.14919679760932922,
+          "mean": 0.13421226541201275,
+          "median": 0.13004800081253054,
+          "min": 0.12339199781417846
+        },
+        "peak_delta_allocated_mib": {
+          "max": 2.0625,
+          "mean": 2.0625,
+          "median": 2.0625,
+          "min": 2.0625
+        },
+        "run_count": 3,
+        "speedup": {
+          "bootstrap_95_ci": {
+            "lower": 0.4032738084926364,
+            "upper": 0.4394184255363686
+          },
+          "point_estimate": 0.42113442890074215,
+          "resamples": 10000
+        },
+        "stage": "V3_swiglu_nvidia",
+        "status": "measured",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "V4_residual_layer_norm_torch",
+        "gain_kind": "reference",
+        "p50_ms": {
+          "max": 0.06912000179290771,
+          "mean": 0.06307840148607889,
+          "median": 0.06369280219078063,
+          "min": 0.05642240047454834
+        },
+        "peak_delta_allocated_mib": {
+          "max": 0.3896484375,
+          "mean": 0.3896484375,
+          "median": 0.3896484375,
+          "min": 0.3896484375
+        },
+        "run_count": 3,
+        "stage": "V4_residual_layer_norm_torch",
+        "status": "measured",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "V4s_residual_layer_norm_stock_flagos",
+        "gain_kind": "stock_aten_reference",
+        "p50_ms": {
+          "max": 0.06359039843082429,
+          "mean": 0.05925546586513519,
+          "median": 0.05939199924468994,
+          "min": 0.05478399991989136
+        },
+        "peak_delta_allocated_mib": {
+          "max": 0.3896484375,
+          "mean": 0.3896484375,
+          "median": 0.3896484375,
+          "min": 0.3896484375
+        },
+        "run_count": 3,
+        "stage": "V4s_residual_layer_norm_stock_flagos",
+        "status": "measured",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "V4s_residual_layer_norm_stock_flagos",
+        "gain_kind": "rejected",
+        "reason": "The existing FlagGems skip-LayerNorm candidate lost on the V100 R1 shape and has no verified backward contract.",
+        "stage": "V5_residual_layer_norm_rejected",
+        "status": "rejected"
+      }
+    ]
+  },
+  "environments": {
+    "optimized": {
+      "flaggems_source_root": "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm",
+      "python": "/home/ymm/ym/xl/20260815-first-operator/.venv-flagos-r2/bin/python"
+    },
+    "stock": {
+      "flaggems_source_root": "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stock-r2",
+      "python": "/home/ymm/ym/xl/20260815-first-operator/.venv-flagos-stock-r2/bin/python"
+    }
+  },
+  "precision": "fp16",
+  "reference_hashes": {
+    "marker_token_embed": "8c5bdb1534d112e92fa18f1013b909a379d3382a51163f661a7f38bb2811ab37",
+    "residual_layer_norm": "1d805c89d538028c77ba6ba62cb0feb3894c632caa9016493cb17a9ae6d134d9",
+    "swiglu": "abcfe8860f22f7f2ae441843b69be5f201ad272dd9210f33bb96b07fa0de8afa"
+  },
+  "run_count": 3,
+  "schema_version": 2,
+  "trials": [
+    {
+      "optimized": {
+        "commits": {
+          "flaggems": "a9a96bbcc3d685482c656343e0759b7b4a5c38bc",
+          "stofm": "ba914b5d1b30b9dc03cfbb36a2fe968ece13fbcc"
+        },
+        "result": "run-01/optimized/result.json",
+        "result_sha256": "a6fb915818cff1b212f2580f3492858211122261a23ee40816f713ffe11a0dac"
+      },
+      "results": [
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V0s_marker_token_stock_flagos",
+          "description": "Frozen FlagOS scoped ATen baseline for KRONOS marker-token assembly.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "marker_token_embed",
+              "precision": "fp16",
+              "reason": "frozen FlagOS has no Vision composite API; reference boundary executes inside scoped ATen dispatch",
+              "requested": "stock",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "stock_aten_reference",
+          "mean_ms": 0.26768042882283527,
+          "p20_ms": 0.2610790491104126,
+          "p50_ms": 0.2653183937072754,
+          "p80_ms": 0.2720153570175171,
+          "p95_ms": 0.28284928798675535,
+          "peak_allocated_mib": 37.3134765625,
+          "peak_delta_allocated_mib": 12.02392578125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.2826240062713623,
+            0.26746881008148193,
+            0.2717695951461792,
+            0.27729918956756594,
+            0.26357760429382326,
+            0.27054080963134763,
+            0.26439681053161623,
+            0.26439681053161623,
+            0.26112000942230223,
+            0.26521599292755127,
+            0.2637824058532715,
+            0.260915207862854,
+            0.260915207862854,
+            0.2693120002746582,
+            0.27197439670562745,
+            0.2570240020751953,
+            0.26030080318450927,
+            0.26255359649658205,
+            0.27013120651245115,
+            0.2805759906768799,
+            0.2668544054031372,
+            0.25804800987243653,
+            0.2830336093902588,
+            0.2590719938278198,
+            0.26255359649658205,
+            0.2721791982650757,
+            0.2654207944869995,
+            0.2846719980239868,
+            0.26521599292755127,
+            0.26746881008148193
+          ],
+          "scope": "vision_operator",
+          "stage": "V0s_marker_token_stock_flagos",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "8c5bdb1534d112e92fa18f1013b909a379d3382a51163f661a7f38bb2811ab37",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V2s_swiglu_stock_flagos",
+          "description": "Frozen FlagOS scoped ATen baseline for Uni2 packed SwiGLU.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "swiglu",
+              "precision": "fp16",
+              "reason": "frozen FlagOS has no Vision composite API; reference boundary executes inside scoped ATen dispatch",
+              "requested": "stock",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "stock_aten_reference",
+          "mean_ms": 0.05519359985987345,
+          "p20_ms": 0.052592641115188604,
+          "p50_ms": 0.054681599140167236,
+          "p80_ms": 0.0580403196811676,
+          "p95_ms": 0.0613478422164917,
+          "peak_allocated_mib": 25.46923828125,
+          "peak_delta_allocated_mib": 4.125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.06123520135879516,
+            0.06000639796257019,
+            0.05263360142707825,
+            0.05283839702606201,
+            0.05283839702606201,
+            0.05304319858551025,
+            0.05263360142707825,
+            0.05263360142707825,
+            0.05857279896736145,
+            0.054476797580718994,
+            0.0579584002494812,
+            0.062054401636123656,
+            0.05570560097694397,
+            0.05529599785804749,
+            0.061440002918243405,
+            0.05324800014495849,
+            0.05529599785804749,
+            0.05734400153160095,
+            0.053452801704406736,
+            0.05242879986763001,
+            0.05181440114974976,
+            0.05570560097694397,
+            0.052223998308181765,
+            0.052223998308181765,
+            0.05509120225906372,
+            0.05242879986763001,
+            0.051609599590301515,
+            0.05631999969482422,
+            0.05836799740791321,
+            0.05488640069961548
+          ],
+          "scope": "vision_operator",
+          "stage": "V2s_swiglu_stock_flagos",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "abcfe8860f22f7f2ae441843b69be5f201ad272dd9210f33bb96b07fa0de8afa",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V4s_residual_layer_norm_stock_flagos",
+          "description": "Frozen FlagOS scoped ATen baseline for Uni2 residual LayerNorm.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "residual_layer_norm",
+              "precision": "fp16",
+              "reason": "frozen FlagOS has no Vision composite API; reference boundary executes inside scoped ATen dispatch",
+              "requested": "stock",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "stock_aten_reference",
+          "mean_ms": 0.05885952015717824,
+          "p20_ms": 0.054886401891708375,
+          "p50_ms": 0.05939199924468994,
+          "p80_ms": 0.062013440132141114,
+          "p95_ms": 0.06555648118257523,
+          "peak_allocated_mib": 19.86474609375,
+          "peak_delta_allocated_mib": 0.3896484375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 84.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.059596800804138185,
+            0.06164479851722717,
+            0.054067200422286986,
+            0.0536575973033905,
+            0.05939199924468994,
+            0.0626688003540039,
+            0.06062080264091492,
+            0.06533120274543762,
+            0.05816320180892944,
+            0.05304319858551025,
+            0.05816320180892944,
+            0.0626688003540039,
+            0.06389759778976441,
+            0.05980160236358643,
+            0.056934398412704465,
+            0.056524801254272464,
+            0.06574079990386963,
+            0.061849600076675414,
+            0.061849600076675414,
+            0.06574079990386963,
+            0.05939199924468994,
+            0.05324800014495849,
+            0.05836799740791321,
+            0.056934398412704465,
+            0.05263360142707825,
+            0.05591040253639221,
+            0.05939199924468994,
+            0.05509120225906372,
+            0.05283839702606201,
+            0.06062080264091492
+          ],
+          "scope": "vision_operator",
+          "stage": "V4s_residual_layer_norm_stock_flagos",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "1d805c89d538028c77ba6ba62cb0feb3894c632caa9016493cb17a9ae6d134d9",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V0_marker_token_torch",
+          "description": "KRONOS marker-aware token assembly through the public Torch reference API.",
+          "dispatch": {
+            "flagos_scope": null,
+            "public": {
+              "operator": "marker_token_embed",
+              "precision": "fp16",
+              "reason": "explicit reference backend",
+              "requested": "torch",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "reference",
+          "mean_ms": 0.2969122123718262,
+          "p20_ms": 0.27987968921661377,
+          "p50_ms": 0.2900991916656494,
+          "p80_ms": 0.3096985483169556,
+          "p95_ms": 0.34424831390380856,
+          "peak_allocated_mib": 37.3134765625,
+          "peak_delta_allocated_mib": 12.02392578125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.31600639820098875,
+            0.29818880558013916,
+            0.29040639400482177,
+            0.28037118911743164,
+            0.2756608009338379,
+            0.29900801181793213,
+            0.3495935916900635,
+            0.34979839324951173,
+            0.28733439445495607,
+            0.27873280048370364,
+            0.27648000717163085,
+            0.29982719421386717,
+            0.30617599487304686,
+            0.28016641139984133,
+            0.28917760848999025,
+            0.2865151882171631,
+            0.27299840450286866,
+            0.2721791982650757,
+            0.33771519660949706,
+            0.2916352033615112,
+            0.2826240062713623,
+            0.28917760848999025,
+            0.3147775888442993,
+            0.28979198932647704,
+            0.29409279823303225,
+            0.30167040824890134,
+            0.2879487991333008,
+            0.3254271984100342,
+            0.30842878818511965,
+            0.27545599937438964
+          ],
+          "scope": "vision_operator",
+          "stage": "V0_marker_token_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "8c5bdb1534d112e92fa18f1013b909a379d3382a51163f661a7f38bb2811ab37",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V0s_marker_token_stock_flagos",
+          "description": "FlagGems NVIDIA marker-token Triton candidate versus the frozen scoped-FlagOS baseline.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "marker_token_embed",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            }
+          },
+          "gain_kind": "custom_kernel",
+          "mean_ms": 0.2462924806276957,
+          "p20_ms": 0.23859200477600098,
+          "p50_ms": 0.24586240053176878,
+          "p80_ms": 0.25395200252532957,
+          "p95_ms": 0.26274815559387205,
+          "peak_allocated_mib": 31.2978515625,
+          "peak_delta_allocated_mib": 6.00830078125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.2654207944869995,
+            0.2594815969467163,
+            0.2537472009658813,
+            0.2514944076538086,
+            0.255180811882019,
+            0.2744319915771484,
+            0.2564095973968506,
+            0.25477120876312254,
+            0.24821760654449462,
+            0.24801280498504638,
+            0.2406399965286255,
+            0.24944639205932617,
+            0.24780800342559814,
+            0.24596478939056396,
+            0.24657919406890869,
+            0.23900160789489747,
+            0.23859200477600098,
+            0.23900160789489747,
+            0.24494080543518065,
+            0.23367679119110107,
+            0.24043519496917726,
+            0.23900160789489747,
+            0.24576001167297362,
+            0.24944639205932617,
+            0.23859200477600098,
+            0.2357248067855835,
+            0.23592960834503174,
+            0.23388159275054932,
+            0.23654398918151856,
+            0.2406399965286255
+          ],
+          "scope": "vision_operator",
+          "stage": "V1_marker_token_nvidia",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "a85dfbec60f2dcb1160379db11b614bb629fd940715a17008fae1c3e75a6c615",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V2_swiglu_torch",
+          "description": "Uni2 packed SwiGLU through the public Torch reference API.",
+          "dispatch": {
+            "flagos_scope": null,
+            "public": {
+              "operator": "swiglu",
+              "precision": "fp16",
+              "reason": "explicit reference backend",
+              "requested": "torch",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "reference",
+          "mean_ms": 0.058818559845288595,
+          "p20_ms": 0.05611519813537598,
+          "p50_ms": 0.05867519974708557,
+          "p80_ms": 0.06111232042312622,
+          "p95_ms": 0.06519808053970336,
+          "peak_allocated_mib": 25.46923828125,
+          "peak_delta_allocated_mib": 4.125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.06328319907188415,
+            0.05713919997215271,
+            0.060211199522018435,
+            0.058982402086257935,
+            0.05611519813537598,
+            0.05550079941749573,
+            0.061440002918243405,
+            0.06287360191345215,
+            0.06062080264091492,
+            0.058982402086257935,
+            0.05611519813537598,
+            0.05631999969482422,
+            0.057548797130584715,
+            0.05611519813537598,
+            0.05529599785804749,
+            0.05550079941749573,
+            0.05631999969482422,
+            0.05550079941749573,
+            0.05877760052680969,
+            0.05734400153160095,
+            0.05550079941749573,
+            0.05631999969482422,
+            0.06103039979934692,
+            0.05857279896736145,
+            0.058982402086257935,
+            0.062463998794555664,
+            0.05877760052680969,
+            0.0591871976852417,
+            0.06696959733963012,
+            0.06676480174064636
+          ],
+          "scope": "vision_operator",
+          "stage": "V2_swiglu_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "abcfe8860f22f7f2ae441843b69be5f201ad272dd9210f33bb96b07fa0de8afa",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V2s_swiglu_stock_flagos",
+          "description": "Existing FlagGems SwiGLU candidate versus the frozen scoped-FlagOS baseline.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "swiglu",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            }
+          },
+          "gain_kind": "existing_flaggems_kernel",
+          "mean_ms": 0.12397226651509603,
+          "p20_ms": 0.11993087768554687,
+          "p50_ms": 0.12339199781417846,
+          "p80_ms": 0.1256652808189392,
+          "p95_ms": 0.13651968121528624,
+          "peak_allocated_mib": 23.40673828125,
+          "peak_delta_allocated_mib": 2.0625,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.1376255989074707,
+            0.12963839769363403,
+            0.12369920015335083,
+            0.12349439859390259,
+            0.12349439859390259,
+            0.12615679502487182,
+            0.12247040271759033,
+            0.1210368037223816,
+            0.12472319602966309,
+            0.12267520427703857,
+            0.12410880327224731,
+            0.12492799758911133,
+            0.11919360160827637,
+            0.12021759748458863,
+            0.12328959703445434,
+            0.12410880327224731,
+            0.12021759748458863,
+            0.12267520427703857,
+            0.11878399848937989,
+            0.12554240226745605,
+            0.1183743953704834,
+            0.12001279592514039,
+            0.12677119970321654,
+            0.11960320472717285,
+            0.11612160205841064,
+            0.12062720060348511,
+            0.1171455979347229,
+            0.12554240226745605,
+            0.1351680040359497,
+            0.14172159433364867
+          ],
+          "scope": "vision_operator",
+          "stage": "V3_swiglu_nvidia",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "103874239c68da8a75a928e91dcb77a9edff97921129c36a95a271dfb8469017",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V4_residual_layer_norm_torch",
+          "description": "Uni2 residual-LayerNorm reference boundary.",
+          "dispatch": {
+            "flagos_scope": null,
+            "public": {
+              "operator": "residual_layer_norm",
+              "precision": "fp16",
+              "reason": "explicit reference backend",
+              "requested": "torch",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "reference",
+          "mean_ms": 0.056695253252983094,
+          "p20_ms": 0.054681599140167236,
+          "p50_ms": 0.05642240047454834,
+          "p80_ms": 0.058039040565490724,
+          "p95_ms": 0.06148095995187759,
+          "peak_allocated_mib": 19.86474609375,
+          "peak_delta_allocated_mib": 0.3896484375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 84.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.061849600076675414,
+            0.06103039979934692,
+            0.06103039979934692,
+            0.0579584002494812,
+            0.056729602813720706,
+            0.05529599785804749,
+            0.054681599140167236,
+            0.05509120225906372,
+            0.057548797130584715,
+            0.054681599140167236,
+            0.054681599140167236,
+            0.05775359869003296,
+            0.054681599140167236,
+            0.05857279896736145,
+            0.056729602813720706,
+            0.054476797580718994,
+            0.056934398412704465,
+            0.06369280219078063,
+            0.05734400153160095,
+            0.05509120225906372,
+            0.05631999969482422,
+            0.05509120225906372,
+            0.054681599140167236,
+            0.054476797580718994,
+            0.056524801254272464,
+            0.054476797580718994,
+            0.054067200422286986,
+            0.056524801254272464,
+            0.054476797580718994,
+            0.058361601829528806
+          ],
+          "scope": "vision_operator",
+          "stage": "V4_residual_layer_norm_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "1d805c89d538028c77ba6ba62cb0feb3894c632caa9016493cb17a9ae6d134d9",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "comparison_baseline": "V4s_residual_layer_norm_stock_flagos",
+          "description": "No NVIDIA residual-LayerNorm native candidate is timed in R2.",
+          "gain_kind": "rejected",
+          "reason": "The existing FlagGems skip-LayerNorm candidate lost on the V100 R1 shape and has no verified backward contract.",
+          "samples_ms": [],
+          "scope": "vision_operator",
+          "stage": "V5_residual_layer_norm_rejected",
+          "status": "rejected"
+        }
+      ],
+      "run_index": 1,
+      "stock": {
+        "commits": {
+          "flaggems": "03bf364ede763d573d5c30124d554283a209ab85",
+          "stofm": "ba914b5d1b30b9dc03cfbb36a2fe968ece13fbcc"
+        },
+        "result": "run-01/stock/result.json",
+        "result_sha256": "6c72f9a8db7609c4c161a31bae4b5e028502536fdaf600aeca790a8d6d637aa0"
+      }
+    },
+    {
+      "optimized": {
+        "commits": {
+          "flaggems": "a9a96bbcc3d685482c656343e0759b7b4a5c38bc",
+          "stofm": "ba914b5d1b30b9dc03cfbb36a2fe968ece13fbcc"
+        },
+        "result": "run-02/optimized/result.json",
+        "result_sha256": "8ffdf2ff140ddf510fa81bfcc6188d1b537e8e5d072215bcbb5cadb5b5d0c4a3"
+      },
+      "results": [
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V0s_marker_token_stock_flagos",
+          "description": "Frozen FlagOS scoped ATen baseline for KRONOS marker-token assembly.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "marker_token_embed",
+              "precision": "fp16",
+              "reason": "frozen FlagOS has no Vision composite API; reference boundary executes inside scoped ATen dispatch",
+              "requested": "stock",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "stock_aten_reference",
+          "mean_ms": 0.27256832043329876,
+          "p20_ms": 0.2674278497695923,
+          "p50_ms": 0.2713599920272827,
+          "p80_ms": 0.2758656024932861,
+          "p95_ms": 0.28376064181327815,
+          "peak_allocated_mib": 37.3134765625,
+          "peak_delta_allocated_mib": 12.02392578125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.28139519691467285,
+            0.27299840450286866,
+            0.2721791982650757,
+            0.2758656024932861,
+            0.2725888013839722,
+            0.2752511978149414,
+            0.2758656024932861,
+            0.2676736116409302,
+            0.26972160339355467,
+            0.2678783893585205,
+            0.2748415946960449,
+            0.2703360080718994,
+            0.2664448022842407,
+            0.26972160339355467,
+            0.27013120651245115,
+            0.26521599292755127,
+            0.2654207944869995,
+            0.2770944118499756,
+            0.26460158824920654,
+            0.27156479358673097,
+            0.26439681053161623,
+            0.30310399532318116,
+            0.26972160339355467,
+            0.2725888013839722,
+            0.27791359424591067,
+            0.2711551904678345,
+            0.285696005821228,
+            0.2695168018341064,
+            0.27238399982452394,
+            0.2637824058532715
+          ],
+          "scope": "vision_operator",
+          "stage": "V0s_marker_token_stock_flagos",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "8c5bdb1534d112e92fa18f1013b909a379d3382a51163f661a7f38bb2811ab37",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V2s_swiglu_stock_flagos",
+          "description": "Frozen FlagOS scoped ATen baseline for Uni2 packed SwiGLU.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "swiglu",
+              "precision": "fp16",
+              "reason": "frozen FlagOS has no Vision composite API; reference boundary executes inside scoped ATen dispatch",
+              "requested": "stock",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "stock_aten_reference",
+          "mean_ms": 0.0577809061606725,
+          "p20_ms": 0.054681599140167236,
+          "p50_ms": 0.056729599833488464,
+          "p80_ms": 0.05971968054771424,
+          "p95_ms": 0.06512640118598938,
+          "peak_allocated_mib": 25.46923828125,
+          "peak_delta_allocated_mib": 4.125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.06103039979934692,
+            0.05550079941749573,
+            0.054681599140167236,
+            0.056524801254272464,
+            0.054681599140167236,
+            0.054067200422286986,
+            0.05611519813537598,
+            0.053862398862838744,
+            0.05427200198173523,
+            0.056934398412704465,
+            0.05529599785804749,
+            0.0536575973033905,
+            0.05550079941749573,
+            0.059596800804138185,
+            0.054476797580718994,
+            0.054681599140167236,
+            0.05939199924468994,
+            0.05939199924468994,
+            0.05631999969482422,
+            0.0579584002494812,
+            0.057548797130584715,
+            0.060211199522018435,
+            0.06512640118598938,
+            0.06512640118598938,
+            0.06348800063133239,
+            0.06553599834442139,
+            0.05836799740791321,
+            0.05939199924468994,
+            0.05877760052680969,
+            0.05591040253639221
+          ],
+          "scope": "vision_operator",
+          "stage": "V2s_swiglu_stock_flagos",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "abcfe8860f22f7f2ae441843b69be5f201ad272dd9210f33bb96b07fa0de8afa",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V4s_residual_layer_norm_stock_flagos",
+          "description": "Frozen FlagOS scoped ATen baseline for Uni2 residual LayerNorm.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "residual_layer_norm",
+              "precision": "fp16",
+              "reason": "frozen FlagOS has no Vision composite API; reference boundary executes inside scoped ATen dispatch",
+              "requested": "stock",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "stock_aten_reference",
+          "mean_ms": 0.06339925289154053,
+          "p20_ms": 0.058531838655471805,
+          "p50_ms": 0.06359039843082429,
+          "p80_ms": 0.06647807836532593,
+          "p95_ms": 0.06965247988700868,
+          "peak_allocated_mib": 19.86474609375,
+          "peak_delta_allocated_mib": 0.3896484375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 84.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.06615039706230164,
+            0.08478720188140869,
+            0.06225919723510742,
+            0.0694271981716156,
+            0.06471679806709289,
+            0.058982402086257935,
+            0.06696959733963012,
+            0.06635519862174988,
+            0.06307839751243591,
+            0.06492159962654113,
+            0.06451200246810913,
+            0.0579584002494812,
+            0.06512640118598938,
+            0.06307839751243591,
+            0.05775359869003296,
+            0.06574079990386963,
+            0.06410239934921265,
+            0.058982402086257935,
+            0.06901760101318359,
+            0.05631999969482422,
+            0.05611519813537598,
+            0.06533120274543762,
+            0.05939199924468994,
+            0.05836799740791321,
+            0.06983680129051209,
+            0.061849600076675414,
+            0.05857279896736145,
+            0.06717439889907836,
+            0.05591040253639221,
+            0.0591871976852417
+          ],
+          "scope": "vision_operator",
+          "stage": "V4s_residual_layer_norm_stock_flagos",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "1d805c89d538028c77ba6ba62cb0feb3894c632caa9016493cb17a9ae6d134d9",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V0_marker_token_torch",
+          "description": "KRONOS marker-aware token assembly through the public Torch reference API.",
+          "dispatch": {
+            "flagos_scope": null,
+            "public": {
+              "operator": "marker_token_embed",
+              "precision": "fp16",
+              "reason": "explicit reference backend",
+              "requested": "torch",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "reference",
+          "mean_ms": 0.322785279750824,
+          "p20_ms": 0.2958950328826904,
+          "p50_ms": 0.31651840209960935,
+          "p80_ms": 0.3512729597091675,
+          "p95_ms": 0.36409344196319576,
+          "peak_allocated_mib": 37.3134765625,
+          "peak_delta_allocated_mib": 12.02392578125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.3123199939727783,
+            0.30248959064483644,
+            0.2959359884262085,
+            0.3057663917541504,
+            0.2916352033615112,
+            0.31969280242919923,
+            0.3575808048248291,
+            0.3547136068344116,
+            0.3352576017379761,
+            0.3299328088760376,
+            0.36925439834594725,
+            0.38973441123962405,
+            0.3510272026062012,
+            0.3248127937316895,
+            0.35778560638427737,
+            0.3131392002105713,
+            0.2957312107086182,
+            0.3522559881210327,
+            0.3344383955001831,
+            0.324403190612793,
+            0.30883839130401614,
+            0.318668794631958,
+            0.3063807964324951,
+            0.31436800956726074,
+            0.33873920440673827,
+            0.294707202911377,
+            0.29122560024261473,
+            0.30801920890808104,
+            0.29061119556427,
+            0.29409279823303225
+          ],
+          "scope": "vision_operator",
+          "stage": "V0_marker_token_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "8c5bdb1534d112e92fa18f1013b909a379d3382a51163f661a7f38bb2811ab37",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V0s_marker_token_stock_flagos",
+          "description": "FlagGems NVIDIA marker-token Triton candidate versus the frozen scoped-FlagOS baseline.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "marker_token_embed",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            }
+          },
+          "gain_kind": "custom_kernel",
+          "mean_ms": 0.3167231996854146,
+          "p20_ms": 0.2679193592071533,
+          "p50_ms": 0.3244032025337219,
+          "p80_ms": 0.35680255413055423,
+          "p95_ms": 0.36838400244712827,
+          "peak_allocated_mib": 31.2978515625,
+          "peak_delta_allocated_mib": 6.00830078125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.372326397895813,
+            0.36515839099884034,
+            0.3655679941177368,
+            0.37068800926208495,
+            0.3606528043746948,
+            0.35635199546813967,
+            0.35450880527496337,
+            0.3495935916900635,
+            0.34938879013061525,
+            0.35184640884399415,
+            0.3532799959182739,
+            0.349183988571167,
+            0.34897921085357664,
+            0.3586047887802124,
+            0.294707202911377,
+            0.2983936071395874,
+            0.26398720741271975,
+            0.2707456111907959,
+            0.25231359004974363,
+            0.2689023971557617,
+            0.28774399757385255,
+            0.25763840675354005,
+            0.3190783977508545,
+            0.32972800731658936,
+            0.263372802734375,
+            0.2623487949371338,
+            0.2815999984741211,
+            0.28815360069274903,
+            0.29409279823303225,
+            0.2627583980560303
+          ],
+          "scope": "vision_operator",
+          "stage": "V1_marker_token_nvidia",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "a85dfbec60f2dcb1160379db11b614bb629fd940715a17008fae1c3e75a6c615",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V2_swiglu_torch",
+          "description": "Uni2 packed SwiGLU through the public Torch reference API.",
+          "dispatch": {
+            "flagos_scope": null,
+            "public": {
+              "operator": "swiglu",
+              "precision": "fp16",
+              "reason": "explicit reference backend",
+              "requested": "torch",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "reference",
+          "mean_ms": 0.06321493407090505,
+          "p20_ms": 0.056401921510696416,
+          "p50_ms": 0.06328319907188415,
+          "p80_ms": 0.06639615893363952,
+          "p95_ms": 0.06944768100976945,
+          "peak_allocated_mib": 25.46923828125,
+          "peak_delta_allocated_mib": 4.125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.08499199748039246,
+            0.06717439889907836,
+            0.06963199973106385,
+            0.06328319907188415,
+            0.05857279896736145,
+            0.06594560146331788,
+            0.06287360191345215,
+            0.06635519862174988,
+            0.06840320229530335,
+            0.056524801254272464,
+            0.06512640118598938,
+            0.06389759778976441,
+            0.05509120225906372,
+            0.06533120274543762,
+            0.06922240257263183,
+            0.05591040253639221,
+            0.06369280219078063,
+            0.06287360191345215,
+            0.05570560097694397,
+            0.06287360191345215,
+            0.061440002918243405,
+            0.05529599785804749,
+            0.06287360191345215,
+            0.06348800063133239,
+            0.05509120225906372,
+            0.06656000018119812,
+            0.06328319907188415,
+            0.05570560097694397,
+            0.06287360191345215,
+            0.06635519862174988
+          ],
+          "scope": "vision_operator",
+          "stage": "V2_swiglu_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "abcfe8860f22f7f2ae441843b69be5f201ad272dd9210f33bb96b07fa0de8afa",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V2s_swiglu_stock_flagos",
+          "description": "Existing FlagGems SwiGLU candidate versus the frozen scoped-FlagOS baseline.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "swiglu",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            }
+          },
+          "gain_kind": "existing_flaggems_kernel",
+          "mean_ms": 0.15258965293566387,
+          "p20_ms": 0.14053375959396364,
+          "p50_ms": 0.14919679760932922,
+          "p80_ms": 0.16461823940277098,
+          "p95_ms": 0.170731520652771,
+          "peak_allocated_mib": 23.40673828125,
+          "peak_delta_allocated_mib": 2.0625,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.19763200283050536,
+            0.1667072057723999,
+            0.1644544005393982,
+            0.15892479419708253,
+            0.16240639686584474,
+            0.16363519430160522,
+            0.1703935980796814,
+            0.1652735948562622,
+            0.1669119954109192,
+            0.1581055998802185,
+            0.14438400268554688,
+            0.15749119520187377,
+            0.15421439409255983,
+            0.14438400268554688,
+            0.14069759845733643,
+            0.14520319700241088,
+            0.1482751965522766,
+            0.13905919790267945,
+            0.12288000583648681,
+            0.1478656053543091,
+            0.15011839866638182,
+            0.13987840414047242,
+            0.17100800275802613,
+            0.13987840414047242,
+            0.14602240324020385,
+            0.15032320022583007,
+            0.13393919467926024,
+            0.1392639994621277,
+            0.14417920112609864,
+            0.14417920112609864
+          ],
+          "scope": "vision_operator",
+          "stage": "V3_swiglu_nvidia",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "103874239c68da8a75a928e91dcb77a9edff97921129c36a95a271dfb8469017",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V4_residual_layer_norm_torch",
+          "description": "Uni2 residual-LayerNorm reference boundary.",
+          "dispatch": {
+            "flagos_scope": null,
+            "public": {
+              "operator": "residual_layer_norm",
+              "precision": "fp16",
+              "reason": "explicit reference backend",
+              "requested": "torch",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "reference",
+          "mean_ms": 0.06939306716124216,
+          "p20_ms": 0.0634060788154602,
+          "p50_ms": 0.06912000179290771,
+          "p80_ms": 0.07512063860893249,
+          "p95_ms": 0.08030208021402359,
+          "peak_allocated_mib": 19.86474609375,
+          "peak_delta_allocated_mib": 0.3896484375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 84.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.07823359966278076,
+            0.06840320229530335,
+            0.08335360288619995,
+            0.07495679855346679,
+            0.06574079990386963,
+            0.07270399928092956,
+            0.05591040253639221,
+            0.06840320229530335,
+            0.07352319955825806,
+            0.06389759778976441,
+            0.07454720139503479,
+            0.06492159962654113,
+            0.07577599883079529,
+            0.07639039754867553,
+            0.07229440212249756,
+            0.06922240257263183,
+            0.061440002918243405,
+            0.056729602813720706,
+            0.08007680177688599,
+            0.06123520135879516,
+            0.06696959733963012,
+            0.07045120000839233,
+            0.05734400153160095,
+            0.0681984007358551,
+            0.07229440212249756,
+            0.0673792004585266,
+            0.08048639893531799,
+            0.0591871976852417,
+            0.06901760101318359,
+            0.07270399928092956
+          ],
+          "scope": "vision_operator",
+          "stage": "V4_residual_layer_norm_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "1d805c89d538028c77ba6ba62cb0feb3894c632caa9016493cb17a9ae6d134d9",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "comparison_baseline": "V4s_residual_layer_norm_stock_flagos",
+          "description": "No NVIDIA residual-LayerNorm native candidate is timed in R2.",
+          "gain_kind": "rejected",
+          "reason": "The existing FlagGems skip-LayerNorm candidate lost on the V100 R1 shape and has no verified backward contract.",
+          "samples_ms": [],
+          "scope": "vision_operator",
+          "stage": "V5_residual_layer_norm_rejected",
+          "status": "rejected"
+        }
+      ],
+      "run_index": 2,
+      "stock": {
+        "commits": {
+          "flaggems": "03bf364ede763d573d5c30124d554283a209ab85",
+          "stofm": "ba914b5d1b30b9dc03cfbb36a2fe968ece13fbcc"
+        },
+        "result": "run-02/stock/result.json",
+        "result_sha256": "e9122f0562670e2fff516fe5e356a76a20f83ceae411e494052a0204b342665b"
+      }
+    },
+    {
+      "optimized": {
+        "commits": {
+          "flaggems": "a9a96bbcc3d685482c656343e0759b7b4a5c38bc",
+          "stofm": "ba914b5d1b30b9dc03cfbb36a2fe968ece13fbcc"
+        },
+        "result": "run-03/optimized/result.json",
+        "result_sha256": "43584688c20225b462a835feb08dd75ec53983b9cceb171f0242db97b13527bd"
+      },
+      "results": [
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V0s_marker_token_stock_flagos",
+          "description": "Frozen FlagOS scoped ATen baseline for KRONOS marker-token assembly.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "marker_token_embed",
+              "precision": "fp16",
+              "reason": "frozen FlagOS has no Vision composite API; reference boundary executes inside scoped ATen dispatch",
+              "requested": "stock",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "stock_aten_reference",
+          "mean_ms": 0.2778180265426636,
+          "p20_ms": 0.2657075166702271,
+          "p50_ms": 0.27340800762176515,
+          "p80_ms": 0.29196288108825685,
+          "p95_ms": 0.30173183560371397,
+          "peak_allocated_mib": 37.3134765625,
+          "peak_delta_allocated_mib": 12.02392578125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.2916352033615112,
+            0.27238399982452394,
+            0.28405759334564207,
+            0.2758656024932861,
+            0.2742271900177002,
+            0.2762752056121826,
+            0.2879487991333008,
+            0.2791424036026001,
+            0.26910719871520994,
+            0.29450240135192873,
+            0.26664960384368896,
+            0.26521599292755127,
+            0.26255359649658205,
+            0.264192008972168,
+            0.2861056089401245,
+            0.265830397605896,
+            0.2613248109817505,
+            0.25927679538726806,
+            0.2732032060623169,
+            0.2736128091812134,
+            0.2713599920272827,
+            0.2689023971557617,
+            0.26664960384368896,
+            0.2619391918182373,
+            0.2676736116409302,
+            0.3010560035705566,
+            0.321126389503479,
+            0.2932735919952393,
+            0.29716479778289795,
+            0.3022847890853882
+          ],
+          "scope": "vision_operator",
+          "stage": "V0s_marker_token_stock_flagos",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "8c5bdb1534d112e92fa18f1013b909a379d3382a51163f661a7f38bb2811ab37",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V2s_swiglu_stock_flagos",
+          "description": "Frozen FlagOS scoped ATen baseline for Uni2 packed SwiGLU.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "swiglu",
+              "precision": "fp16",
+              "reason": "frozen FlagOS has no Vision composite API; reference boundary executes inside scoped ATen dispatch",
+              "requested": "stock",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "stock_aten_reference",
+          "mean_ms": 0.056285866498947144,
+          "p20_ms": 0.054599679708480835,
+          "p50_ms": 0.05529599785804749,
+          "p80_ms": 0.05697535872459411,
+          "p95_ms": 0.061050879955291744,
+          "peak_allocated_mib": 25.46923828125,
+          "peak_delta_allocated_mib": 4.125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.06615039706230164,
+            0.06123520135879516,
+            0.05488640069961548,
+            0.05488640069961548,
+            0.05734400153160095,
+            0.05529599785804749,
+            0.054681599140167236,
+            0.05570560097694397,
+            0.05529599785804749,
+            0.05550079941749573,
+            0.05488640069961548,
+            0.056934398412704465,
+            0.05488640069961548,
+            0.05427200198173523,
+            0.056934398412704465,
+            0.05529599785804749,
+            0.056934398412704465,
+            0.06082559823989868,
+            0.05427200198173523,
+            0.053862398862838744,
+            0.05713919997215271,
+            0.05631999969482422,
+            0.054681599140167236,
+            0.054681599140167236,
+            0.060211199522018435,
+            0.056729602813720706,
+            0.05427200198173523,
+            0.05631999969482422,
+            0.053862398862838744,
+            0.05427200198173523
+          ],
+          "scope": "vision_operator",
+          "stage": "V2s_swiglu_stock_flagos",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "abcfe8860f22f7f2ae441843b69be5f201ad272dd9210f33bb96b07fa0de8afa",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V4s_residual_layer_norm_stock_flagos",
+          "description": "Frozen FlagOS scoped ATen baseline for Uni2 residual LayerNorm.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "residual_layer_norm",
+              "precision": "fp16",
+              "reason": "frozen FlagOS has no Vision composite API; reference boundary executes inside scoped ATen dispatch",
+              "requested": "stock",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "stock_aten_reference",
+          "mean_ms": 0.05548714657624563,
+          "p20_ms": 0.052223998308181765,
+          "p50_ms": 0.05478399991989136,
+          "p80_ms": 0.05857279896736145,
+          "p95_ms": 0.06096895813941955,
+          "peak_allocated_mib": 19.86474609375,
+          "peak_delta_allocated_mib": 0.3896484375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 84.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.06328319907188415,
+            0.05857279896736145,
+            0.053862398862838744,
+            0.05242879986763001,
+            0.056524801254272464,
+            0.0591871976852417,
+            0.058982402086257935,
+            0.05550079941749573,
+            0.052223998308181765,
+            0.052223998308181765,
+            0.05857279896736145,
+            0.054067200422286986,
+            0.052223998308181765,
+            0.054476797580718994,
+            0.052223998308181765,
+            0.05181440114974976,
+            0.054681599140167236,
+            0.06225919723510742,
+            0.05734400153160095,
+            0.052019202709198,
+            0.05488640069961548,
+            0.05939199924468994,
+            0.05713919997215271,
+            0.0579584002494812,
+            0.052019202709198,
+            0.052019202709198,
+            0.05631999969482422,
+            0.056524801254272464,
+            0.052019202709198,
+            0.053862398862838744
+          ],
+          "scope": "vision_operator",
+          "stage": "V4s_residual_layer_norm_stock_flagos",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "1d805c89d538028c77ba6ba62cb0feb3894c632caa9016493cb17a9ae6d134d9",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V0_marker_token_torch",
+          "description": "KRONOS marker-aware token assembly through the public Torch reference API.",
+          "dispatch": {
+            "flagos_scope": null,
+            "public": {
+              "operator": "marker_token_embed",
+              "precision": "fp16",
+              "reason": "explicit reference backend",
+              "requested": "torch",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "reference",
+          "mean_ms": 0.29838677326838176,
+          "p20_ms": 0.2887270450592041,
+          "p50_ms": 0.2973695993423462,
+          "p80_ms": 0.30404608249664306,
+          "p95_ms": 0.3192729568481445,
+          "peak_allocated_mib": 37.3134765625,
+          "peak_delta_allocated_mib": 12.02392578125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.31600639820098875,
+            0.2871295928955078,
+            0.3082240104675293,
+            0.2996223926544189,
+            0.3037184000015259,
+            0.32624640464782717,
+            0.30126080513000486,
+            0.29368319511413576,
+            0.2830336093902588,
+            0.29224960803985595,
+            0.3004415988922119,
+            0.30392320156097413,
+            0.30883839130401614,
+            0.3026943922042847,
+            0.32194559574127196,
+            0.2973695993423462,
+            0.2973695993423462,
+            0.29716479778289795,
+            0.29859840869903564,
+            0.29081599712371825,
+            0.2969599962234497,
+            0.28774399757385255,
+            0.29511680603027346,
+            0.30453760623931886,
+            0.2973695993423462,
+            0.28774399757385255,
+            0.30392320156097413,
+            0.28671998977661134,
+            0.288972806930542,
+            0.2721791982650757
+          ],
+          "scope": "vision_operator",
+          "stage": "V0_marker_token_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "8c5bdb1534d112e92fa18f1013b909a379d3382a51163f661a7f38bb2811ab37",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V0s_marker_token_stock_flagos",
+          "description": "FlagGems NVIDIA marker-token Triton candidate versus the frozen scoped-FlagOS baseline.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "marker_token_embed",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            }
+          },
+          "gain_kind": "custom_kernel",
+          "mean_ms": 0.24589653412501017,
+          "p20_ms": 0.23822336196899416,
+          "p50_ms": 0.24545280933380126,
+          "p80_ms": 0.2520678472518921,
+          "p95_ms": 0.2624716866016388,
+          "peak_allocated_mib": 31.2978515625,
+          "peak_delta_allocated_mib": 6.00830078125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.25866239070892333,
+            0.24576001167297362,
+            0.24268798828125,
+            0.25088000297546387,
+            0.2461695909500122,
+            0.24186880588531495,
+            0.23838720321655274,
+            0.2476032018661499,
+            0.24125440120697023,
+            0.24657919406890869,
+            0.23900160789489747,
+            0.26357760429382326,
+            0.24842240810394287,
+            0.2406399965286255,
+            0.23756799697875977,
+            0.2416640043258667,
+            0.23347198963165283,
+            0.23224320411682128,
+            0.23244800567626953,
+            0.2451456069946289,
+            0.23162879943847656,
+            0.2342911958694458,
+            0.24801280498504638,
+            0.2744319915771484,
+            0.26112000942230223,
+            0.2506752014160156,
+            0.25128960609436035,
+            0.25559039115905763,
+            0.255180811882019,
+            0.2406399965286255
+          ],
+          "scope": "vision_operator",
+          "stage": "V1_marker_token_nvidia",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "a85dfbec60f2dcb1160379db11b614bb629fd940715a17008fae1c3e75a6c615",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V2_swiglu_torch",
+          "description": "Uni2 packed SwiGLU through the public Torch reference API.",
+          "dispatch": {
+            "flagos_scope": null,
+            "public": {
+              "operator": "swiglu",
+              "precision": "fp16",
+              "reason": "explicit reference backend",
+              "requested": "torch",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "reference",
+          "mean_ms": 0.057739947040875754,
+          "p20_ms": 0.05591040253639221,
+          "p50_ms": 0.056832000613212585,
+          "p80_ms": 0.059064321517944336,
+          "p95_ms": 0.06283264040946959,
+          "peak_allocated_mib": 25.46923828125,
+          "peak_delta_allocated_mib": 4.125,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.06615039706230164,
+            0.06103039979934692,
+            0.06430720090866089,
+            0.05713919997215271,
+            0.056934398412704465,
+            0.058982402086257935,
+            0.05611519813537598,
+            0.05611519813537598,
+            0.058982402086257935,
+            0.056729602813720706,
+            0.056729602813720706,
+            0.05939199924468994,
+            0.05591040253639221,
+            0.05570560097694397,
+            0.057548797130584715,
+            0.05939199924468994,
+            0.0579584002494812,
+            0.057548797130584715,
+            0.05611519813537598,
+            0.05591040253639221,
+            0.05591040253639221,
+            0.05734400153160095,
+            0.05570560097694397,
+            0.056524801254272464,
+            0.05980160236358643,
+            0.056524801254272464,
+            0.05591040253639221,
+            0.05836799740791321,
+            0.05570560097694397,
+            0.05570560097694397
+          ],
+          "scope": "vision_operator",
+          "stage": "V2_swiglu_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "abcfe8860f22f7f2ae441843b69be5f201ad272dd9210f33bb96b07fa0de8afa",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V2s_swiglu_stock_flagos",
+          "description": "Existing FlagGems SwiGLU candidate versus the frozen scoped-FlagOS baseline.",
+          "dispatch": {
+            "flagos_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "public": {
+              "operator": "swiglu",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            }
+          },
+          "gain_kind": "existing_flaggems_kernel",
+          "mean_ms": 0.13431466698646546,
+          "p20_ms": 0.12505087852478028,
+          "p50_ms": 0.13004800081253054,
+          "p80_ms": 0.13848575592041018,
+          "p95_ms": 0.1652326452732086,
+          "peak_allocated_mib": 23.40673828125,
+          "peak_delta_allocated_mib": 2.0625,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 82.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.1325055956840515,
+            0.1210368037223816,
+            0.12472319602966309,
+            0.12738560438156127,
+            0.12144639492034912,
+            0.12615679502487182,
+            0.1435647964477539,
+            0.15032320022583007,
+            0.1667072057723999,
+            0.17223680019378662,
+            0.16343040466308595,
+            0.15646719932556152,
+            0.13373440504074097,
+            0.12902400493621827,
+            0.13352960348129272,
+            0.1275904059410095,
+            0.12799999713897706,
+            0.13107199668884278,
+            0.12124160528182984,
+            0.1282047986984253,
+            0.13107199668884278,
+            0.12513279914855957,
+            0.12165119647979736,
+            0.13312000036239624,
+            0.1257472038269043,
+            0.12083200216293336,
+            0.1275904059410095,
+            0.1372159957885742,
+            0.1325055956840515,
+            0.13619199991226197
+          ],
+          "scope": "vision_operator",
+          "stage": "V3_swiglu_nvidia",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "103874239c68da8a75a928e91dcb77a9edff97921129c36a95a271dfb8469017",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "V4_residual_layer_norm_torch",
+          "description": "Uni2 residual-LayerNorm reference boundary.",
+          "dispatch": {
+            "flagos_scope": null,
+            "public": {
+              "operator": "residual_layer_norm",
+              "precision": "fp16",
+              "reason": "explicit reference backend",
+              "requested": "torch",
+              "selected": "torch"
+            }
+          },
+          "gain_kind": "reference",
+          "mean_ms": 0.06243669390678406,
+          "p20_ms": 0.05734400153160095,
+          "p50_ms": 0.06369280219078063,
+          "p80_ms": 0.06586367964744569,
+          "p95_ms": 0.07088128000497818,
+          "peak_allocated_mib": 19.86474609375,
+          "peak_delta_allocated_mib": 0.3896484375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 84.0,
+          "sample_count": 30,
+          "samples_ms": [
+            0.07229440212249756,
+            0.05775359869003296,
+            0.06225919723510742,
+            0.07065600156784058,
+            0.05734400153160095,
+            0.06369280219078063,
+            0.06512640118598938,
+            0.056729602813720706,
+            0.06369280219078063,
+            0.06635519862174988,
+            0.05775359869003296,
+            0.06717439889907836,
+            0.06451200246810913,
+            0.05734400153160095,
+            0.06574079990386963,
+            0.06451200246810913,
+            0.056934398412704465,
+            0.06574079990386963,
+            0.06369280219078063,
+            0.05611519813537598,
+            0.06389759778976441,
+            0.06369280219078063,
+            0.058982402086257935,
+            0.07106559872627258,
+            0.05877760052680969,
+            0.060211199522018435,
+            0.06103039979934692,
+            0.056729602813720706,
+            0.05591040253639221,
+            0.0673792004585266
+          ],
+          "scope": "vision_operator",
+          "stage": "V4_residual_layer_norm_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.002,
+            "output_sha256": "1d805c89d538028c77ba6ba62cb0feb3894c632caa9016493cb17a9ae6d134d9",
+            "rtol": 0.02,
+            "status": "passed"
+          }
+        },
+        {
+          "comparison_baseline": "V4s_residual_layer_norm_stock_flagos",
+          "description": "No NVIDIA residual-LayerNorm native candidate is timed in R2.",
+          "gain_kind": "rejected",
+          "reason": "The existing FlagGems skip-LayerNorm candidate lost on the V100 R1 shape and has no verified backward contract.",
+          "samples_ms": [],
+          "scope": "vision_operator",
+          "stage": "V5_residual_layer_norm_rejected",
+          "status": "rejected"
+        }
+      ],
+      "run_index": 3,
+      "stock": {
+        "commits": {
+          "flaggems": "03bf364ede763d573d5c30124d554283a209ab85",
+          "stofm": "ba914b5d1b30b9dc03cfbb36a2fe968ece13fbcc"
+        },
+        "result": "run-03/stock/result.json",
+        "result_sha256": "9c080146d32e2bca2ff3c1c2a0cd2dca100f7c3c88c04014cc6a43c80f5fd813"
+      }
+    }
+  ],
+  "workload": {
+    "batch_size": 1,
+    "embedding_dim": 384,
+    "marker_vocab": 175,
+    "markers": 32,
+    "seed": 20260815,
+    "swiglu_hidden": 4096,
+    "swiglu_sequence": 264,
+    "tokens_per_marker": 256
+  }
+}

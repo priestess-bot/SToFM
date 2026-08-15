@@ -16,6 +16,9 @@
       --green: #16734d;
       --amber: #9a5d00;
       --red: #9d3330;
+      --torch: #276f9e;
+      --stock: #8a6517;
+      --optimized: #007c73;
       --code: #f1f5f7;
     }
 
@@ -232,6 +235,123 @@
       white-space: nowrap;
     }
 
+    .chart-note {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .legend-swatch {
+      width: 12px;
+      height: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.16);
+    }
+
+    .legend-swatch.torch,
+    .bar.torch {
+      background: var(--torch);
+    }
+
+    .legend-swatch.stock,
+    .bar.stock {
+      background: var(--stock);
+    }
+
+    .legend-swatch.optimized,
+    .bar.optimized {
+      background: var(--optimized);
+    }
+
+    .visual-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .chart-card {
+      margin: 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .chart-card figcaption {
+      color: var(--ink);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .chart-card .chart-meta {
+      min-height: 22px;
+      margin: 3px 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 104px minmax(72px, 1fr) 80px;
+      align-items: center;
+      gap: 8px;
+      min-height: 22px;
+      font-size: 13px;
+    }
+
+    .bar-name {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .bar-track {
+      height: 14px;
+      overflow: hidden;
+      background: #e6edf0;
+    }
+
+    .bar {
+      display: block;
+      min-width: 3px;
+      height: 100%;
+    }
+
+    .bar-value {
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .bar-row.rejected .bar-value {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .bar-row.retained .bar-track {
+      background: transparent;
+      border: 1px dashed var(--line);
+    }
+
     .status-list {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -311,7 +431,8 @@
 
       .metrics,
       .status-list,
-      .evidence {
+      .evidence,
+      .visual-grid {
         grid-template-columns: 1fr;
       }
 
@@ -326,6 +447,10 @@
 
       table {
         min-width: 770px;
+      }
+
+      .bar-row {
+        grid-template-columns: 96px minmax(60px, 1fr) 74px;
       }
     }
   </style>
@@ -342,7 +467,7 @@
       <div class="repo-strip">
         <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference">SToFM fork: r2/flagos-inference</a>
         <a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference">FlagGems fork: r2/stofm-flagos-inference</a>
-        <a href="https://github.com/priestess-bot/SToFM/commit/e4b4e9aeffd3cd85cd794a98aa148028afaf746f">SToFM delivery commit</a>
+        <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/benchmarks/vision_r2_v100_stock_worker.py">Vision F0 worker</a>
         <a href="https://github.com/priestess-bot/FlagGems/commit/a9a96bbcc3d685482c656343e0759b7b4a5c38bc">FlagGems optimized commit</a>
       </div>
     </div>
@@ -364,8 +489,8 @@
         </div>
         <div class="metric">
           <span class="label">KRONOS marker-token Triton 核</span>
-          <strong>1.154x</strong>
-          <p>FP32：0.2867 ms -> 0.2449 ms；FP16 为 1.106x。</p>
+          <strong>1.077x</strong>
+          <p>FP32：F0 0.2785 ms -> 0.2512 ms；FP16 为 1.076x。</p>
         </div>
       </div>
       <div class="callout">
@@ -373,7 +498,8 @@
           <strong>范围说明：</strong>冻结 FlagOS F0 是真实的、临时 scoped
           <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py"><code>flag_gems.use_gems()</code> ATen 路由</a>，
           只覆盖 <code>addmm</code>、<code>baddbmm</code>、<code>bmm</code> 和 <code>softmax</code>。
-          Gaussian、pair epilogue 与 marker-token 是在该基线之上由 R2 显式补齐的复合算子，而不是把通用编译器称为 FlagOS。
+          Gaussian、pair epilogue 与 marker-token 是在该基线之上由 R2 显式补齐的复合算子，而不是把通用编译器称为 FlagOS。Vision F0 worker
+          使用冻结包并复现参考边界的验证/dispatch 开销，不导入 R2 Vision API。
         </p>
       </div>
     </section>
@@ -422,88 +548,224 @@
       </p>
     </section>
 
+    <section aria-labelledby="visual-heading">
+      <h2 id="visual-heading">三基线延迟可视化</h2>
+      <p class="chart-note">
+        每张图的条形按该图中最大的 p50 延迟归一化；右侧仍显示真实毫秒值。这样既可一眼看出同一算子内的差异，也不会把端到端毫秒和微算子微秒级延迟混为同一尺度。
+      </p>
+      <div class="chart-legend" aria-label="基线图例">
+        <span class="legend-item"><span class="legend-swatch torch"></span>纯 Torch</span>
+        <span class="legend-item"><span class="legend-swatch stock"></span>冻结 FlagOS F0</span>
+        <span class="legend-item"><span class="legend-swatch optimized"></span>优化 FlagOS / 候选</span>
+      </div>
+      <div class="visual-grid">
+        <figure class="chart-card">
+          <figcaption>SToFM 端到端 FP32</figcaption>
+          <p class="chart-meta">F0 -> Ffinal: 2.277x [2.225x, 2.288x]</p>
+          <div class="bar-list">
+            <div class="bar-row"><span class="bar-name">Torch P1</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">23.0998 ms</span></div>
+            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 93.94%"></span></span><span class="bar-value">21.7006 ms</span></div>
+            <div class="bar-row"><span class="bar-name">Optimized</span><span class="bar-track"><span class="bar optimized" style="width: 41.06%"></span></span><span class="bar-value">9.4850 ms</span></div>
+          </div>
+        </figure>
+        <figure class="chart-card">
+          <figcaption>SToFM 端到端 FP16</figcaption>
+          <p class="chart-meta">F0 -> Ffinal: 2.151x [2.098x, 2.181x]</p>
+          <div class="bar-list">
+            <div class="bar-row"><span class="bar-name">Torch P1</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">21.0268 ms</span></div>
+            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 92.02%"></span></span><span class="bar-value">19.3490 ms</span></div>
+            <div class="bar-row"><span class="bar-name">Optimized</span><span class="bar-track"><span class="bar optimized" style="width: 41.94%"></span></span><span class="bar-value">8.8179 ms</span></div>
+          </div>
+        </figure>
+        <figure class="chart-card">
+          <figcaption>KRONOS marker-token FP32</figcaption>
+          <p class="chart-meta">F0 -> Triton: 1.077x [1.052x, 1.108x]</p>
+          <div class="bar-list">
+            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">0.2828 ms</span></div>
+            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 98.48%"></span></span><span class="bar-value">0.2785 ms</span></div>
+            <div class="bar-row"><span class="bar-name">NVIDIA Triton</span><span class="bar-track"><span class="bar optimized" style="width: 88.81%"></span></span><span class="bar-value">0.2512 ms</span></div>
+          </div>
+        </figure>
+        <figure class="chart-card">
+          <figcaption>KRONOS marker-token FP16</figcaption>
+          <p class="chart-meta">F0 -> Triton: 1.076x [1.049x, 1.095x]</p>
+          <div class="bar-list">
+            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">0.2974 ms</span></div>
+            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 91.25%"></span></span><span class="bar-value">0.2714 ms</span></div>
+            <div class="bar-row"><span class="bar-name">NVIDIA Triton</span><span class="bar-track"><span class="bar optimized" style="width: 82.68%"></span></span><span class="bar-value">0.2459 ms</span></div>
+          </div>
+        </figure>
+        <figure class="chart-card">
+          <figcaption>Uni2 packed SwiGLU FP32</figcaption>
+          <p class="chart-meta">F0 -> candidate: 0.439x [0.431x, 0.449x], rejected</p>
+          <div class="bar-list">
+            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 47.70%"></span></span><span class="bar-value">0.0585 ms</span></div>
+            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 44.28%"></span></span><span class="bar-value">0.0543 ms</span></div>
+            <div class="bar-row rejected"><span class="bar-name">FlagGems candidate</span><span class="bar-track"><span class="bar optimized" style="width: 100%"></span></span><span class="bar-value">0.1226 ms</span></div>
+          </div>
+        </figure>
+        <figure class="chart-card">
+          <figcaption>Uni2 packed SwiGLU FP16</figcaption>
+          <p class="chart-meta">F0 -> candidate: 0.421x [0.403x, 0.439x], rejected</p>
+          <div class="bar-list">
+            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 45.12%"></span></span><span class="bar-value">0.0587 ms</span></div>
+            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 42.52%"></span></span><span class="bar-value">0.0553 ms</span></div>
+            <div class="bar-row rejected"><span class="bar-name">FlagGems candidate</span><span class="bar-track"><span class="bar optimized" style="width: 100%"></span></span><span class="bar-value">0.1300 ms</span></div>
+          </div>
+        </figure>
+        <figure class="chart-card">
+          <figcaption>Uni2 residual LayerNorm FP32</figcaption>
+          <p class="chart-meta">没有胜出的复合候选，保持 reference fallback</p>
+          <div class="bar-list">
+            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">0.0573 ms</span></div>
+            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 91.79%"></span></span><span class="bar-value">0.0526 ms</span></div>
+            <div class="bar-row retained"><span class="bar-name">Optimized</span><span class="bar-track"></span><span class="bar-value">no candidate</span></div>
+          </div>
+        </figure>
+        <figure class="chart-card">
+          <figcaption>Uni2 residual LayerNorm FP16</figcaption>
+          <p class="chart-meta">没有胜出的复合候选，保持 reference fallback</p>
+          <div class="bar-list">
+            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">0.0637 ms</span></div>
+            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 93.25%"></span></span><span class="bar-value">0.0594 ms</span></div>
+            <div class="bar-row retained"><span class="bar-name">Optimized</span><span class="bar-track"></span><span class="bar-value">no candidate</span></div>
+          </div>
+        </figure>
+      </div>
+    </section>
+
     <section aria-labelledby="operator-heading">
-      <h2 id="operator-heading">逐算子：Torch、未优化 FlagOS、优化 FlagOS</h2>
+      <h2 id="operator-heading">逐算子完整三基线表</h2>
+      <p>
+        所有数字均为三个独立进程、90 个原始样本聚合后的 p50。Gaussian、pair 和最终组合是 SToFM 端到端消融，
+        Vision 三行则是独立算子边界；二者不应横向比较绝对毫秒。
+      </p>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>算子边界</th>
-              <th>Torch / 未优化 FlagOS 行为</th>
-              <th>优化实现</th>
-              <th>FP32 对比</th>
-              <th>FP16 对比</th>
+              <th>算子边界 / 计时范围</th>
+              <th>Torch FP32</th>
+              <th>冻结 FlagOS F0 FP32</th>
+              <th>优化 FlagOS FP32</th>
+              <th>F0 -> 优化 FP32</th>
+              <th>Torch FP16</th>
+              <th>冻结 FlagOS F0 FP16</th>
+              <th>优化 FlagOS FP16</th>
+              <th>F0 -> 优化 FP16</th>
               <th>决策</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Gaussian pair bias</td>
-              <td>F0 内仍是 Torch RBF、投影和逐元素表达式；stock FlagOS 没有该复合算子。</td>
-              <td>
+              <td>Gaussian pair bias<br><small>SToFM 端到端 C1 消融</small></td>
+              <td class="num">P1 23.0998 ms</td>
+              <td class="num">F0 21.7006 ms</td>
+              <td class="num">C1 10.5686 ms</td>
+              <td class="gain">2.054x<br><small>[2.052x, 2.055x]</small></td>
+              <td class="num">P1 21.0268 ms</td>
+              <td class="num">F0 19.3490 ms</td>
+              <td class="num">C1 8.1812 ms</td>
+              <td class="gain">2.352x<br><small>[2.319x, 2.365x]</small></td>
+              <td class="gain">
                 <a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm.py">FlagGems public Gaussian API</a>
-                选择显式 Inductor 全图编译。
+                + Inductor 全图编译，晋升。
               </td>
-              <td class="gain">C1: 2.054x vs F0</td>
-              <td class="gain">C1: 2.352x vs F0</td>
-              <td class="gain">晋升</td>
             </tr>
             <tr>
-              <td>Pair-score epilogue</td>
-              <td>F0 走分离的 <code>baddbmm</code>、mask、softmax、pair state 物化。</td>
-              <td>
+              <td>Pair-score epilogue<br><small>SToFM 端到端 C2 消融</small></td>
+              <td class="num">P1 23.0998 ms</td>
+              <td class="num">F0 21.7006 ms</td>
+              <td class="num">C2 20.6351 ms</td>
+              <td class="gain">1.052x<br><small>[1.052x, 1.053x]</small></td>
+              <td class="num">P1 21.0268 ms</td>
+              <td class="num">F0 19.3490 ms</td>
+              <td class="num">C2 18.9990 ms</td>
+              <td class="gain">1.018x<br><small>[1.018x, 1.018x]</small></td>
+              <td class="hold">
                 <a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm_backends/nvidia.py">NVIDIA Triton pair epilogue</a>
-                在 QK score 后融合 mask、softmax 与 pair state 写回。
+                保留在组合路径，需更多 shape bucket 验证。
               </td>
-              <td class="gain">C2: 1.052x vs F0</td>
-              <td class="gain">C2: 1.018x vs F0</td>
-              <td class="hold">保留于组合路径</td>
             </tr>
             <tr>
-              <td>FlagOS core ATen</td>
-              <td>纯 Torch P1 没有 FlagOS 路由。</td>
-              <td>
+              <td>Scoped FlagOS core ATen<br><small>SToFM F0 稳态</small></td>
+              <td class="num">P1 23.0998 ms</td>
+              <td class="num">F0 21.7006 ms</td>
+              <td class="num">F0（无额外候选）</td>
+              <td class="gain">F0/P1 1.064x</td>
+              <td class="num">P1 21.0268 ms</td>
+              <td class="num">F0 19.3490 ms</td>
+              <td class="num">F0（无额外候选）</td>
+              <td class="gain">F0/P1 1.087x</td>
+              <td class="gain">
                 <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py">Scoped runtime bridge</a>
-                对真实 <code>use_gems()</code> 使用窄 allowlist。
+                的真实窄 ATen 路由，保留。
               </td>
-              <td class="gain">F0: 1.064x vs P1</td>
-              <td class="gain">F0: 1.087x vs P1</td>
-              <td class="gain">保留</td>
             </tr>
             <tr>
-              <td>KRONOS marker-token</td>
-              <td>Torch embedding lookup、广播加法、padding；stock FlagOS 没有该直接 API。</td>
-              <td>
+              <td>SToFM 最终组合<br><small>Ffinal 稳态</small></td>
+              <td class="num">P1 23.0998 ms</td>
+              <td class="num">F0 21.7006 ms</td>
+              <td class="num">Ffinal 9.4850 ms</td>
+              <td class="gain">2.277x<br><small>[2.225x, 2.288x]</small></td>
+              <td class="num">P1 21.0268 ms</td>
+              <td class="num">F0 19.3490 ms</td>
+              <td class="num">Ffinal 8.8179 ms</td>
+              <td class="gain">2.151x<br><small>[2.098x, 2.181x]</small></td>
+              <td class="gain">Gaussian C1 + pair C2 + scoped ATen；端到端晋升。</td>
+            </tr>
+            <tr>
+              <td>KRONOS marker-token<br><small>独立算子边界</small></td>
+              <td class="num">0.2828 ms</td>
+              <td class="num">0.2785 ms</td>
+              <td class="num">0.2512 ms</td>
+              <td class="gain">1.077x<br><small>[1.052x, 1.108x]</small></td>
+              <td class="num">0.2974 ms</td>
+              <td class="num">0.2714 ms</td>
+              <td class="num">0.2459 ms</td>
+              <td class="gain">1.076x<br><small>[1.049x, 1.095x]</small></td>
+              <td class="gain">
                 <a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py">NVIDIA Triton marker kernel</a>
+                ，连续 inference 输入晋升。
               </td>
-              <td class="gain">0.2867 -> 0.2449 ms, 1.154x</td>
-              <td class="gain">0.2897 -> 0.2651 ms, 1.106x</td>
-              <td class="gain">晋升</td>
             </tr>
             <tr>
-              <td>Uni2 packed SwiGLU</td>
-              <td>Torch <code>silu</code> + multiply；stock FlagOS 没有此复合边界。</td>
-              <td>
+              <td>Uni2 packed SwiGLU<br><small>独立算子边界</small></td>
+              <td class="num">0.0585 ms</td>
+              <td class="num">0.0543 ms</td>
+              <td class="num">0.1226 ms</td>
+              <td class="reject">0.439x<br><small>[0.431x, 0.449x]</small></td>
+              <td class="num">0.0587 ms</td>
+              <td class="num">0.0553 ms</td>
+              <td class="num">0.1300 ms</td>
+              <td class="reject">0.421x<br><small>[0.403x, 0.439x]</small></td>
+              <td class="reject">
                 <a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py">Existing FlagGems SwiGLU candidate</a>
+                ，两种精度均拒绝。
               </td>
-              <td class="reject">0.0592 -> 0.1227 ms, 0.484x</td>
-              <td class="reject">0.0600 -> 0.1373 ms, 0.438x</td>
-              <td class="reject">拒绝</td>
             </tr>
             <tr>
-              <td>Residual LayerNorm</td>
-              <td>Torch <code>native_layer_norm</code>；stock FlagOS 没有已验证的该复合核。</td>
-              <td>
+              <td>Uni2 residual LayerNorm<br><small>独立算子边界</small></td>
+              <td class="num">0.0573 ms</td>
+              <td class="num">0.0526 ms</td>
+              <td class="hold">无候选（F0 fallback）</td>
+              <td class="hold">不适用</td>
+              <td class="num">0.0637 ms</td>
+              <td class="num">0.0594 ms</td>
+              <td class="hold">无候选（F0 fallback）</td>
+              <td class="hold">不适用</td>
+              <td class="hold">
                 <a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision.py">Versioned Vision API</a>
                 保持 reference fallback。
               </td>
-              <td class="hold">无胜出候选</td>
-              <td class="hold">无胜出候选</td>
-              <td class="hold">保持 Torch</td>
             </tr>
           </tbody>
         </table>
       </div>
+      <p class="chart-note">
+        Vision 的冻结 F0 使用冻结 FlagGems <code>03bf364</code> 的真实 scoped ATen 路由；由于该提交早于 Vision public API，
+        worker 在不导入 R2 实验 API 的前提下复现相同的输入验证、参考表达式和 dispatch 构造。它不是把缺失复合算子伪装成原生 FlagOS 覆盖。
+      </p>
     </section>
 
     <section aria-labelledby="implementation-heading">
@@ -513,7 +775,7 @@
           <h3>SToFM fork</h3>
           <p>
             模型配置、<code>torch / stock / optimized</code> 三种模式、scoped FlagOS runtime、
-            端到端 worker、Vision worker、profile 与 checksum 验证工具均在
+            端到端 worker、双环境 Vision worker、profile 与 checksum 验证工具均在
             <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference">SToFM R2 分支</a>。
           </p>
         </article>
@@ -565,10 +827,10 @@
     <section aria-labelledby="method-heading">
       <h2 id="method-heading">严格测试与证据</h2>
       <ol>
-        <li>每个精度使用三个独立 Python 进程，10 次 warm-up、30 个 CUDA-event 样本、每样本 5 次调用；每个测量阶段有 90 个原始样本。</li>
+        <li>每个精度使用三个独立进程对；每一对分别运行冻结与优化环境，10 次 warm-up、30 个 CUDA-event 样本、每样本 5 次调用；每个测量阶段有 90 个原始样本。</li>
         <li>编译发生在 warm-up，未计入延迟。FP32 与 FP16 分开聚合，使用 10,000 次 bootstrap resample 得到 95% 置信区间。</li>
-        <li>每个候选先与 Torch reference 比较；FP32 为 <code>rtol=3e-4, atol=3e-5</code>，FP16 为 <code>rtol=3e-2, atol=3e-3</code>。marker padding mask 必须完全相同。</li>
-        <li>FlagGems R2 回归为 26 项通过；SToFM R2 回归为 25 项通过。CANN/MUSA 仅通过离线源码门禁，保留为等待真实硬件的项目。</li>
+        <li>每个候选先与 Torch reference 比较；FP32 为 <code>rtol=3e-4, atol=3e-5</code>，FP16 为 <code>rtol=3e-2, atol=3e-3</code>。marker padding mask 必须完全相同；跨环境聚合会拒绝 workload、reference hash、timer 设置或 runtime identity 漂移。</li>
+        <li>FlagGems R2 回归为 26 项通过；SToFM 优化环境 28 项、冻结环境 3 项通过。CANN/MUSA 仅通过离线源码门禁，保留为等待真实硬件的项目。</li>
       </ol>
 
       <div class="evidence">
@@ -580,13 +842,13 @@
           SToFM FP16 原始证据
           <span>三进程结果、CSV、日志、suite、checksum</span>
         </a>
-        <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-vision-v100-fp32-20260815">
-          Vision FP32 原始证据
-          <span>marker、SwiGLU、LayerNorm 的独立算子测量</span>
+        <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-vision-v100-fp32-20260815-stock-complete">
+          Vision FP32 三基线原始证据
+          <span>每次运行都有 Torch、冻结 F0 与优化环境的独立 JSON、CSV、日志和 checksum</span>
         </a>
-        <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-vision-v100-fp16-20260815">
-          Vision FP16 原始证据
-          <span>FP16 独立算子测量与拒绝项</span>
+        <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-vision-v100-fp16-20260815-stock-complete">
+          Vision FP16 三基线原始证据
+          <span>FP16 的双环境原始测量、拒绝项与 checksum</span>
         </a>
         <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-profiles-20260815">
           SToFM 与 Vision trace

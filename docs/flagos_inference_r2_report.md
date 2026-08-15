@@ -15,9 +15,12 @@ FlagOS.
   Gaussian and pair-attention composites in addition to the same scoped ATen
   route.
 - SToFM timing workers are commit
-  `e01b0a9d8348101815fba63224910a25830c29a9`; Vision timing workers are
-  `de4278f7307de167dfd21d406198ca2c2881658e`. Later commits only improve
-  profile classification and evidence verification.
+  `e01b0a9d8348101815fba63224910a25830c29a9`; the authoritative Vision
+  three-baseline workers are commit
+  `ba914b5d1b30b9dc03cfbb36a2fe968ece13fbcc`. The latter adds an isolated
+  frozen-stock worker and requires the stock/optimized workers to agree on
+  workload, reference hashes, timing controls, and runtime identity before
+  aggregation.
 
 The test device was GPU 0, Tesla V100-SXM2-16GB (compute capability 7.0), with
 NVIDIA driver 550.144.03, PyTorch 2.6.0+cu124, CUDA 12.4, Triton 3.2.0, and
@@ -54,6 +57,14 @@ non-contiguous reference fallback, and autograd fallback. Target adapters are
 tested separately in CPU-only static mode; no target runtime is represented as
 a pass.
 
+The frozen FlagGems commit predates the Vision public API. Its Vision F0 worker
+therefore does not import R2 experimental operators: it recreates the public
+reference boundary's input validation and dispatch construction, evaluates the
+same portable Torch expression within a real frozen `use_gems()` scope, and
+records the active registered ATen operations. This isolates a genuine F0
+environment without claiming that the old package had a marker/SwiGLU/LayerNorm
+composite API.
+
 ## End-to-End SToFM Results
 
 The speedup column names its comparison baseline. It is the bootstrap point
@@ -81,13 +92,18 @@ Median peak allocation growth within the timed window was 1618.09 MiB FP32 and
 1617.07 MiB FP16 for P1/F0, 152.54 MiB and 79.29 MiB for C1, and 145.15 MiB
 and 71.40 MiB for Ffinal. This is not total process or model memory.
 
-## Vision Operator Results
+## Vision Operator Results: Separate Torch, F0, and Optimized Values
 
-| Boundary | FP32 Torch -> candidate p50 ms | FP32 speedup and 95% CI | FP16 Torch -> candidate p50 ms | FP16 speedup and 95% CI | Decision |
-| --- | --- | --- | --- | --- | --- |
-| KRONOS marker-token assembly | 0.2867 -> 0.2449 | 1.154x [1.137x, 1.174x] | 0.2897 -> 0.2651 | 1.106x [1.075x, 1.138x] | Promote NVIDIA Triton candidate |
-| Uni2 packed SwiGLU | 0.0592 -> 0.1227 | 0.484x [0.472x, 0.497x] | 0.0600 -> 0.1373 | 0.438x [0.430x, 0.450x] | Reject existing candidate |
-| Uni2 residual LayerNorm | 0.0626 -> no candidate | - | 0.0609 -> no candidate | - | Retain Torch |
+Every measured cell below is an aggregate p50 from 90 raw CUDA-event samples.
+The speedup uses the independent frozen F0 samples as its baseline; it is not a
+ratio inferred from the Torch column. The three Vision boundaries are isolated
+operator measurements, not full Uni2/KRONOS model throughput.
+
+| Boundary | Torch FP32 ms | Frozen FlagOS F0 FP32 ms | Optimized FlagOS FP32 ms | FP32 F0 -> optimized (95% CI) | Torch FP16 ms | Frozen FlagOS F0 FP16 ms | Optimized FlagOS FP16 ms | FP16 F0 -> optimized (95% CI) | Decision |
+| --- | ---: | ---: | ---: | --- | ---: | ---: | ---: | --- | --- |
+| KRONOS marker-token assembly | 0.2828 | 0.2785 | 0.2512 | 1.077x [1.052x, 1.108x] | 0.2974 | 0.2714 | 0.2459 | 1.076x [1.049x, 1.095x] | Promote NVIDIA Triton candidate |
+| Uni2 packed SwiGLU | 0.0585 | 0.0543 | 0.1226 | 0.439x [0.431x, 0.449x] | 0.0587 | 0.0553 | 0.1300 | 0.421x [0.403x, 0.439x] | Reject existing candidate |
+| Uni2 residual LayerNorm | 0.0573 | 0.0526 | no candidate | - | 0.0637 | 0.0594 | no candidate | - | Retain reference fallback |
 
 Clean profiles show `_marker_token_embed_kernel` in both marker candidate
 precisions. They show `swiglu_kernel` for the rejected existing candidate and
@@ -100,8 +116,8 @@ precisions. They show `swiglu_kernel` for the rejected existing candidate and
 | Gaussian pair bias `[B,N,N,H]` | Eager scalar RBF/projection operations do not expose an SToFM composite boundary; generic ATen replacement does not fuse it. | Versioned public compiler route: C1 2.054x FP32, 2.352x FP16 vs F0. Promote compiler route. The separate NVIDIA Triton Gaussian is available but is not claimed as an R2 winner. | Deferred AscendC source: FP32/FP16/BF16 symbols, tiling metadata, host registration, lazy import, reference fallback. No binary or timing claim. | Deferred MUSA `.mu` extension/Triton route: FP32/FP16/BF16, `musa_add_library`, reference fallback. No binary or timing claim. |
 | Pair score, mask, softmax, pair state | `baddbmm`, mask, softmax, and pair materialization are separate generic boundaries. | NVIDIA native inference epilogue: C2 1.052x FP32, 1.018x FP16 vs F0. Keep in optimized route; repeat for shape buckets. | Deferred CANN Gaussian/pair project; Vision remains lazy reference-first. | Deferred extension/Triton and `PrivateUse1` schema. |
 | `addmm,baddbmm,bmm,softmax` | No SToFM-aware route selection; global patching hides scope lifecycle. | Real narrow FlagOS scope: F0 steady 1.064x FP32, 1.087x FP16 vs P1. Keep as scoped ATen coverage, not a whole-model backend claim. | Establish target F0 after runtime install. | Establish target F0 after runtime install. |
-| KRONOS marker-token assembly | Lookup, broadcast, position/token add, and padding are separate operations. | Triton marker kernel: 1.154x FP32, 1.106x FP16. Promote for contiguous inference input. | Lazy adapter/reference fallback only. | Lazy Triton/extension candidate/reference fallback only. |
-| Uni2 packed SwiGLU | `silu` plus multiply is launch-sensitive at this shape. | Existing candidate loses at 0.484x FP32 and 0.438x FP16. Reject on V100. | Lazy reference-first adapter. | Lazy candidate/reference fallback. |
+| KRONOS marker-token assembly | Lookup, broadcast, position/token add, and padding are separate operations. | Frozen F0 is 0.2785/0.2714 ms; Triton is 1.077x FP32, 1.076x FP16 versus that F0. Promote for contiguous inference input. | Lazy adapter/reference fallback only. | Lazy Triton/extension candidate/reference fallback only. |
+| Uni2 packed SwiGLU | `silu` plus multiply is launch-sensitive at this shape. | Existing candidate loses at 0.439x FP32 and 0.421x FP16 versus frozen F0. Reject on V100. | Lazy reference-first adapter. | Lazy candidate/reference fallback. |
 | Residual LayerNorm | No verified composite win. | Retain Torch `native_layer_norm`; no new kernel. | Lazy adapter/reference fallback. | Lazy adapter/reference fallback. |
 
 ## Profile and Target Gates
@@ -131,14 +147,15 @@ committed under these directories:
 
 - `benchmark-results/r2-v100-fp32-20260815/`
 - `benchmark-results/r2-v100-fp16-20260815/`
-- `benchmark-results/r2-vision-v100-fp32-20260815/`
-- `benchmark-results/r2-vision-v100-fp16-20260815/`
+- `benchmark-results/r2-vision-v100-fp32-20260815-stock-complete/`
+- `benchmark-results/r2-vision-v100-fp16-20260815-stock-complete/`
 - `benchmark-results/r2-v100-profiles-20260815/`
 
-`benchmarks/write_r2_checksums.py --verify` verified 20, 20, 11, 11, and 48
-files respectively. Audit directories named `invalid-*` contain an earlier
-concurrent timing attempt or pre-cleanup profiles and are excluded from every
-reported number and checksum manifest.
+`benchmarks/write_r2_checksums.py --verify` verified 20, 20, 20, 20, and 48
+files respectively. The earlier `r2-vision-v100-*` trees remain historical
+single-environment evidence and are not used by this three-baseline table or
+the HTML visualization. Locally retained audit directories containing
+`invalid` are excluded from every reported number and checksum manifest.
 
 Results apply only to the declared V100 workloads. SToFM is end-to-end synthetic
 inference with fixed shapes; Vision results are operator-level boundaries, not

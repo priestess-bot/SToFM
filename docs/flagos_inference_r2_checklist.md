@@ -76,25 +76,34 @@ required and is not a completed item.
   Evidence: C2 FP16 p50 18.9990 ms, 1.018x [1.018x, 1.018x] versus frozen F0
   steady; the low but positive gain is retained only in the composed route.
 - [x] V100-5 Implement and validate FP32/FP16 KRONOS marker-token candidate.
-  Evidence: marker Triton p50 is 0.2449 ms / 1.154x FP32 and 0.2651 ms /
-  1.106x FP16; both precisions have 90 raw samples and clean kernel traces.
+  Evidence: independent frozen F0 is 0.2785 ms and Triton is 0.2512 ms /
+  1.077x [1.052x, 1.108x] FP32; frozen F0 is 0.2714 ms and Triton is
+  0.2459 ms / 1.076x [1.049x, 1.095x] FP16. Both precisions have 90 raw
+  samples per stage, matching reference hashes, and clean kernel traces.
 - [x] V100-6 Re-evaluate SwiGLU and residual-LayerNorm under the R2 stock
   baseline; add a native implementation only if profiling justifies it.
-  Evidence: existing SwiGLU is rejected at 0.484x FP32 and 0.438x FP16;
-  residual LayerNorm remains Torch because no verified winner exists.
+  Evidence: existing SwiGLU is rejected at 0.439x [0.431x, 0.449x] FP32
+  and 0.421x [0.403x, 0.439x] FP16 versus independent F0; residual LayerNorm
+  remains reference fallback because no verified winner exists.
 - [x] V100-7 Run three independent FP32 benchmark processes and aggregate P1,
   F0, each candidate, and Ffinal.
   Evidence: `benchmark-results/r2-v100-fp32-20260815/` and
-  `r2-vision-v100-fp32-20260815/`, each with three worker processes, 90 raw
-  samples per measured stage, checksums, and 10,000-resample intervals.
+  `r2-vision-v100-fp32-20260815-stock-complete/`; the Vision suite has three
+  stock/optimized worker pairs, 90 raw samples per measured stage, 20-file
+  checksum manifest, and 10,000-resample intervals.
 - [x] V100-8 Run the equivalent independent FP16 benchmark suite and aggregate
   it separately from FP32.
   Evidence: `benchmark-results/r2-v100-fp16-20260815/` and
-  `r2-vision-v100-fp16-20260815/`, with the same independent-process and raw
-  evidence rules.
-- [ ] V100-9 Add an independent frozen-FlagOS F0 worker for every Vision
+  `r2-vision-v100-fp16-20260815-stock-complete/`, with the same three-pair,
+  raw-evidence, and checksum rules.
+- [x] V100-9 Add an independent frozen-FlagOS F0 worker for every Vision
   boundary, then rerun the FP32/FP16 operator suites so Torch, stock FlagOS,
   and optimized FlagOS have separate raw measurements.
+  Evidence: `benchmarks/vision_r2_v100_stock_worker.py` imports no R2 Vision
+  API, recreates the portable public boundary, and measures it inside frozen
+  scoped `use_gems()`. `run_vision_r2_v100_suite.py` pins distinct source roots
+  and rejects cross-environment workload/reference/measurement/runtime drift;
+  both `*-stock-complete/` suites are schema v2 with six worker artifacts.
 
 ## 3. Target-Device Preparation
 
@@ -142,9 +151,11 @@ required and is not a completed item.
   masks, padding/CLS, gradients, and fallback contracts; selected R2 run passed
   26 tests with target static gates on 2026-08-15.
 - [x] TEST-1 Add full SToFM P1/F0/optimized consistency tests and dispatch tests.
-  Evidence: SToFM R2 suite passed 25 tests on 2026-08-15, including frozen-stock
-  P1 equivalence, scoped dispatch cleanup, FP16 optimized inference, benchmark
-  aggregation drift rejection, profile classification, and checksum validation.
+  Evidence: optimized SToFM R2 suite passed 28 tests on 2026-08-15, including
+  cross-environment Vision aggregation, stock wrapper CPU semantics, scoped
+  dispatch cleanup, FP16 optimized inference, profile classification, and
+  checksum validation. The frozen environment additionally passed 3 tests for
+  P1 equivalence and the no-R2-API stock Vision worker.
 - [x] TEST-2 Add CPU-only target static validation for all public APIs and
   deferred native-project metadata.
   Evidence: FlagGems `tests/test_deferred_native_projects.py` plus
@@ -155,16 +166,17 @@ required and is not a completed item.
   passed 26 tests on 2026-08-15.
 - [x] REPORT-0 Publish raw benchmark files, checksums, bootstrap confidence
   intervals, rejected candidates, and separate compiler/kernel/lifecycle gains.
-  Evidence: `docs/flagos_inference_r2_report.md` and five R2 evidence trees;
-  `benchmarks/write_r2_checksums.py --verify` passed for 20, 20, 11, 11, and
-  48 files respectively.
+  Evidence: `docs/flagos_inference_r2_report.md` and five authoritative R2
+  evidence trees; `benchmarks/write_r2_checksums.py --verify` passed for 20,
+  20, 20, 20, and 48 files respectively.
 - [x] REPORT-1 Publish the R2 operator coverage matrix and final promotion
   decision. Do not reuse R1 speedups as R2 results.
   Evidence: `docs/flagos_inference_r2_report.md` contains the framework and
   architecture matrix, V100 promotion/rejection decisions, and explicit
   CANN/MUSA no-hardware limitations. The companion
-  `docs/flagos_inference_r2_report.html` links all code and evidence references
-  only to the pushed SToFM and FlagGems fork branches.
+  `docs/flagos_inference_r2_report.html` adds per-operator Torch/F0/optimized
+  tables and inline three-baseline p50 visualizations; every code/evidence link
+  targets the pushed SToFM or FlagGems fork branches.
 - [x] GIT-0 Commit and push FlagGems first; advance the SToFM optimized lock only
   after the matching FlagGems SHA is tested and pushed.
   Evidence: FlagGems `r2/stofm-flagos-inference` is pushed at
