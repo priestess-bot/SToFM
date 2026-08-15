@@ -44,19 +44,19 @@
       "path": "benchmark-results/vision-v100-final-20260815-run1",
       "result_sha256": "d7eacc723d64c4ab13c51e46e02caeb40b7f70dcd3fdd701bb57d04016fc1385",
       "run_id": "vision-v100-20260815T075824Z",
-      "samples_sha256": "2d2f2887e2d789198aea19248c2202460267d7d9996c0220c9078497a94e692c"
+      "samples_sha256": "f8862261d4d3132f369da85a7cd2d6fa6d2bc4876e52c176f4c4f910207ad245"
     },
     {
       "path": "benchmark-results/vision-v100-final-20260815-run2",
       "result_sha256": "434a1f575308790d5aef8a3bee58fb365c2c4f7fa6f65873194404b920690210",
       "run_id": "vision-v100-20260815T075854Z",
-      "samples_sha256": "9290494de6595c44c6960edd99063123a703a72e118da27c6a858467e2b58278"
+      "samples_sha256": "418a83511f79e2f4b366baced44422a9fd31feac37817d060db0dbc64f6fda43"
     },
     {
       "path": "benchmark-results/vision-v100-final-20260815-run3",
       "result_sha256": "90ae01bd11d2a46e033e090987b0e84d771f8f0cbd80ab24cde2ee0dfb06a7f5",
       "run_id": "vision-v100-20260815T075927Z",
-      "samples_sha256": "9c7c8dc7822ebb109443031f75a5f91a885e8c4f815909c76fc793e86a995df8"
+      "samples_sha256": "99f5a5c121ce71c6d4886a0ab6a8b5d203ab2676c20df5aeee581f733af160f1"
     }
   ],
   "schema_version": 1,

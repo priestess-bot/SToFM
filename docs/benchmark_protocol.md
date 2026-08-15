@@ -58,7 +58,7 @@ Compilation happens during warm-up and is excluded from latency.
 Promotion requires three independent processes on the same device/runtime and
 workload. `benchmarks/aggregate_operator_runs.py` refuses to aggregate runs
 with different Git commits, hardware/runtime, workload, or stage contract. It
-records raw-file SHA-256 values, p50 min/median/max, peak memory and a
+records LF-normalized raw-file SHA-256 values, p50 min/median/max, peak memory and a
 deterministic 10,000-resample bootstrap CI for every direct baseline/candidate
 speedup. The accepted V100 data and commands are documented in
 [`v100_operator_optimization_report.md`](v100_operator_optimization_report.md).

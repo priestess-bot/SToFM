@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from benchmarks.aggregate_operator_runs import _bootstrap_speedup, aggregate
+from benchmarks.aggregate_operator_runs import _bootstrap_speedup, _sha256, aggregate
 
 
 def _write_run(path: Path, *, p50: float, nodes: int = 17, peak_allocated_mib: float = 10.0) -> None:
@@ -84,3 +84,12 @@ def test_aggregate_keeps_memory_unavailable_when_a_target_runtime_cannot_report_
     summary = aggregate([run_a, run_b], bootstrap_resamples=100)
 
     assert summary["stages"][0]["peak_allocated_mib"] is None
+
+
+def test_text_artifact_digest_is_invariant_to_platform_line_endings(tmp_path):
+    lf = tmp_path / "lf.csv"
+    crlf = tmp_path / "crlf.csv"
+    lf.write_bytes(b"stage,sample_index\nB0,0\n")
+    crlf.write_bytes(b"stage,sample_index\r\nB0,0\r\n")
+
+    assert _sha256(lf) == _sha256(crlf)

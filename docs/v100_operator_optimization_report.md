@@ -57,7 +57,7 @@ O2n 不是完整 FlashAttention 替换：QK 与 PV GEMM 仍交给 cuBLAS，Trito
 `result.json`、`samples.csv`、`report.md` 和 `report.html`。聚合结果
 [`three_run_summary.json`](../benchmark-results/v100-o5-final-20260815-run1/three_run_summary.json)
 验证了所有运行的工作负载、硬件/runtime、stage contract 和两个 Git SHA 完全一致，
-并记录了输入 JSON/CSV 的 SHA-256。
+并记录了输入 JSON/CSV 的 LF 规范化 SHA-256。
 
 ## 三运行结果
 

@@ -1,0 +1,2 @@
+benchmark-results/**/*.csv text eol=lf
+benchmark-results/**/*.json text eol=lf
