@@ -44,7 +44,7 @@ def _workload_for_comparison(workload: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _hardware_for_comparison(hardware: Dict[str, Any]) -> Dict[str, Any]:
-    return {key: hardware.get(key) for key in ("name", "capability", "torch", "cuda")}
+    return {key: hardware.get(key) for key in ("name", "device_type", "capability", "torch", "cuda")}
 
 
 def _stage_contract(result: Dict[str, Any]) -> List[tuple]:

@@ -18,7 +18,7 @@ external rental hardware.
 - [x] C1. Maintain independent forks and a versioned public dependency
   boundary.
   Evidence: `priestess-bot/FlagGems:integration/stofm` at
-  `dd9abb71aa79a4bbc6428b85cd7eeef5d5b7bb33`; `priestess-bot/SToFM:integration/flagos`.
+  `2e0ab4ffa5447e2647383faf22d2bb93590f519c`; `priestess-bot/SToFM:integration/flagos`.
 - [x] C2. Lock the exact FlagGems commit consumed by SToFM.
   Evidence: `deps/flagos.lock.json` and `requirements/flagos-v100.txt`.
 - [x] C3. Inventory SToFM, Uni2, KRONOS, PyTorch, and target-backend operator
@@ -60,10 +60,12 @@ external rental hardware.
   p50 and memory results; record a rejection when a native candidate loses.
   Evidence: `benchmark-results/v100-native-epilogue-20260815/` at SToFM
   `960dda12b98cb2a4fd60c03929ecaa0a6acfc1a7` and FlagGems
-  `567297236ddc2db6fee498854fd0e493c6f4ea03`. O2n p50 is `0.6605 ms`
-  versus O2 `0.9140 ms` (`1.384x`); O5 p50 is `8.8122 ms` versus O4
-  `10.8573 ms` (`1.232x`) at unchanged peak allocation. O5 is selected;
-  O1n Gaussian remains rejected.
+  `567297236ddc2db6fee498854fd0e493c6f4ea03`; final default-route rerun is
+  `benchmark-results/v100-o5-final-20260815-run1/`. O2n p50-of-p50 is
+  `0.6603 ms` versus O2 `0.9181 ms` (`1.391x`); default O5 p50-of-p50 is
+  `8.8105 ms` versus O4 `10.8552 ms` (`1.232x`) and B0 `23.6024 ms`
+  (`2.679x`) at `144.7 MiB` peak delta versus B0's `1618.7 MiB`. O5 is selected by
+  `flagos_backend=flaggems`; O1n Gaussian remains rejected.
 - [x] V100-6. Profile remaining SToFM LayerNorm/residual/FFN work and record
   whether existing FlagGems fused primitives are sufficient or a new kernel
   is justified. This is a decision task, not permission to count a wrapper as
@@ -72,6 +74,15 @@ external rental hardware.
   PyTorch residual+LayerNorm p50 `0.0351 ms` versus FlagGems
   `skip_layer_norm` p50 `0.1053 ms`. The existing primitive is rejected for
   this path; its potential share is too small to justify a new V100 kernel.
+- [x] V100-7. Repeat the selected default O5 benchmark in independent
+  processes and publish an aggregate with checksums, so promotion does not
+  depend on one process or one p50 sample set.
+  Evidence: three independent runs at SToFM `ee64e363a06cbc2cdd42ffa540cf0fdcf1f29944`
+  and FlagGems `dde373fe33c71e5819584685781182b0ad2cb144`, aggregated by
+  `benchmarks/aggregate_operator_runs.py` into
+  `benchmark-results/v100-o5-final-20260815-run1/three_run_summary.json`.
+  O5 p50-of-p50 is `8.8105 ms` (range `8.8077--8.8360 ms`, 90 raw samples),
+  and O5/O4 bootstrap 95% CI is `1.2307--1.2324x`.
 
 ## 2. Vision Operator Work for Uni2 and KRONOS
 
@@ -98,12 +109,13 @@ external rental hardware.
 - [x] VIS-4. Add V100 microbenchmarks for the implemented vision operators.
   Do not claim a full Uni2/KRONOS model speedup without model weights and an
   end-to-end reproducible workload.
-  Evidence: `benchmark-results/vision-v100-20260815/` at SToFM
-  `5c3662ae55ae59214f3b8ae9899d2cf83c020572` and FlagGems
-  `dde373fe33c71e5819584685781182b0ad2cb144`. Marker-token Triton p50 is
-  `0.2099 ms` versus reference `0.3058 ms` (`1.456x`) with peak allocation
-  `24.0 -> 12.0 MiB`; existing SwiGLU is `0.598x` and is rejected. These are
-  operator microbenchmarks, not full Uni2/KRONOS model speedups.
+  Evidence: three independent runs at SToFM `bd3aeae4bc207ae2a2a348ef04e0262e95be91a2`
+  and FlagGems `2e0ab4ffa5447e2647383faf22d2bb93590f519c`, aggregated into
+  `benchmark-results/vision-v100-final-20260815-run1/three_run_summary.json`.
+  Marker-token Triton has a sample-level speedup `1.349x` (bootstrap 95% CI
+  `1.327--1.382x`) and peak delta `24.0 -> 12.0 MiB`; existing SwiGLU is
+  `0.591x` and remains rejected. These remain operator microbenchmarks, not
+  full Uni2/KRONOS model speedups.
 
 ## 3. Ascend 310 Correctness-First Implementation
 
@@ -119,7 +131,9 @@ external rental hardware.
 - [x] ASC-2. Run source syntax/AST/API tests for all Ascend adapters and save
   the deferred device test commands.
   Evidence: expanded `tools/check_stofm_target_backends.py` reports passed
-  SToFM and vision Ascend contracts with no `torch_npu` import.
+  SToFM/vision Ascend contracts plus the target runtime harness with no
+  import-time `torch_npu`; `tools/validate_target_operator_runtime.py` has a
+  CPU fallback semantic test and saved on-device commands.
 - [!] ASC-3. On rented Ascend 310 hardware: establish B0/B1, run forward and
   gradient matrices, then measure each promoted operator and full model.
 
@@ -137,7 +151,9 @@ external rental hardware.
 - [x] MTT-2. Run source syntax/AST/API tests for all MTT adapters and save the
   deferred device test commands.
   Evidence: expanded `tools/check_stofm_target_backends.py` reports passed
-  SToFM and vision MTT contracts with no `torch_musa` import.
+  SToFM/vision MTT contracts plus the target runtime harness with no
+  import-time `torch_musa`; `tools/validate_target_operator_runtime.py` has a
+  CPU fallback semantic test and saved on-device commands.
 - [!] MTT-3. On rented MTT S4000 hardware: establish B0/B1, run forward and
   gradient matrices, then measure each promoted operator and full model.
 
@@ -145,15 +161,21 @@ external rental hardware.
 
 - [x] E0. Run the expanded local correctness suite: forward, gradients,
   zero-distance/mask behavior, non-contiguous layouts, and dispatch fallback.
-  Evidence: FlagGems `tests/test_stofm_experimental.py` plus
-  `tests/test_vision_experimental.py` (`15 passed`); SToFM
-  `tests/test_flagos_adapter.py` (`6 passed`); all four target adapters pass
-  `tools/check_stofm_target_backends.py`; related sources pass `compileall`.
-- [ ] E1. Publish a V100 optimization report that separates each actual kernel
+  Evidence: FlagGems `tests/test_stofm_experimental.py`,
+  `tests/test_vision_experimental.py`, and `tests/test_target_runtime_harness.py`
+  (`16 passed`); SToFM `tests/test_flagos_adapter.py` plus
+  `tests/test_benchmark_aggregation.py` (`11 passed`); five target static
+  checks pass `tools/check_stofm_target_backends.py`; all related sources pass
+  `compileall`.
+- [x] E1. Publish a V100 optimization report that separates each actual kernel
   from API-only and lifecycle changes, with raw samples for every measured
   stage.
-- [ ] E2. Update the architecture gap analysis with implemented/rejected
+  Evidence: `docs/v100_operator_optimization_report.md`; three-run SToFM and
+  vision summaries with raw CSV, checksums, and bootstrap CI.
+- [x] E2. Update the architecture gap analysis with implemented/rejected
   operator decisions and no unmeasured performance claims.
+  Evidence: `docs/operator_gap_analysis.md`, `docs/benchmark_protocol.md`,
+  and `docs/target_device_acceptance.md`.
 - [ ] E3. Commit and push each repository only after its checklist entries,
   tests, locks, and reports agree.
 

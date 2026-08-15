@@ -4,4 +4,8 @@ __pycache__/
 benchmark-results/*
 !benchmark-results/v100-20260815-v100-sxm2-16gb-committed/
 !benchmark-results/v100-20260815-v100-sxm2-16gb-committed/**
+!benchmark-results/v100-o5-final-20260815*/
+!benchmark-results/v100-o5-final-20260815*/**
+!benchmark-results/vision-v100-final-20260815*/
+!benchmark-results/vision-v100-final-20260815*/**
 reports/

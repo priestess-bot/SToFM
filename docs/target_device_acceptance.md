@@ -1,48 +1,112 @@
-# Deferred Target-Device Acceptance
+# Ascend 310 and MTT S4000 Acceptance Procedure
 
-The Ascend 310 and MTT S4000 adapters are deliberately limited to a
-correctness-first tiled implementation until rental hardware is available.  A
-passing static check is not a device performance result.
+The Ascend and MTT code paths are correctness-first adapters, not measured
+accelerators. A static pass means only that source can be imported and routed
+without an import-time vendor dependency. Do not change an external-hardware
+checklist item to complete until this procedure has run on the named device.
 
-## Pre-Rental Gate
+## Pre-rental Host Gate
 
-Run this from the FlagGems fork on any host:
+Run these before spending rental time. They deliberately work without
+`torch_npu` or `torch_musa` installed.
 
 ```bash
-python tools/check_stofm_target_backends.py --output target-static.json
+cd /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm
+python -m compileall -q tools/validate_target_operator_runtime.py tools/check_stofm_target_backends.py
+python -m pytest -q tests/test_target_runtime_harness.py tests/test_stofm_experimental.py tests/test_vision_experimental.py
+python tools/check_stofm_target_backends.py --output /tmp/target-static.json
+
+cd /home/ymm/ym/xl/20260815-first-operator/SToFM-flagos
+python -m compileall -q model/flagos_backend.py benchmarks/stofm_target.py benchmarks/vision_target.py benchmarks/aggregate_operator_runs.py
+python -m pytest -q tests/test_flagos_adapter.py tests/test_benchmark_aggregation.py
 ```
 
-It parses both adapters, verifies their target metadata, confirms that neither
-has an import-time `torch_npu` or `torch_musa` dependency, and records the
-runtime checks that remain deferred.
+The FlagGems checker must report five passes: SToFM/vision for Ascend,
+SToFM/vision for MTT, and the device runtime validation harness. The CPU
+fallback test exercises the validation harness's tensor/gradient logic, but
+does not substitute for target-device execution.
 
-## On-Device Test Order
+## On-device Correctness Order
 
-1. Install the vendor PyTorch extension and use the matching optional
-   dependency group declared by FlagGems.
-2. Record driver/runtime versions, device model, memory capacity, precision
-   support, and exact SToFM/FlagGems commits.
-3. Run Gaussian forward and gradients against dense FP32 reference for
-   `N={33,65,256,1050}`; include zero-distance masks.
-4. Run attention forward, pair state, attention weights, and `pair_bias`
-   gradients with unmasked and padded inputs.
-5. Run full SToFM last-hidden-state and pair-distance-recovery paths.  The
-   latter must retain `pair_rep`; embedding extraction may set it to false.
-6. Measure B0, B1, O1, O2, O3, and O4 with the same event-timing protocol as
-   `benchmarks/stofm_v100.py`, but write a separate target report.
-7. Only after correctness and baseline capture, profile tile size and test a
-   vendor fused Gaussian or pair-attention kernel.
+1. Install the matching vendor PyTorch extension and runtime, then record the
+   device model, driver/runtime versions, memory capacity, supported dtypes,
+   exact SToFM/FlagGems commits, and all non-idle processes.
+2. Confirm the vendor extension has registered `torch.npu` or `torch.musa`.
+   Run the target validator first at `N=7`, then `33`, `65`, `256`, and `1050`.
+   If a shape cannot fit, preserve the command, OOM message, and memory state
+   as a failed/limited case rather than dropping it from the report.
 
-## Required Result Artifacts
+```bash
+cd /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm
+python tools/validate_target_operator_runtime.py \
+  --device npu --backend ascend --nodes 33 \
+  --output target-results/ascend310-validation-n33.json
 
-Store `result.json`, per-sample CSV, p20/p50/p80/p95/mean statistics, peak
-allocated memory, compiler/runtime logs, and failed-case details.  Do not
-compare an Ascend or MTT speedup directly with V100; compare optimized and
-baseline paths within the same target environment.
+python tools/validate_target_operator_runtime.py \
+  --device musa --backend mthreads --nodes 33 \
+  --output target-results/mtt-s4000-validation-n33.json
+```
 
-## Promotion Rule
+The validator compares target adapter and Torch reference output plus
+gradients for Gaussian pair bias, pair attention with padding, KRONOS marker
+token assembly with padding/CLS, ViT residual-LayerNorm, and SwiGLU. It uses
+FP32 `rtol=3e-4`, `atol=3e-5` and records maximum absolute output/gradient
+errors. Repeat the command for each required shape and both target platforms.
 
-Promote a target fused backend only when it meets all FP32 correctness gates,
-has a documented mixed-precision tolerance if enabled, and beats the target's
-own B1 end-to-end p50 after warm-up.  Otherwise retain the tested tiled
-reference adapter and report the result as correct but not accelerated.
+3. Run SToFM `last_hidden_state` and pair-distance-recovery paths. The latter
+must retain `pair_rep`; embedding extraction alone may set it to false.
+4. Only after all numerical gates pass, establish B0/B1 and candidate timing.
+The host-clock timer synchronizes the target before/after each sample, which
+is conservative and portable. If the vendor provides a stable event timer,
+add it as a separately documented timing backend rather than silently mixing
+timer types.
+
+## Three-run Performance Capture
+
+Use a new result directory for every process. The target benchmark is a
+correctness-gated B0/B1/O1/O2/O5 harness; current target adapters may perform
+like the reference until a vendor fused kernel exists, which is an expected
+and useful baseline outcome.
+
+```bash
+cd /home/ymm/ym/xl/20260815-first-operator/SToFM-flagos
+
+python benchmarks/stofm_target.py --device npu --backend ascend \
+  --output-dir benchmark-results/ascend310-stofm-run1
+python benchmarks/stofm_target.py --device npu --backend ascend \
+  --output-dir benchmark-results/ascend310-stofm-run2
+python benchmarks/stofm_target.py --device npu --backend ascend \
+  --output-dir benchmark-results/ascend310-stofm-run3
+
+python benchmarks/aggregate_operator_runs.py \
+  benchmark-results/ascend310-stofm-run1 \
+  benchmark-results/ascend310-stofm-run2 \
+  benchmark-results/ascend310-stofm-run3 \
+  --output benchmark-results/ascend310-stofm-run1/three_run_summary.json
+```
+
+For MTT replace `npu/ascend/ascend310` with `musa/mthreads/mtt-s4000`. The
+same pattern applies to `benchmarks/vision_target.py`, which captures marker
+assembly, SwiGLU, and residual-LayerNorm separately from a full Uni2/KRONOS
+model. Each run emits `result.json`, `samples.csv`, `report.md`, and
+`report.html`; the aggregator checks compatibility, records source-file
+checksums and produces deterministic bootstrap CIs.
+
+## Target-specific Promotion Rule
+
+Do not compare target milliseconds directly with V100. Compare each candidate
+to its target-local B0/B1 under the same shape, dtype, runtime, thermal state,
+and process isolation.
+
+| Candidate family | Required correctness before promotion | Engineering target, not result |
+| --- | --- | --- |
+| SToFM Gaussian | all forward/gradient/mask/layout cases; no peak-memory regression | p50 >= `1.30x` vs target B0 Gaussian |
+| Pair-score epilogue | context, pair state, weights, padding, gradients; preserve fallback | at least one full SToFM candidate >= `1.10x` vs target B1 |
+| KRONOS marker assembly | marker identity/permutation/padding/CLS semantics | operator or block p50 >= `1.05x` vs local reference |
+| Uni2 residual/MLP/attention | reference forward/gradient matrix and dynamic shape buckets | operator or block p50 >= `1.05x` vs local reference |
+
+For each promoted kernel, retain a reference fallback for unsupported dtype,
+layout, dropout/training, or missing vendor feature. Include failed variants,
+compiler logs, full raw samples, memory availability/absence, and exact Git
+SHAs in the final target report. A correct but slower vendor path remains a
+reference adapter and is not enabled by default.

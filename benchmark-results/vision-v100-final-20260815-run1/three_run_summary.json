@@ -1,0 +1,236 @@
+{
+  "bootstrap": {
+    "resamples": 10000,
+    "seed": 20260815
+  },
+  "common": {
+    "commits": {
+      "flaggems": "2e0ab4ffa5447e2647383faf22d2bb93590f519c",
+      "stofm": "bd3aeae4bc207ae2a2a348ef04e0262e95be91a2"
+    },
+    "hardware": {
+      "capability": [
+        7,
+        0
+      ],
+      "cuda": "12.1",
+      "device_type": null,
+      "name": "Tesla V100-SXM2-16GB",
+      "torch": "2.5.1+cu121"
+    },
+    "validation": {
+      "atol": 3e-05,
+      "mode": "torch.inference_mode",
+      "rtol": 0.0003,
+      "status": "passed"
+    },
+    "workload": {
+      "batch_size": 1,
+      "calls_per_sample": 5,
+      "embedding_dim": 384,
+      "marker_vocab": 175,
+      "markers": 32,
+      "repetitions": 30,
+      "seed": 73,
+      "swiglu_hidden": 4096,
+      "swiglu_sequence": 264,
+      "tokens_per_marker": 256,
+      "warmup": 10
+    }
+  },
+  "run_count": 3,
+  "runs": [
+    {
+      "path": "benchmark-results/vision-v100-final-20260815-run1",
+      "result_sha256": "d7eacc723d64c4ab13c51e46e02caeb40b7f70dcd3fdd701bb57d04016fc1385",
+      "run_id": "vision-v100-20260815T075824Z",
+      "samples_sha256": "2d2f2887e2d789198aea19248c2202460267d7d9996c0220c9078497a94e692c"
+    },
+    {
+      "path": "benchmark-results/vision-v100-final-20260815-run2",
+      "result_sha256": "434a1f575308790d5aef8a3bee58fb365c2c4f7fa6f65873194404b920690210",
+      "run_id": "vision-v100-20260815T075854Z",
+      "samples_sha256": "9290494de6595c44c6960edd99063123a703a72e118da27c6a858467e2b58278"
+    },
+    {
+      "path": "benchmark-results/vision-v100-final-20260815-run3",
+      "result_sha256": "90ae01bd11d2a46e033e090987b0e84d771f8f0cbd80ab24cde2ee0dfb06a7f5",
+      "run_id": "vision-v100-20260815T075927Z",
+      "samples_sha256": "9c7c8dc7822ebb109443031f75a5f91a885e8c4f815909c76fc793e86a995df8"
+    }
+  ],
+  "schema_version": 1,
+  "stages": [
+    {
+      "baseline_stage": "B0_marker_token_reference",
+      "p50_ms": {
+        "max": 0.30300159454345704,
+        "mean": 0.28764159679412843,
+        "median": 0.28016639947891236,
+        "min": 0.2797567963600159
+      },
+      "peak_allocated_mib": null,
+      "peak_delta_allocated_mib": {
+        "max": 24.04736328125,
+        "mean": 24.04736328125,
+        "median": 24.04736328125,
+        "min": 24.04736328125
+      },
+      "run_p50_ms": [
+        0.30300159454345704,
+        0.28016639947891236,
+        0.2797567963600159
+      ],
+      "samples_per_run": [
+        30,
+        30,
+        30
+      ],
+      "stage": "B0_marker_token_reference",
+      "status": "measured",
+      "total_raw_samples": 90
+    },
+    {
+      "baseline_stage": "B0_marker_token_reference",
+      "p50_ms": {
+        "max": 0.21544959545135497,
+        "mean": 0.2092031995455424,
+        "median": 0.21350400447845458,
+        "min": 0.19865599870681763
+      },
+      "peak_allocated_mib": null,
+      "peak_delta_allocated_mib": {
+        "max": 12.00830078125,
+        "mean": 12.00830078125,
+        "median": 12.00830078125,
+        "min": 12.00830078125
+      },
+      "run_p50_ms": [
+        0.21544959545135497,
+        0.19865599870681763,
+        0.21350400447845458
+      ],
+      "samples_per_run": [
+        30,
+        30,
+        30
+      ],
+      "speedup_vs_baseline": {
+        "bootstrap_95_ci": {
+          "lower": 1.3274030154657894,
+          "upper": 1.3817495661134316
+        },
+        "point_estimate": 1.3490519480578278,
+        "resamples": 10000
+      },
+      "stage": "O1_marker_token_triton",
+      "status": "measured",
+      "total_raw_samples": 90
+    },
+    {
+      "baseline_stage": "B0_swiglu_reference",
+      "p50_ms": {
+        "max": 0.0560128003358841,
+        "mean": 0.053964800635973614,
+        "median": 0.05560320019721985,
+        "min": 0.05027840137481689
+      },
+      "peak_allocated_mib": null,
+      "peak_delta_allocated_mib": {
+        "max": 8.25,
+        "mean": 8.25,
+        "median": 8.25,
+        "min": 8.25
+      },
+      "run_p50_ms": [
+        0.0560128003358841,
+        0.05027840137481689,
+        0.05560320019721985
+      ],
+      "samples_per_run": [
+        30,
+        30,
+        30
+      ],
+      "stage": "B0_swiglu_reference",
+      "status": "measured",
+      "total_raw_samples": 90
+    },
+    {
+      "baseline_stage": "B0_swiglu_reference",
+      "p50_ms": {
+        "max": 0.09400319755077362,
+        "mean": 0.09161279996236166,
+        "median": 0.09133760035037994,
+        "min": 0.0894976019859314
+      },
+      "peak_allocated_mib": null,
+      "peak_delta_allocated_mib": {
+        "max": 4.125,
+        "mean": 4.125,
+        "median": 4.125,
+        "min": 4.125
+      },
+      "run_p50_ms": [
+        0.09400319755077362,
+        0.0894976019859314,
+        0.09133760035037994
+      ],
+      "samples_per_run": [
+        30,
+        30,
+        30
+      ],
+      "speedup_vs_baseline": {
+        "bootstrap_95_ci": {
+          "lower": 0.5747508190004759,
+          "upper": 0.6081080779909234
+        },
+        "point_estimate": 0.590755356942238,
+        "resamples": 10000
+      },
+      "stage": "O2_swiglu_existing_triton",
+      "status": "measured",
+      "total_raw_samples": 90
+    },
+    {
+      "baseline_stage": "B0_residual_layer_norm",
+      "p50_ms": {
+        "max": 0.05457920134067536,
+        "mean": 0.052906667192777,
+        "median": 0.05263360142707825,
+        "min": 0.051507198810577394
+      },
+      "peak_allocated_mib": null,
+      "peak_delta_allocated_mib": {
+        "max": 0.7763671875,
+        "mean": 0.7763671875,
+        "median": 0.7763671875,
+        "min": 0.7763671875
+      },
+      "run_p50_ms": [
+        0.05263360142707825,
+        0.051507198810577394,
+        0.05457920134067536
+      ],
+      "samples_per_run": [
+        30,
+        30,
+        30
+      ],
+      "stage": "B0_residual_layer_norm",
+      "status": "measured",
+      "total_raw_samples": 90
+    },
+    {
+      "baseline_stage": "B0_residual_layer_norm",
+      "reasons": [
+        "The existing skip_layer_norm candidate is slower on V100 and has no verified backward path.",
+        "The existing skip_layer_norm candidate is slower on V100 and has no verified backward path.",
+        "The existing skip_layer_norm candidate is slower on V100 and has no verified backward path."
+      ],
+      "stage": "O3_residual_layer_norm",
+      "status": "rejected"
+    }
+  ]
+}

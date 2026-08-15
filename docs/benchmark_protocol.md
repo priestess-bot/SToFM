@@ -1,76 +1,95 @@
-# SToFM Operator Benchmark Protocol
+# SToFM and Vision Operator Benchmark Protocol
 
-This protocol is the evidence contract for the FlagGems integration.  It
-separates a measured result from an optimization target so benchmark reports
-cannot turn an unverified estimate into a performance claim.
+This is the evidence contract for the FlagGems integration. A source-level
+adapter, a public API, and a measured native kernel are different deliverables;
+the reports must identify which one is being discussed.
 
-## Scope and Baselines
+## SToFM Stages
 
-| ID | Scope | Implementation | Purpose |
+| ID | Scope | Implementation | Role |
 | --- | --- | --- | --- |
-| B0 | Gaussian / attention / end-to-end | Unmodified SToFM tensor expressions | Semantic and performance baseline |
-| B1 | End-to-end | B0 with final unused `pair_rep` omitted | Allocation-elimination baseline |
-| B2 | End-to-end | Generic `use_gems` monkey patch | Explicitly excluded; it does not preserve the direct-op contract |
-| O1 | Gaussian bias | FlagGems `stofm_gaussian_pair_bias` | Inductor dense fusion on CUDA; tiled reference elsewhere |
-| O2 | Pair-state attention | FlagGems `stofm_pair_attention` | `baddbmm` score construction and no clone when pair state is unused |
-| O3 | End-to-end | O1 + B1 + native attention | End-to-end comparator reported against B1 |
-| O4 | End-to-end | O1 + O2 + B1 | Selected V100 deployment result reported against B1 |
+| B0 | Gaussian, attention, end-to-end | Original SToFM expressions; final pair state retained | Semantic/performance baseline |
+| B1 | End-to-end | B0 with only the unused final `pair_rep` omitted | Allocation-lifecycle baseline |
+| B2 | End-to-end | Generic `use_gems` monkey patch | Explicitly excluded; not a direct-op semantic benchmark |
+| O1 | Gaussian | FlagGems public Gaussian API, CUDA Inductor implementation | Accepted compiler specialization |
+| O1n | Gaussian | Explicit NVIDIA Triton RBF/projection kernel | Native candidate; measured, but currently rejected on V100 |
+| O2 | Attention | Direct FlagGems pair-state reference API | Pair-semantic comparison path |
+| O2n | Attention | NVIDIA Triton score/mask/optional-pair/softmax epilogue | Accepted native inference candidate |
+| O3 | End-to-end | O1 + B1 + original Torch attention | Isolates Gaussian/lifecycle effect |
+| O4 | End-to-end | O1 + B1 + direct pair reference | Direct pair API comparison |
+| O5 | End-to-end | O1 + B1 + O2n | Selected V100 CUDA inference default |
 
-The V100 report must use `B0` as the baseline for O1 and O2, and `B1` as the
-baseline for O3.  B2 is listed only to make its exclusion auditable.
+O2n intentionally does not replace QK/PV GEMMs: cuBLAS performs the GEMMs and
+the Triton kernel owns score masking, optional pair-state materialization, and
+row softmax. This preserves SToFM's required next-layer pair state rather than
+silently changing the model to an SDPA-only interface.
 
 ## Correctness Gates
 
-1. Parse every new Python source with `compileall` and run the target-adapter
-   static contract checker.
-2. Compare Gaussian output to the original formula in FP32, including zero
-   distance masking.  Use `rtol=3e-4`, `atol=3e-5`.
-3. Compare gradients for all Gaussian learnable tensors against the dense
-   reference with the same tolerance.
-4. Compare attention output, attention weights, next pair state, and the
-   gradient of `pair_bias`, with and without a key-padding mask.
-5. Compare the end-to-end `last_hidden_state` for equal model parameters.
-   A final `pair_rep` may be omitted only when the caller explicitly sets
-   `return_pair_rep=False`; intermediate layers must still propagate it.
-6. Record any unsupported dtype or target runtime as `skipped`, never as a
-   passing result.
+1. Run `compileall` on all new Python sources and FlagGems's static target
+   adapter checker.
+2. Compare Gaussian output, zero-distance masking, and every learnable-input
+   gradient with the dense reference. The FP32 tolerance is `rtol=3e-4`,
+   `atol=3e-5`.
+3. Compare pair-attention context, attention weights, next pair state, and
+   `pair_bias` gradient for unmasked and padded cases.
+4. Exercise unsupported native conditions deliberately: gradient-enabled
+   execution, non-contiguous layout, dropout/training, and unsupported target
+   device must use the verified reference path rather than error or silently
+   use an untested backward.
+5. Compare equal-weight SToFM `last_hidden_state` before timing. `pair_rep`
+   may be omitted only when `return_pair_rep=False`; all intermediate layers
+   and pair-recovery/training paths retain it.
+6. For vision APIs, compare marker padding, marker permutation, dynamic token
+   count, optional CLS, non-contiguous fallback, and gradients against the
+   reference. Do not equate an operator result with a Uni2/KRONOS end-to-end
+   result without those models and reproducible inputs.
+7. Mark absent dtype, runtime, or hardware coverage as `skipped`/`deferred`,
+   never as passed.
 
 ## V100 Measurement
 
-The benchmark uses CUDA events, fixed seed 42, inference mode, disabled
-dropout, a ten-iteration warm-up, 30 measured samples, and five calls per
-sample.  Compilation occurs during warm-up and is excluded from latency.
+The canonical SToFM workload is FP32 inference with `batch=1`, `nodes=1050`,
+`layers=4`, `embedding_dim=256`, `heads=8`, `gaussian_hidden_dim=128`, and
+`input_dim=256`. Use fixed seed 42, disabled dropout, `torch.inference_mode()`,
+CUDA events, 10 warm-up iterations, 30 measured samples, and 5 calls/sample.
+Compilation happens during warm-up and is excluded from latency.
 
-The canonical workload is `batch=1`, `nodes=1050`, `layers=4`,
-`embedding_dim=256`, `heads=8`, `gaussian_hidden_dim=128`, and
-`input_dim=256`.  A smoke workload may be used to validate the harness but
-cannot replace the canonical report.
+Promotion requires three independent processes on the same device/runtime and
+workload. `benchmarks/aggregate_operator_runs.py` refuses to aggregate runs
+with different Git commits, hardware/runtime, workload, or stage contract. It
+records raw-file SHA-256 values, p50 min/median/max, peak memory and a
+deterministic 10,000-resample bootstrap CI for every direct baseline/candidate
+speedup. The accepted V100 data and commands are documented in
+[`v100_operator_optimization_report.md`](v100_operator_optimization_report.md).
 
-Each result directory contains:
+Each run directory must contain:
 
-- `result.json`: immutable inputs, runtime versions, commits, raw samples, and
-  summary statistics.
-- `samples.csv`: one latency per row for future statistical reanalysis.
-- `report.md` and `report.html`: a human-readable p50 comparison.
+- `result.json`: immutable inputs, versions, commits, raw samples, and
+  per-run summary statistics.
+- `samples.csv`: one latency per row for later statistical analysis.
+- `report.md` and `report.html`: readable per-run summaries.
 
-The report must present p20/p50/p80/p95, mean, peak allocated MiB, raw sample
-count, and the exact commit IDs.  A speedup is `baseline_p50 / candidate_p50`.
+## Promotion and Rejection
 
-## Acceptance Targets, Not Results
+For a new architecture, pre-measurement targets are O1 Gaussian at least
+`1.30x` versus local B0 and at least one full-model candidate at least `1.10x`
+versus local B1, while maintaining or reducing peak allocated memory. They are
+engineering thresholds, not predicted results.
 
-Before measurement on a new target, the engineering targets are O1 >= 1.30x
-versus B0 Gaussian and at least one of O3/O4 >= 1.10x versus B1 end-to-end at
-p50.  O2 must be assessed both in isolation and as part of O4; the selected
-default is the faster end-to-end candidate after correctness validation.  The
-V100 result selected O4; see `v100_optimization_report.md`.  These targets are
-decision thresholds, not performance claims.  The generated report is the only
-source for measured values.
+On V100, O5 was selected because it passes all gates and its O5/O4 bootstrap
+95% lower bound is above `1.23x`. O1n Gaussian, O2 direct reference, existing
+SwiGLU, and residual-LayerNorm candidates remain explicitly rejected where
+they lose to their own local references. A rejected candidate stays available
+for future architectures but is never enabled by default solely because it is
+native code.
 
-## Deferred Ascend 310 and MTT S4000 Validation
+## Ascend 310 and MTT S4000 Extension
 
-The target adapters are source-validated before rental but make no performance
-claim.  On each rented target, first capture a new B0/B1 baseline under the
-vendor PyTorch extension, then rerun all correctness gates and the canonical
-benchmark.  Keep the V100 and target reports separate: their compiler,
-operator library, memory hierarchy, and precision support are not comparable
-as a single speedup number.
+Create fresh B0/B1 baselines on each rented target; never divide their
+milliseconds by the V100 result. First run the complete forward/backward/mask/
+layout matrix, then use the same raw artifact format and aggregate three
+independent runs. Include `B={1,2}`, `N={7,33,65,256,1050}`, odd dimensions,
+zero-distance masks, no padding and tail padding. The target-specific ordering
+and failure-capture requirements are in
+[`target_device_acceptance.md`](target_device_acceptance.md).
