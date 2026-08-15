@@ -17,8 +17,15 @@ required and is not a completed item.
   Evidence: `requirements/flagos-r2-v100.txt`, `flagos-r2-stock.txt`, and
   `flagos-r2-optimized.txt` pin Python 3.11 / PyTorch 2.6.0+cu124 / CUDA 12.4
   / Triton 3.2.0; `tests/test_r2_provenance.py` passed (2 tests, 2026-08-15).
-- [ ] R2-2 Add exact stock and optimized FlagGems locks, package provenance,
+- [x] R2-2 Add exact stock and optimized FlagGems locks, package provenance,
   and benchmark environment capture.
+  Evidence: `deps/flagos-stock.lock.json` pins frozen stock
+  `03bf364ede763d573d5c30124d554283a209ab85`; the optimized lock and install
+  requirement pin pushed FlagGems `a9a96bbcc3d685482c656343e0759b7b4a5c38bc`.
+  `tests/test_r2_provenance.py` passed in the R2 environment on 2026-08-15;
+  `benchmarks/r2_benchmark_common.py::runtime_capture()` records Python,
+  package inventory, CUDA runtime, driver, GPU, Torch backend controls, and
+  relevant environment variables with every worker result.
 
 ## 1. Real FlagOS Inference Modes
 

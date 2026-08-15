@@ -22,7 +22,7 @@ def test_r2_stock_and_optimized_manifests_share_torch_cuda_stack():
     assert "-r flagos-r2-v100.txt" in stock
     assert "-r flagos-r2-v100.txt" in optimized
     assert "03bf364ede763d573d5c30124d554283a209ab85" in stock
-    assert "e69ee3aa04a16d84108bd9ca9a41fd9d6c2d94d7" in optimized
+    assert "a9a96bbcc3d685482c656343e0759b7b4a5c38bc" in optimized
 
 
 def test_r2_locks_match_the_frozen_and_optimized_install_specs():
@@ -33,6 +33,6 @@ def test_r2_locks_match_the_frozen_and_optimized_install_specs():
     assert stock["role"] == "frozen-stock-baseline"
     assert stock["commit"] == "03bf364ede763d573d5c30124d554283a209ab85"
     assert stock["required_environment"] == optimized["required_environment"]
-    assert optimized["commit"] == "e69ee3aa04a16d84108bd9ca9a41fd9d6c2d94d7"
+    assert optimized["commit"] == "a9a96bbcc3d685482c656343e0759b7b4a5c38bc"
     assert environment["runtime"]["torch"] == optimized["required_environment"]["torch"]
     assert environment["runtime"]["cuda"] == optimized["required_environment"]["cuda"]

@@ -1,3 +1,3 @@
 # Install after flagos-r2-v100.txt in a clean Python 3.11 environment.
 -r flagos-r2-v100.txt
-git+https://github.com/priestess-bot/FlagGems.git@e69ee3aa04a16d84108bd9ca9a41fd9d6c2d94d7#egg=flag-gems
+git+https://github.com/priestess-bot/FlagGems.git@a9a96bbcc3d685482c656343e0759b7b4a5c38bc#egg=flag-gems
