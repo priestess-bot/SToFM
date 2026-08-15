@@ -177,6 +177,17 @@ required and is not a completed item.
   `docs/flagos_inference_r2_report.html` adds per-operator Torch/F0/optimized
   tables and inline three-baseline p50 visualizations; every code/evidence link
   targets the pushed SToFM or FlagGems fork branches.
+- [x] REPORT-2 Rebuild the HTML as a human-readable technical-review report:
+  separate end-to-end stages from isolated operator boundaries, surface the
+  three baselines and promotion decisions first, and retain full evidence,
+  source, and target-device limitations in the same standalone file.
+  Evidence: docs/flagos_inference_r2_report.html now has an executive
+  conclusion, named P1/F0/R2 baseline rail, precision switcher, per-operator
+  FP32/FP16 three-baseline rows, code ownership, target maturity, validation
+  chain, and rental-device gate in one readable report. Chromium QA at
+  1440x1000 and 390x844 verified title/content, six navigation links, no
+  horizontal overflow or console warnings, and working FP32/FP16 tab state.
+  All report links remain on the pushed SToFM/FlagGems fork branches.
 - [x] GIT-0 Commit and push FlagGems first; advance the SToFM optimized lock only
   after the matching FlagGems SHA is tested and pushed.
   Evidence: FlagGems `r2/stofm-flagos-inference` is pushed at

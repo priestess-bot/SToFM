@@ -3,249 +3,656 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FlagOS Inference R2 - V100 Optimization Report</title>
+  <meta name="description" content="FlagOS Inference R2: SToFM, Uni2, and KRONOS V100 three-baseline optimization review.">
+  <title>FlagOS Inference R2 | V100 技术评审报告</title>
   <style>
     :root {
-      --ink: #16202a;
-      --muted: #5a6773;
-      --line: #cfd8df;
+      --paper: #f4f6f7;
       --surface: #ffffff;
-      --page: #eef2f4;
-      --navy: #174a67;
-      --teal: #007c73;
-      --green: #16734d;
-      --amber: #9a5d00;
-      --red: #9d3330;
-      --torch: #276f9e;
-      --stock: #8a6517;
-      --optimized: #007c73;
-      --code: #f1f5f7;
+      --surface-soft: #edf2f3;
+      --ink: #16242e;
+      --ink-strong: #0d1820;
+      --muted: #5b6973;
+      --line: #d5dde0;
+      --line-strong: #aebdc3;
+      --navy: #1b425d;
+      --teal: #087d70;
+      --teal-dark: #075e56;
+      --gold: #a86608;
+      --gold-soft: #f7ecd7;
+      --blue: #39729b;
+      --red: #b93f36;
+      --red-soft: #f9e3e0;
+      --green: #12744c;
+      --green-soft: #ddf0e6;
+      --code: #eaf0f2;
+      --max: 1240px;
+      --shadow: 0 10px 26px rgba(22, 36, 46, 0.08);
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
       color: var(--ink);
-      background: var(--page);
+      background: var(--paper);
       font-family: Inter, "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif;
       font-size: 16px;
-      line-height: 1.58;
+      line-height: 1.6;
     }
 
     a {
       color: var(--navy);
+      text-decoration-color: #8ca5b5;
       text-decoration-thickness: 1px;
       text-underline-offset: 3px;
     }
 
     a:hover {
-      color: var(--teal);
+      color: var(--teal-dark);
+      text-decoration-color: currentColor;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
     }
 
     code {
-      padding: 0.08rem 0.28rem;
-      border: 1px solid var(--line);
+      padding: 0.12rem 0.3rem;
+      border: 1px solid #d6e0e4;
       background: var(--code);
-      color: #263947;
+      color: #27424e;
       font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
       font-size: 0.88em;
     }
 
-    .shell {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 0 28px 56px;
+    .skip-link {
+      position: fixed;
+      z-index: 20;
+      top: 10px;
+      left: 10px;
+      padding: 8px 12px;
+      transform: translateY(-160%);
+      color: #ffffff;
+      background: var(--teal-dark);
+      text-decoration: none;
     }
 
-    header {
-      border-bottom: 5px solid var(--teal);
-      background: var(--surface);
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .topbar {
+      position: sticky;
+      z-index: 10;
+      top: 0;
+      color: #ffffff;
+      background: #112630;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .topbar-inner,
+    .section-inner,
+    .hero-inner,
+    .footer-inner {
+      width: min(var(--max), calc(100% - 48px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 58px;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 9px;
+      color: #ffffff;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      display: inline-grid;
+      width: 23px;
+      height: 23px;
+      place-items: center;
+      color: #112630;
+      background: #ffffff;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .brand small {
+      color: #b5c8d1;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .topnav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      overflow-x: auto;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .topnav a {
+      color: #e3edf1;
+      text-decoration: none;
+    }
+
+    .topnav a:hover,
+    .topnav a:focus-visible {
+      color: #ffffff;
+      text-decoration: underline;
+      text-underline-offset: 5px;
     }
 
     .hero {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 42px 28px 34px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
     }
 
-    .eyebrow {
-      margin: 0 0 8px;
-      color: var(--teal);
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1.62fr) minmax(280px, 0.78fr);
+      gap: 56px;
+      padding-top: 64px;
+      padding-bottom: 58px;
+    }
+
+    .hero h1 {
+      max-width: 780px;
+      margin: 0;
+      color: var(--ink-strong);
+      font-size: 46px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .hero .lede {
+      max-width: 740px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.65;
+    }
+
+    .hero-facts {
+      align-self: end;
+      padding: 24px 0 2px 24px;
+      border-left: 3px solid var(--teal);
+    }
+
+    .hero-facts h2 {
+      margin: 0 0 12px;
+      color: var(--ink-strong);
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .hero-facts ul {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
       font-size: 14px;
+    }
+
+    .hero-facts li {
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .hero-facts li::before {
+      position: absolute;
+      top: 0.58em;
+      left: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--teal);
+      content: "";
+    }
+
+    .hero-meta {
+      display: flex;
+      grid-column: 1 / -1;
+      flex-wrap: wrap;
+      gap: 10px 22px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hero-meta strong {
+      color: var(--ink);
+    }
+
+    .hero-meta a {
       font-weight: 700;
+    }
+
+    .baseline-band {
+      color: #eff7f6;
+      background: #143d42;
+    }
+
+    .baseline-band .section-inner {
+      display: grid;
+      grid-template-columns: 0.88fr 1.12fr 1.18fr 1.18fr;
+      gap: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .baseline-intro,
+    .baseline-item {
+      min-height: 152px;
+      padding: 28px 24px;
+      border-right: 1px solid rgba(222, 244, 241, 0.2);
+    }
+
+    .baseline-intro {
+      color: #d6edeb;
+      background: #0f3338;
+    }
+
+    .baseline-intro h2 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 19px;
+      line-height: 1.3;
+    }
+
+    .baseline-intro p,
+    .baseline-item p {
+      margin: 8px 0 0;
+      color: #bfdbd8;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .baseline-item:last-child {
+      border-right: 0;
+    }
+
+    .baseline-item .baseline-id {
+      display: block;
+      margin-bottom: 9px;
+      color: #79cec3;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .baseline-item strong {
+      display: block;
+      color: #ffffff;
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .section {
+      padding: 76px 0;
+    }
+
+    .section.white {
+      background: var(--surface);
+    }
+
+    .section.soft {
+      background: var(--paper);
+    }
+
+    .section.deep {
+      color: #e7f0f3;
+      background: #172e39;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(170px, 0.42fr) minmax(0, 1.38fr);
+      gap: 42px;
+      align-items: start;
+      margin-bottom: 34px;
+    }
+
+    .section-label {
+      margin: 0;
+      color: var(--teal-dark);
+      font-size: 14px;
+      font-weight: 800;
       letter-spacing: 0;
       text-transform: uppercase;
     }
 
-    h1,
-    h2,
-    h3 {
-      color: var(--ink);
+    .section-heading h2 {
+      margin: 0;
+      color: var(--ink-strong);
+      font-size: 32px;
+      line-height: 1.22;
       letter-spacing: 0;
     }
 
-    h1 {
-      max-width: 900px;
-      margin: 0;
-      font-size: 34px;
-      line-height: 1.2;
-    }
-
-    h2 {
-      margin: 38px 0 14px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--line);
-      font-size: 23px;
-      line-height: 1.25;
-    }
-
-    h3 {
-      margin: 22px 0 8px;
-      font-size: 18px;
-    }
-
-    .lede {
-      max-width: 960px;
-      margin: 14px 0 0;
+    .section-heading p {
+      max-width: 820px;
+      margin: 12px 0 0;
       color: var(--muted);
-      font-size: 18px;
+      font-size: 17px;
     }
 
-    .repo-strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 18px;
-      margin-top: 24px;
-      color: var(--muted);
-      font-size: 14px;
+    .deep .section-label {
+      color: #8dd9cf;
     }
 
-    .repo-strip a {
-      font-weight: 700;
+    .deep .section-heading h2 {
+      color: #ffffff;
     }
 
-    main {
-      padding-top: 10px;
+    .deep .section-heading p {
+      color: #b8cbd2;
     }
 
-    .metrics {
+    .key-results {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      border: 1px solid var(--line);
-      background: var(--surface);
+      border-top: 2px solid var(--ink-strong);
+      border-bottom: 1px solid var(--line-strong);
     }
 
-    .metric {
-      min-height: 120px;
-      padding: 18px;
+    .key-result {
+      min-height: 202px;
+      padding: 24px 26px 22px;
       border-right: 1px solid var(--line);
     }
 
-    .metric:last-child {
+    .key-result:first-child {
+      padding-left: 0;
+    }
+
+    .key-result:last-child {
+      padding-right: 0;
       border-right: 0;
     }
 
-    .metric .label {
-      display: block;
+    .key-result .result-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
       color: var(--muted);
       font-size: 14px;
       font-weight: 700;
     }
 
-    .metric strong {
+    .result-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--teal);
+    }
+
+    .key-result:nth-child(2) .result-dot {
+      background: var(--gold);
+    }
+
+    .key-result:nth-child(3) .result-dot {
+      background: var(--green);
+    }
+
+    .key-result strong {
       display: block;
-      margin-top: 7px;
-      color: var(--teal);
-      font-size: 30px;
+      margin-top: 18px;
+      color: var(--ink-strong);
+      font-size: 42px;
+      font-weight: 800;
       line-height: 1;
-    }
-
-    .metric p {
-      margin: 8px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .callout {
-      margin: 18px 0;
-      padding: 15px 18px;
-      border-left: 4px solid var(--teal);
-      background: var(--surface);
-    }
-
-    .callout p {
-      margin: 0;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--line);
-      background: var(--surface);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-
-    th,
-    td {
-      padding: 12px 13px;
-      border-bottom: 1px solid var(--line);
-      text-align: left;
-      vertical-align: top;
-    }
-
-    th {
-      background: #e6eef2;
-      color: #233947;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    tr:last-child td {
-      border-bottom: 0;
-    }
-
-    .num {
-      text-align: right;
       font-variant-numeric: tabular-nums;
-      white-space: nowrap;
     }
 
-    .gain {
-      color: var(--green);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .hold {
-      color: var(--amber);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .reject {
-      color: var(--red);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .chart-note {
-      margin: 0 0 14px;
+    .key-result p {
+      margin: 12px 0 0;
       color: var(--muted);
       font-size: 14px;
     }
 
-    .chart-legend {
+    .scope-note {
+      display: grid;
+      grid-template-columns: 170px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 34px;
+      padding: 22px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .scope-note h3 {
+      margin: 0;
+      color: var(--ink-strong);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .scope-note p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .scope-note strong {
+      color: var(--ink);
+    }
+
+    .precision-control {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .precision-control p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .precision-tabs {
+      display: inline-flex;
+      flex: 0 0 auto;
+      border: 1px solid var(--line-strong);
+      background: #ffffff;
+    }
+
+    .precision-tab {
+      min-width: 84px;
+      min-height: 36px;
+      padding: 7px 13px;
+      border: 0;
+      border-right: 1px solid var(--line-strong);
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .precision-tab:last-child {
+      border-right: 0;
+    }
+
+    .precision-tab[aria-selected="true"] {
+      color: #ffffff;
+      background: var(--teal-dark);
+    }
+
+    .precision-tab:focus-visible {
+      position: relative;
+      outline: 3px solid #72c8bf;
+      outline-offset: -3px;
+    }
+
+    .precision-panel[hidden] {
+      display: none;
+    }
+
+    .e2e-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(250px, 0.6fr);
+      gap: 42px;
+      align-items: start;
+    }
+
+    .e2e-chart {
+      padding: 26px 0 28px;
+      border-top: 2px solid var(--ink-strong);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .e2e-chart-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .e2e-chart-title h3 {
+      margin: 0;
+      color: var(--ink-strong);
+      font-size: 21px;
+      line-height: 1.3;
+    }
+
+    .e2e-chart-title span {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .latency-row {
+      display: grid;
+      grid-template-columns: 120px minmax(110px, 1fr) 122px;
+      gap: 14px;
+      align-items: center;
+      min-height: 48px;
+    }
+
+    .latency-row + .latency-row {
+      margin-top: 9px;
+    }
+
+    .latency-name {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .latency-track {
+      height: 24px;
+      overflow: hidden;
+      background: #e6edef;
+    }
+
+    .latency-fill {
+      display: block;
+      min-width: 4px;
+      height: 100%;
+    }
+
+    .latency-row.torch .latency-fill {
+      background: var(--blue);
+    }
+
+    .latency-row.stock .latency-fill {
+      background: var(--gold);
+    }
+
+    .latency-row.optimized .latency-fill {
+      background: var(--teal);
+    }
+
+    .latency-value {
+      color: var(--ink-strong);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .e2e-caption {
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .route-summary {
+      display: grid;
+      gap: 0;
+      border-top: 2px solid var(--ink-strong);
+    }
+
+    .route-summary article {
+      padding: 17px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .route-summary h3 {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0;
+      color: var(--ink-strong);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .route-summary h3 span {
+      color: var(--teal-dark);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .route-summary p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .route-summary .reject-text {
+      color: var(--red);
+    }
+
+    .operator-legend {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px 18px;
-      margin: 0 0 14px;
+      gap: 12px 21px;
+      margin: 0 0 22px;
       color: var(--muted);
       font-size: 13px;
       font-weight: 700;
@@ -254,617 +661,1399 @@
     .legend-item {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 8px;
     }
 
-    .legend-swatch {
+    .legend-square {
       width: 12px;
       height: 12px;
-      border: 1px solid rgba(0, 0, 0, 0.16);
+      border: 1px solid rgba(13, 24, 32, 0.22);
     }
 
-    .legend-swatch.torch,
-    .bar.torch {
-      background: var(--torch);
+    .legend-square.torch {
+      background: var(--blue);
     }
 
-    .legend-swatch.stock,
-    .bar.stock {
-      background: var(--stock);
+    .legend-square.stock {
+      background: var(--gold);
     }
 
-    .legend-swatch.optimized,
-    .bar.optimized {
-      background: var(--optimized);
+    .legend-square.optimized {
+      background: var(--teal);
     }
 
-    .visual-grid {
+    .operator-list {
+      border-top: 2px solid var(--ink-strong);
+    }
+
+    .operator-row {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: minmax(190px, 0.66fr) minmax(440px, 1.55fr) minmax(210px, 0.68fr);
+      gap: 28px;
+      padding: 31px 0;
+      border-bottom: 1px solid var(--line-strong);
     }
 
-    .chart-card {
+    .operator-title h3 {
       margin: 0;
-      padding: 16px;
-      border: 1px solid var(--line);
-      background: var(--surface);
+      color: var(--ink-strong);
+      font-size: 19px;
+      line-height: 1.32;
     }
 
-    .chart-card figcaption {
-      color: var(--ink);
-      font-size: 16px;
+    .operator-title p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .operator-title .boundary {
+      display: block;
+      margin-top: 13px;
+      color: var(--navy);
+      font-size: 13px;
       font-weight: 700;
     }
 
-    .chart-card .chart-meta {
-      min-height: 22px;
-      margin: 3px 0 12px;
-      color: var(--muted);
+    .precision-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .operator-precision + .operator-precision {
+      padding-left: 22px;
+      border-left: 1px solid var(--line);
+    }
+
+    .operator-precision h4 {
+      margin: 0 0 10px;
+      color: var(--ink);
       font-size: 13px;
+      font-weight: 800;
     }
 
-    .bar-list {
+    .micro-row {
       display: grid;
+      grid-template-columns: 60px minmax(60px, 1fr) 73px;
       gap: 8px;
-    }
-
-    .bar-row {
-      display: grid;
-      grid-template-columns: 104px minmax(72px, 1fr) 80px;
       align-items: center;
-      gap: 8px;
-      min-height: 22px;
-      font-size: 13px;
+      min-height: 25px;
+      font-size: 12px;
     }
 
-    .bar-name {
+    .micro-row + .micro-row {
+      margin-top: 6px;
+    }
+
+    .micro-label {
       color: var(--muted);
+      font-weight: 700;
       white-space: nowrap;
     }
 
-    .bar-track {
-      height: 14px;
+    .micro-track {
+      height: 10px;
       overflow: hidden;
-      background: #e6edf0;
+      background: #e7edef;
     }
 
-    .bar {
+    .micro-fill {
       display: block;
       min-width: 3px;
       height: 100%;
     }
 
-    .bar-value {
+    .micro-row.torch .micro-fill {
+      background: var(--blue);
+    }
+
+    .micro-row.stock .micro-fill {
+      background: var(--gold);
+    }
+
+    .micro-row.optimized .micro-fill {
+      background: var(--teal);
+    }
+
+    .micro-row.rejected .micro-fill {
+      background: var(--red);
+    }
+
+    .micro-row.fallback .micro-track {
+      border: 1px dashed var(--line-strong);
+      background: transparent;
+    }
+
+    .micro-value {
       color: var(--ink);
-      font-variant-numeric: tabular-nums;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 11px;
+      font-weight: 700;
       text-align: right;
       white-space: nowrap;
     }
 
-    .bar-row.rejected .bar-value {
+    .micro-row.rejected .micro-value {
       color: var(--red);
-      font-weight: 700;
     }
 
-    .bar-row.retained .bar-track {
-      background: transparent;
-      border: 1px dashed var(--line);
+    .operator-decision {
+      align-self: center;
+      padding-left: 17px;
+      border-left: 3px solid var(--teal);
     }
 
-    .status-list {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin: 16px 0;
-    }
-
-    .status-item {
-      padding: 16px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-    }
-
-    .status-item h3 {
-      margin-top: 0;
-    }
-
-    .status-item p {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    ul,
-    ol {
-      padding-left: 22px;
-    }
-
-    li + li {
-      margin-top: 7px;
-    }
-
-    .evidence {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .evidence a {
+    .operator-decision .decision-label {
       display: block;
-      min-height: 74px;
-      padding: 15px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      font-weight: 700;
+      color: var(--teal-dark);
+      font-size: 12px;
+      font-weight: 800;
     }
 
-    .evidence span {
+    .operator-decision strong {
       display: block;
       margin-top: 6px;
+      color: var(--ink-strong);
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .operator-decision p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .operator-decision.hold {
+      border-left-color: var(--gold);
+    }
+
+    .operator-decision.hold .decision-label {
+      color: #825008;
+    }
+
+    .operator-decision.reject {
+      border-left-color: var(--red);
+    }
+
+    .operator-decision.reject .decision-label,
+    .operator-decision.reject strong {
+      color: var(--red);
+    }
+
+    .operator-footnote {
+      margin: 23px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .implementation-grid {
+      display: grid;
+      grid-template-columns: 1.18fr 0.82fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .code-map {
+      border-top: 2px solid #ffffff;
+    }
+
+    .code-row {
+      display: grid;
+      grid-template-columns: 154px minmax(0, 1fr) 150px;
+      gap: 18px;
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(225, 242, 243, 0.25);
+    }
+
+    .code-row h3 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .code-row p {
+      margin: 0;
+      color: #c4d8de;
+      font-size: 14px;
+    }
+
+    .code-row a,
+    .evidence-list a {
+      color: #a9e4dc;
+      font-weight: 700;
+    }
+
+    .code-row .platform {
+      color: #c4d8de;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .maturity {
+      border-top: 2px solid #ffffff;
+    }
+
+    .maturity-row {
+      padding: 19px 0;
+      border-bottom: 1px solid rgba(225, 242, 243, 0.25);
+    }
+
+    .maturity-row h3 {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0;
+      color: #ffffff;
+      font-size: 17px;
+    }
+
+    .maturity-row h3 span {
+      color: #8dd9cf;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .maturity-row p {
+      margin: 8px 0 0;
+      color: #c4d8de;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .maturity-row.pending h3 span {
+      color: #f3c779;
+    }
+
+    .method-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 2px solid var(--ink-strong);
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .method-step {
+      min-height: 190px;
+      padding: 23px 24px 23px 0;
+      border-right: 1px solid var(--line);
+    }
+
+    .method-step + .method-step {
+      padding-left: 24px;
+    }
+
+    .method-step:last-child {
+      border-right: 0;
+      padding-right: 0;
+    }
+
+    .method-number {
+      display: block;
+      color: var(--teal-dark);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .method-step h3 {
+      margin: 10px 0 0;
+      color: var(--ink-strong);
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .method-step p {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: 0.86fr 1.14fr;
+      gap: 48px;
+      margin-top: 46px;
+    }
+
+    .test-counts {
+      border-top: 2px solid var(--ink-strong);
+    }
+
+    .test-count {
+      display: grid;
+      grid-template-columns: 80px minmax(0, 1fr);
+      gap: 16px;
+      padding: 17px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .test-count strong {
+      color: var(--teal-dark);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 27px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .test-count p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .evidence-list {
+      display: grid;
+      border-top: 2px solid var(--ink-strong);
+    }
+
+    .evidence-list a {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--navy);
+      text-decoration: none;
+    }
+
+    .evidence-list a:hover {
+      color: var(--teal-dark);
+    }
+
+    .evidence-list strong {
+      display: block;
+      color: currentColor;
+      font-size: 15px;
+    }
+
+    .evidence-list span {
+      display: block;
+      margin-top: 3px;
       color: var(--muted);
       font-size: 13px;
       font-weight: 400;
     }
 
-    footer {
-      margin-top: 42px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
+    .evidence-list .arrow {
+      align-self: center;
+      color: var(--teal-dark);
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .limits {
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 36px;
+      margin-top: 52px;
+      padding: 26px 0;
+      border-top: 2px solid var(--ink-strong);
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .limits h3 {
+      margin: 0;
+      color: var(--ink-strong);
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .limits ul {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding-left: 20px;
       color: var(--muted);
+      font-size: 14px;
+    }
+
+    .next-grid {
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .next-grid h3 {
+      margin: 0;
+      color: var(--ink-strong);
+      font-size: 21px;
+      line-height: 1.35;
+    }
+
+    .next-grid p {
+      color: var(--muted);
+    }
+
+    .target-table {
+      border-top: 2px solid var(--ink-strong);
+    }
+
+    .target-row {
+      display: grid;
+      grid-template-columns: 138px minmax(0, 1fr);
+      gap: 20px;
+      padding: 19px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .target-row h4 {
+      margin: 0;
+      color: var(--ink-strong);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .target-row p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .target-row strong {
+      color: var(--teal-dark);
+    }
+
+    .target-row .waiting {
+      color: #825008;
+    }
+
+    .rental-sequence {
+      display: grid;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-top: 2px solid var(--ink-strong);
+      counter-reset: rental;
+    }
+
+    .rental-sequence li {
+      position: relative;
+      padding: 17px 0 17px 46px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+      counter-increment: rental;
+    }
+
+    .rental-sequence li::before {
+      position: absolute;
+      top: 15px;
+      left: 0;
+      color: var(--teal-dark);
+      content: "0" counter(rental);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    footer {
+      color: #b8cbd2;
+      background: #112630;
+    }
+
+    .footer-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 32px;
+      padding-top: 29px;
+      padding-bottom: 31px;
       font-size: 13px;
     }
 
+    .footer-inner p {
+      margin: 0;
+    }
+
+    .footer-inner a {
+      color: #a9e4dc;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1020px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .hero-facts {
+        max-width: 700px;
+      }
+
+      .baseline-band .section-inner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .baseline-intro,
+      .baseline-item {
+        min-height: 135px;
+      }
+
+      .baseline-intro {
+        border-bottom: 1px solid rgba(222, 244, 241, 0.2);
+      }
+
+      .baseline-item:nth-child(3) {
+        border-right: 0;
+        border-bottom: 1px solid rgba(222, 244, 241, 0.2);
+      }
+
+      .operator-row {
+        grid-template-columns: minmax(190px, 0.55fr) minmax(420px, 1.35fr);
+      }
+
+      .operator-decision {
+        grid-column: 2;
+      }
+
+      .implementation-grid,
+      .proof-grid,
+      .next-grid {
+        grid-template-columns: 1fr;
+        gap: 42px;
+      }
+    }
+
     @media (max-width: 760px) {
-      .shell,
-      .hero {
-        padding-right: 16px;
-        padding-left: 16px;
+      .topbar-inner,
+      .section-inner,
+      .hero-inner,
+      .footer-inner {
+        width: min(var(--max), calc(100% - 32px));
       }
 
-      .hero {
-        padding-top: 28px;
+      .topbar-inner {
+        min-height: 54px;
+        gap: 15px;
       }
 
-      h1 {
-        font-size: 28px;
+      .brand small,
+      .topnav a:nth-child(n + 4) {
+        display: none;
       }
 
-      .metrics,
-      .status-list,
-      .evidence,
-      .visual-grid {
+      .topnav {
+        gap: 14px;
+      }
+
+      .hero-inner {
+        padding-top: 43px;
+        padding-bottom: 38px;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .hero .lede {
+        font-size: 17px;
+      }
+
+      .hero-facts {
+        padding-top: 18px;
+        padding-left: 17px;
+      }
+
+      .hero-meta {
+        gap: 8px 16px;
+      }
+
+      .baseline-band .section-inner,
+      .key-results,
+      .method-flow {
         grid-template-columns: 1fr;
       }
 
-      .metric {
+      .baseline-intro,
+      .baseline-item,
+      .baseline-item:nth-child(3) {
+        min-height: 0;
+        border-right: 0;
+        border-bottom: 1px solid rgba(222, 244, 241, 0.2);
+      }
+
+      .baseline-item:last-child {
+        border-bottom: 0;
+      }
+
+      .section {
+        padding: 52px 0;
+      }
+
+      .section-heading {
+        grid-template-columns: 1fr;
+        gap: 11px;
+        margin-bottom: 26px;
+      }
+
+      .section-heading h2 {
+        font-size: 27px;
+      }
+
+      .section-heading p {
+        margin-top: 9px;
+        font-size: 16px;
+      }
+
+      .key-result,
+      .key-result:first-child,
+      .key-result:last-child {
+        min-height: 0;
+        padding: 21px 0;
         border-right: 0;
         border-bottom: 1px solid var(--line);
       }
 
-      .metric:last-child {
+      .key-result:last-child {
         border-bottom: 0;
       }
 
-      table {
-        min-width: 770px;
+      .key-result strong {
+        font-size: 37px;
       }
 
-      .bar-row {
-        grid-template-columns: 96px minmax(60px, 1fr) 74px;
+      .scope-note,
+      .limits {
+        grid-template-columns: 1fr;
+        gap: 13px;
+      }
+
+      .precision-control {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .e2e-layout {
+        grid-template-columns: 1fr;
+        gap: 31px;
+      }
+
+      .e2e-chart-title {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .e2e-chart-title span {
+        white-space: normal;
+      }
+
+      .latency-row {
+        grid-template-columns: 90px minmax(70px, 1fr) 95px;
+        gap: 8px;
+      }
+
+      .latency-name {
+        font-size: 12px;
+      }
+
+      .latency-value {
+        font-size: 12px;
+      }
+
+      .operator-row {
+        grid-template-columns: 1fr;
+        gap: 23px;
+        padding: 27px 0;
+      }
+
+      .precision-columns {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .operator-precision + .operator-precision {
+        padding-top: 19px;
+        padding-left: 0;
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+
+      .operator-decision {
+        grid-column: auto;
+      }
+
+      .code-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .method-step,
+      .method-step + .method-step,
+      .method-step:last-child {
+        min-height: 0;
+        padding: 20px 0;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .method-step:last-child {
+        border-bottom: 0;
+      }
+
+      .target-row {
+        grid-template-columns: 1fr;
+        gap: 7px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="hero">
-      <p class="eyebrow">FlagOS Inference R2 / NVIDIA V100</p>
-      <h1>SToFM、Uni2 与 KRONOS 算子优化对比</h1>
-      <p class="lede">
-        比较纯 Torch、冻结未优化 FlagOS，以及包含显式复合算子的优化 FlagOS。
-        所有代码与证据链接均指向已推送的 fork 仓库和 R2 分支。
-      </p>
-      <div class="repo-strip">
-        <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference">SToFM fork: r2/flagos-inference</a>
-        <a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference">FlagGems fork: r2/stofm-flagos-inference</a>
-        <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/benchmarks/vision_r2_v100_stock_worker.py">Vision F0 worker</a>
-        <a href="https://github.com/priestess-bot/FlagGems/commit/a9a96bbcc3d685482c656343e0759b7b4a5c38bc">FlagGems optimized commit</a>
-      </div>
+  <a class="skip-link" href="#main-content">跳至报告正文</a>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#overview" aria-label="FlagOS Inference R2 报告首页">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span>FlagOS</span>
+        <small>Inference R2</small>
+      </a>
+      <nav class="topnav" aria-label="报告导航">
+        <a href="#overview">结论</a>
+        <a href="#v100-results">V100 结果</a>
+        <a href="#operators">逐算子</a>
+        <a href="#implementation">实现</a>
+        <a href="#evidence">证据</a>
+        <a href="#next-steps">后续</a>
+      </nav>
     </div>
   </header>
 
-  <main class="shell">
-    <section aria-labelledby="summary-heading">
-      <h2 id="summary-heading">结论</h2>
-      <div class="metrics">
-        <div class="metric">
-          <span class="label">SToFM FP32: 优化 FlagOS vs 冻结 FlagOS</span>
-          <strong>2.277x</strong>
-          <p>21.7006 ms -> 9.4850 ms，F0 steady 对比 Ffinal steady。</p>
+  <main id="main-content">
+    <section id="overview" class="hero" aria-labelledby="page-title">
+      <div class="hero-inner">
+        <div>
+          <h1 id="page-title">FlagOS Inference R2<br>SToFM、Uni2 与 KRONOS 的 V100 技术评审</h1>
+          <p class="lede">
+            这不是“把编译器改名为 FlagOS”的性能展示。报告将纯 Torch、冻结未优化 FlagOS 与优化后 FlagOS
+            分开测量，明确指出哪些是已实测的后端能力，哪些是被拒绝的候选，以及 Ascend/MTT 目前只完成到什么程度。
+          </p>
         </div>
-        <div class="metric">
-          <span class="label">SToFM FP16: 优化 FlagOS vs 冻结 FlagOS</span>
-          <strong>2.151x</strong>
-          <p>19.3490 ms -> 8.8179 ms，F0 steady 对比 Ffinal steady。</p>
-        </div>
-        <div class="metric">
-          <span class="label">KRONOS marker-token Triton 核</span>
-          <strong>1.077x</strong>
-          <p>FP32：F0 0.2785 ms -> 0.2512 ms；FP16 为 1.076x。</p>
+        <aside class="hero-facts" aria-label="报告阅读要点">
+          <h2>这份报告回答三件事</h2>
+          <ul>
+            <li>冻结 FlagOS 本身带来了多少、以及测量边界在哪里。</li>
+            <li>哪些复合算子在 V100 上真正值得进入优化路径。</li>
+            <li>国产芯片代码已经准备到何种可验证状态，哪些结论尚不能作出。</li>
+          </ul>
+        </aside>
+        <div class="hero-meta">
+          <span><strong>设备</strong> Tesla V100-SXM2-16GB / CUDA 12.4 / PyTorch 2.6.0</span>
+          <span><strong>精度</strong> FP32、FP16 独立测量</span>
+          <span><strong>样本</strong> 3 个独立进程，90 个原始 CUDA-event 样本 / 阶段</span>
+          <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference">SToFM fork</a>
+          <a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference">FlagGems fork</a>
         </div>
       </div>
-      <div class="callout">
-        <p>
-          <strong>范围说明：</strong>冻结 FlagOS F0 是真实的、临时 scoped
-          <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py"><code>flag_gems.use_gems()</code> ATen 路由</a>，
-          只覆盖 <code>addmm</code>、<code>baddbmm</code>、<code>bmm</code> 和 <code>softmax</code>。
-          Gaussian、pair epilogue 与 marker-token 是在该基线之上由 R2 显式补齐的复合算子，而不是把通用编译器称为 FlagOS。Vision F0 worker
-          使用冻结包并复现参考边界的验证/dispatch 开销，不导入 R2 Vision API。
+    </section>
+
+    <section class="baseline-band" aria-labelledby="baseline-heading">
+      <div class="section-inner">
+        <div class="baseline-intro">
+          <h2 id="baseline-heading">先统一三条基线</h2>
+          <p>所有速度比必须说明相对哪一条基线；端到端消融与独立 Vision 算子边界不会混写。</p>
+        </div>
+        <article class="baseline-item">
+          <span class="baseline-id">P1 / TORCH</span>
+          <strong>规范纯 PyTorch</strong>
+          <p>不返回未使用的最终 <code>pair_rep</code>，是端到端的可比较参考实现。</p>
+        </article>
+        <article class="baseline-item">
+          <span class="baseline-id">F0 / FROZEN FLAGOS</span>
+          <strong>冻结提交的 scoped ATen 路由</strong>
+          <p>独立虚拟环境、冻结 FlagGems <code>03bf364</code>；只注册窄 allowlist。</p>
+        </article>
+        <article class="baseline-item">
+          <span class="baseline-id">R2 / OPTIMIZED FLAGOS</span>
+          <strong>显式复合算子与同一 scoped 路由</strong>
+          <p>Gaussian、pair epilogue 与 marker-token 由版本化 public API 选择后端。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section white" aria-labelledby="decision-heading">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="section-label">结论摘要</p>
+          <div>
+            <h2 id="decision-heading">可以直接拿去讨论的结论</h2>
+            <p>V100 上的端到端收益主要来自 Gaussian pair bias 的编译复合路径；pair epilogue 是小幅正收益；marker-token Triton 已通过独立三基线验证。SwiGLU 候选明确拒绝，LayerNorm 不虚构新内核。</p>
+          </div>
+        </div>
+
+        <div class="key-results" aria-label="关键性能结论">
+          <article class="key-result">
+            <div class="result-title"><span class="result-dot" aria-hidden="true"></span>SToFM FP32，F0 到优化 FlagOS</div>
+            <strong>2.277x</strong>
+            <p>21.7006 ms 到 9.4850 ms，95% CI 为 [2.225x, 2.288x]。</p>
+          </article>
+          <article class="key-result">
+            <div class="result-title"><span class="result-dot" aria-hidden="true"></span>SToFM FP16，F0 到优化 FlagOS</div>
+            <strong>2.151x</strong>
+            <p>19.3490 ms 到 8.8179 ms，95% CI 为 [2.098x, 2.181x]。</p>
+          </article>
+          <article class="key-result">
+            <div class="result-title"><span class="result-dot" aria-hidden="true"></span>KRONOS marker-token，F0 到 Triton</div>
+            <strong>1.077x</strong>
+            <p>FP32 0.2785 ms 到 0.2512 ms；FP16 同为 1.076x，均可晋升。</p>
+          </article>
+        </div>
+
+        <div class="scope-note">
+          <h3>应如何理解“FlagOS”</h3>
+          <p>
+            <strong>F0 不是空壳，也不是全模型后端。</strong>
+            它是真实的、临时 scoped
+            <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py"><code>flag_gems.use_gems()</code> 路由</a>，
+            覆盖 <code>addmm</code>、<code>baddbmm</code>、<code>bmm</code>、<code>softmax</code>。
+            R2 在这个冻结基线之上补齐明确的复合边界。Vision 的 F0 worker 使用冻结包、复现同等验证和 dispatch 开销，但不导入 R2 Vision API。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="v100-results" class="section soft" aria-labelledby="v100-heading">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="section-label">V100 端到端</p>
+          <div>
+            <h2 id="v100-heading">SToFM 端到端：从 P1 到 F0，再到最终组合</h2>
+            <p>这里计时的是完整 SToFM 推理工作负载，而非单个 CUDA kernel。切换精度可查看两套独立原始样本的 p50；编译发生在 warm-up，不计入延迟。</p>
+          </div>
+        </div>
+
+        <div class="precision-control">
+          <p>每个条形只在所属图中按最大 p50 归一化，右侧永远是实际毫秒值。</p>
+          <div class="precision-tabs" role="tablist" aria-label="选择端到端精度">
+            <button id="tab-fp32" class="precision-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-fp32">FP32</button>
+            <button id="tab-fp16" class="precision-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-fp16">FP16</button>
+          </div>
+        </div>
+
+        <div id="panel-fp32" class="precision-panel" role="tabpanel" aria-labelledby="tab-fp32">
+          <div class="e2e-layout">
+            <figure class="e2e-chart">
+              <div class="e2e-chart-title">
+                <h3>端到端 p50 延迟 / FP32</h3>
+                <span>F0 到 Ffinal：2.277x [2.225x, 2.288x]</span>
+              </div>
+              <div class="latency-row torch">
+                <span class="latency-name">Torch P1</span>
+                <span class="latency-track"><span class="latency-fill" style="width:100%"></span></span>
+                <span class="latency-value">23.0998 ms</span>
+              </div>
+              <div class="latency-row stock">
+                <span class="latency-name">Frozen F0</span>
+                <span class="latency-track"><span class="latency-fill" style="width:93.94%"></span></span>
+                <span class="latency-value">21.7006 ms</span>
+              </div>
+              <div class="latency-row optimized">
+                <span class="latency-name">R2 Ffinal</span>
+                <span class="latency-track"><span class="latency-fill" style="width:41.06%"></span></span>
+                <span class="latency-value">9.4850 ms</span>
+              </div>
+              <figcaption class="e2e-caption">P1 到 Ffinal 的 aggregate-p50 比为 2.435x。移除未使用的最终 pair 表示只贡献 1.019x，不作为 kernel 优化归因。</figcaption>
+            </figure>
+            <aside class="route-summary" aria-label="FP32 路径消融">
+              <article>
+                <h3>冻结 F0 <span>1.064x vs P1</span></h3>
+                <p>真实 FlagOS 窄 ATen 覆盖，稳态 scope 保持开启。</p>
+              </article>
+              <article>
+                <h3>Gaussian C1 <span>2.054x vs F0</span></h3>
+                <p>全图编译的 Gaussian pair bias 路径，是主收益来源。</p>
+              </article>
+              <article>
+                <h3>Pair C2 <span>1.052x vs F0</span></h3>
+                <p>原生 score/mask/softmax/writeback epilogue，保留但继续扩 shape bucket。</p>
+              </article>
+            </aside>
+          </div>
+        </div>
+
+        <div id="panel-fp16" class="precision-panel" role="tabpanel" aria-labelledby="tab-fp16" hidden>
+          <div class="e2e-layout">
+            <figure class="e2e-chart">
+              <div class="e2e-chart-title">
+                <h3>端到端 p50 延迟 / FP16</h3>
+                <span>F0 到 Ffinal：2.151x [2.098x, 2.181x]</span>
+              </div>
+              <div class="latency-row torch">
+                <span class="latency-name">Torch P1</span>
+                <span class="latency-track"><span class="latency-fill" style="width:100%"></span></span>
+                <span class="latency-value">21.0268 ms</span>
+              </div>
+              <div class="latency-row stock">
+                <span class="latency-name">Frozen F0</span>
+                <span class="latency-track"><span class="latency-fill" style="width:92.02%"></span></span>
+                <span class="latency-value">19.3490 ms</span>
+              </div>
+              <div class="latency-row optimized">
+                <span class="latency-name">R2 Ffinal</span>
+                <span class="latency-track"><span class="latency-fill" style="width:41.94%"></span></span>
+                <span class="latency-value">8.8179 ms</span>
+              </div>
+              <figcaption class="e2e-caption">P1 到 Ffinal 的 aggregate-p50 比为 2.385x。FP16 的所有 speedup 均独立聚合，未从 FP32 推断。</figcaption>
+            </figure>
+            <aside class="route-summary" aria-label="FP16 路径消融">
+              <article>
+                <h3>冻结 F0 <span>1.087x vs P1</span></h3>
+                <p>同一窄 ATen 范围，冻结环境与优化环境分开记录。</p>
+              </article>
+              <article>
+                <h3>Gaussian C1 <span>2.352x vs F0</span></h3>
+                <p>FP16 中同样是主要收益，95% CI 为 [2.319x, 2.365x]。</p>
+              </article>
+              <article>
+                <h3>Pair C2 <span>1.018x vs F0</span></h3>
+                <p>仅微幅正收益；作为组合路径保留，不夸大成独立大幅加速。</p>
+              </article>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="operators" class="section white" aria-labelledby="operator-heading">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="section-label">逐算子决策</p>
+          <div>
+            <h2 id="operator-heading">逐算子：每行都把 Torch、F0 与 R2 分开</h2>
+            <p>SToFM 的 Gaussian、pair 和最终组合是端到端路线消融；Vision 的三项才是独立算子边界。两类结果共用统一的三基线语义，但不横向比较绝对毫秒。</p>
+          </div>
+        </div>
+
+        <div class="operator-legend" aria-label="逐算子图例">
+          <span class="legend-item"><span class="legend-square torch" aria-hidden="true"></span>Torch P1</span>
+          <span class="legend-item"><span class="legend-square stock" aria-hidden="true"></span>冻结 FlagOS F0</span>
+          <span class="legend-item"><span class="legend-square optimized" aria-hidden="true"></span>优化 FlagOS / 候选</span>
+          <span class="legend-item">每组条形按本精度、本行最大延迟归一化</span>
+        </div>
+
+        <div class="operator-list">
+          <article class="operator-row">
+            <div class="operator-title">
+              <h3>Gaussian pair bias</h3>
+              <p>SToFM 端到端 C1 消融。显示加入 Gaussian 编译路径后的完整路线变化，不把它伪装成孤立 kernel 延迟。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm.py#L113">public Gaussian API</a>
+            </div>
+            <div class="precision-columns">
+              <section class="operator-precision" aria-label="Gaussian pair bias FP32">
+                <h4>FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">C1</span><span class="micro-track"><span class="micro-fill" style="width:45.75%"></span></span><span class="micro-value">10.5686 ms</span></div>
+              </section>
+              <section class="operator-precision" aria-label="Gaussian pair bias FP16">
+                <h4>FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">C1</span><span class="micro-track"><span class="micro-fill" style="width:38.91%"></span></span><span class="micro-value">8.1812 ms</span></div>
+              </section>
+            </div>
+            <aside class="operator-decision">
+              <span class="decision-label">PROMOTE</span>
+              <strong>2.054x / 2.352x</strong>
+              <p>相对 F0 的 95% CI：FP32 [2.052x, 2.055x]；FP16 [2.319x, 2.365x]。V100 采用 compiler 路径。</p>
+            </aside>
+          </article>
+
+          <article class="operator-row">
+            <div class="operator-title">
+              <h3>Pair-score epilogue</h3>
+              <p>SToFM 端到端 C2 消融。原生路径融合 score mask、row softmax 与可选 pair-state writeback。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm_backends/nvidia.py#L159">NVIDIA pair epilogue kernel</a>
+            </div>
+            <div class="precision-columns">
+              <section class="operator-precision" aria-label="Pair score epilogue FP32">
+                <h4>FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">C2</span><span class="micro-track"><span class="micro-fill" style="width:89.33%"></span></span><span class="micro-value">20.6351 ms</span></div>
+              </section>
+              <section class="operator-precision" aria-label="Pair score epilogue FP16">
+                <h4>FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">C2</span><span class="micro-track"><span class="micro-fill" style="width:90.35%"></span></span><span class="micro-value">18.9990 ms</span></div>
+              </section>
+            </div>
+            <aside class="operator-decision hold">
+              <span class="decision-label">RETAIN WITH GUARD</span>
+              <strong>1.052x / 1.018x</strong>
+              <p>小幅正收益，保留在组合路线；必须在更多 shape bucket 上复验，不能写成大幅独立加速。</p>
+            </aside>
+          </article>
+
+          <article class="operator-row">
+            <div class="operator-title">
+              <h3>Scoped FlagOS core ATen</h3>
+              <p>冻结 FlagOS 的稳态路线，不是新增复合算子。allowlist 为 <code>addmm</code>、<code>baddbmm</code>、<code>bmm</code>、<code>softmax</code>。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py">scoped runtime bridge</a>
+            </div>
+            <div class="precision-columns">
+              <section class="operator-precision" aria-label="Scoped FlagOS FP32">
+                <h4>FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
+                <div class="micro-row fallback"><span class="micro-label">R2</span><span class="micro-track"></span><span class="micro-value">same scope</span></div>
+              </section>
+              <section class="operator-precision" aria-label="Scoped FlagOS FP16">
+                <h4>FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
+                <div class="micro-row fallback"><span class="micro-label">R2</span><span class="micro-track"></span><span class="micro-value">same scope</span></div>
+              </section>
+            </div>
+            <aside class="operator-decision hold">
+              <span class="decision-label">BASELINE RETAINED</span>
+              <strong>1.064x / 1.087x</strong>
+              <p>相对 Torch P1 的 F0 稳态速度比。它证明 FlagOS 真实参与了推理，但不构成“完整模型后端”宣称。</p>
+            </aside>
+          </article>
+
+          <article class="operator-row">
+            <div class="operator-title">
+              <h3>SToFM final composition</h3>
+              <p>最终组合：Gaussian C1 + pair C2 + 同一 scoped ATen 路由。用于端到端产品价值判断。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-fp32-20260815">SToFM raw benchmark evidence</a>
+            </div>
+            <div class="precision-columns">
+              <section class="operator-precision" aria-label="SToFM final composition FP32">
+                <h4>FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">Final</span><span class="micro-track"><span class="micro-fill" style="width:41.06%"></span></span><span class="micro-value">9.4850 ms</span></div>
+              </section>
+              <section class="operator-precision" aria-label="SToFM final composition FP16">
+                <h4>FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">Final</span><span class="micro-track"><span class="micro-fill" style="width:41.94%"></span></span><span class="micro-value">8.8179 ms</span></div>
+              </section>
+            </div>
+            <aside class="operator-decision">
+              <span class="decision-label">PROMOTE</span>
+              <strong>2.277x / 2.151x</strong>
+              <p>相对冻结 F0 的端到端结果；这才是可以对外描述的最终优化组合。</p>
+            </aside>
+          </article>
+
+          <article class="operator-row">
+            <div class="operator-title">
+              <h3>KRONOS marker-token assembly</h3>
+              <p>独立 Vision 边界。包含 lookup、broadcast、position/token add 与 padding；冻结 F0 是独立 worker 的真实 scoped 路由。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py#L21">NVIDIA Triton marker kernel</a>
+            </div>
+            <div class="precision-columns">
+              <section class="operator-precision" aria-label="Marker token FP32">
+                <h4>FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.2828 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:98.48%"></span></span><span class="micro-value">0.2785 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">Triton</span><span class="micro-track"><span class="micro-fill" style="width:88.81%"></span></span><span class="micro-value">0.2512 ms</span></div>
+              </section>
+              <section class="operator-precision" aria-label="Marker token FP16">
+                <h4>FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.2974 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:91.25%"></span></span><span class="micro-value">0.2714 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">Triton</span><span class="micro-track"><span class="micro-fill" style="width:82.68%"></span></span><span class="micro-value">0.2459 ms</span></div>
+              </section>
+            </div>
+            <aside class="operator-decision">
+              <span class="decision-label">PROMOTE</span>
+              <strong>1.077x / 1.076x</strong>
+              <p>相对 F0 的 95% CI：FP32 [1.052x, 1.108x]；FP16 [1.049x, 1.095x]。连续 inference 输入可启用。</p>
+            </aside>
+          </article>
+
+          <article class="operator-row">
+            <div class="operator-title">
+              <h3>Uni2 packed SwiGLU</h3>
+              <p>独立 Vision 边界。候选复用既有 FlagGems SwiGLU；本形状的 launch 开销不划算。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py#L144">existing SwiGLU candidate route</a>
+            </div>
+            <div class="precision-columns">
+              <section class="operator-precision" aria-label="Packed SwiGLU FP32">
+                <h4>FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:47.70%"></span></span><span class="micro-value">0.0585 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:44.28%"></span></span><span class="micro-value">0.0543 ms</span></div>
+                <div class="micro-row rejected"><span class="micro-label">Cand.</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.1226 ms</span></div>
+              </section>
+              <section class="operator-precision" aria-label="Packed SwiGLU FP16">
+                <h4>FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:45.12%"></span></span><span class="micro-value">0.0587 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:42.52%"></span></span><span class="micro-value">0.0553 ms</span></div>
+                <div class="micro-row rejected"><span class="micro-label">Cand.</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.1300 ms</span></div>
+              </section>
+            </div>
+            <aside class="operator-decision reject">
+              <span class="decision-label">REJECT</span>
+              <strong>0.439x / 0.421x</strong>
+              <p>相对 F0 两种精度都明显更慢，95% CI 不跨 1。候选不进入 V100 优化路径。</p>
+            </aside>
+          </article>
+
+          <article class="operator-row">
+            <div class="operator-title">
+              <h3>Uni2 residual LayerNorm</h3>
+              <p>独立 Vision 边界。没有验证通过的复合实现；保留现有 reference fallback，而非为了覆盖率引入未证实内核。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision.py#L107">versioned Vision public API</a>
+            </div>
+            <div class="precision-columns">
+              <section class="operator-precision" aria-label="Residual LayerNorm FP32">
+                <h4>FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.0573 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:91.79%"></span></span><span class="micro-value">0.0526 ms</span></div>
+                <div class="micro-row fallback"><span class="micro-label">R2</span><span class="micro-track"></span><span class="micro-value">no candidate</span></div>
+              </section>
+              <section class="operator-precision" aria-label="Residual LayerNorm FP16">
+                <h4>FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.0637 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:93.25%"></span></span><span class="micro-value">0.0594 ms</span></div>
+                <div class="micro-row fallback"><span class="micro-label">R2</span><span class="micro-track"></span><span class="micro-value">no candidate</span></div>
+              </section>
+            </div>
+            <aside class="operator-decision hold">
+              <span class="decision-label">REFERENCE FALLBACK</span>
+              <strong>不引入新内核</strong>
+              <p>profile 显示 <code>aten::native_layer_norm</code>。在证明存在更好实现前，不把“缺失”伪装成“已优化”。</p>
+            </aside>
+          </article>
+        </div>
+        <p class="operator-footnote">
+          Vision 每个单元格来自 3 个独立进程、90 个原始样本的 aggregate p50；相对 F0 的速度比使用独立 frozen 样本，而不是从表中 p50 相除。完整数值、CSV、日志和 checksum 在下方证据目录中。
         </p>
       </div>
     </section>
 
-    <section aria-labelledby="e2e-heading">
-      <h2 id="e2e-heading">SToFM 端到端对比</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>精度</th>
-              <th>纯 Torch P1</th>
-              <th>冻结 FlagOS F0</th>
-              <th>优化 FlagOS Ffinal</th>
-              <th>F0 / Torch</th>
-              <th>优化 / F0</th>
-              <th>优化 / Torch</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>FP32</td>
-              <td class="num">23.0998 ms</td>
-              <td class="num">21.7006 ms</td>
-              <td class="num">9.4850 ms</td>
-              <td class="gain">1.064x</td>
-              <td class="gain">2.277x</td>
-              <td class="gain">2.435x</td>
-            </tr>
-            <tr>
-              <td>FP16</td>
-              <td class="num">21.0268 ms</td>
-              <td class="num">19.3490 ms</td>
-              <td class="num">8.8179 ms</td>
-              <td class="gain">1.087x</td>
-              <td class="gain">2.151x</td>
-              <td class="gain">2.385x</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p>
-        P1 是不返回最终未使用 <code>pair_rep</code> 的规范 Torch 基线。F0 是冻结 FlagGems
-        <a href="https://github.com/priestess-bot/FlagGems/commit/03bf364ede763d573d5c30124d554283a209ab85">03bf364</a>
-        的稳态 scoped ATen 路径；Ffinal 叠加了 Gaussian 编译、pair epilogue 与同一 scoped ATen 路径。
-      </p>
-    </section>
+    <section id="implementation" class="section deep" aria-labelledby="implementation-heading">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="section-label">代码与设备覆盖</p>
+          <div>
+            <h2 id="implementation-heading">实现不是一块“FlagOS 黑盒”</h2>
+            <p>SToFM fork 负责三模式接入、双环境 worker 和证据链；FlagGems fork 负责版本化 public API、NVIDIA 路径以及 CANN/MUSA 的延迟构建项目。下面按真正的代码所有权与设备成熟度展开。</p>
+          </div>
+        </div>
 
-    <section aria-labelledby="visual-heading">
-      <h2 id="visual-heading">三基线延迟可视化</h2>
-      <p class="chart-note">
-        每张图的条形按该图中最大的 p50 延迟归一化；右侧仍显示真实毫秒值。这样既可一眼看出同一算子内的差异，也不会把端到端毫秒和微算子微秒级延迟混为同一尺度。
-      </p>
-      <div class="chart-legend" aria-label="基线图例">
-        <span class="legend-item"><span class="legend-swatch torch"></span>纯 Torch</span>
-        <span class="legend-item"><span class="legend-swatch stock"></span>冻结 FlagOS F0</span>
-        <span class="legend-item"><span class="legend-swatch optimized"></span>优化 FlagOS / 候选</span>
-      </div>
-      <div class="visual-grid">
-        <figure class="chart-card">
-          <figcaption>SToFM 端到端 FP32</figcaption>
-          <p class="chart-meta">F0 -> Ffinal: 2.277x [2.225x, 2.288x]</p>
-          <div class="bar-list">
-            <div class="bar-row"><span class="bar-name">Torch P1</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">23.0998 ms</span></div>
-            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 93.94%"></span></span><span class="bar-value">21.7006 ms</span></div>
-            <div class="bar-row"><span class="bar-name">Optimized</span><span class="bar-track"><span class="bar optimized" style="width: 41.06%"></span></span><span class="bar-value">9.4850 ms</span></div>
+        <div class="implementation-grid">
+          <div class="code-map">
+            <article class="code-row">
+              <h3>Gaussian pair bias</h3>
+              <p><a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm.py#L113">公共 API</a>；V100 的正式胜出路线是 compiler 复合。另有手写 NVIDIA Triton 候选，但不将它写成 R2 赢家。</p>
+              <span class="platform">V100 已测<br>Ascend / MTT 源码已备</span>
+            </article>
+            <article class="code-row">
+              <h3>Pair attention</h3>
+              <p><a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm.py#L176">公共 composite API</a>；<a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm_backends/nvidia.py#L159">NVIDIA pair-score epilogue</a> 是实际 native kernel。</p>
+              <span class="platform">V100 已测<br>Ascend / MTT 源码已备</span>
+            </article>
+            <article class="code-row">
+              <h3>Marker-token</h3>
+              <p><a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision.py#L107">Vision public API</a>；<a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py#L21">NVIDIA Triton kernel</a> 通过独立 F0 比较。</p>
+              <span class="platform">V100 已测<br>target fallback 已备</span>
+            </article>
+            <article class="code-row">
+              <h3>ATen runtime scope</h3>
+              <p><a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py">SToFM runtime bridge</a> 限定注册范围并在 scope 退出后清理；它是后端接入，不是新算子。</p>
+              <span class="platform">V100 已测<br>target F0 待建立</span>
+            </article>
           </div>
-        </figure>
-        <figure class="chart-card">
-          <figcaption>SToFM 端到端 FP16</figcaption>
-          <p class="chart-meta">F0 -> Ffinal: 2.151x [2.098x, 2.181x]</p>
-          <div class="bar-list">
-            <div class="bar-row"><span class="bar-name">Torch P1</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">21.0268 ms</span></div>
-            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 92.02%"></span></span><span class="bar-value">19.3490 ms</span></div>
-            <div class="bar-row"><span class="bar-name">Optimized</span><span class="bar-track"><span class="bar optimized" style="width: 41.94%"></span></span><span class="bar-value">8.8179 ms</span></div>
+
+          <div class="maturity" aria-label="各设备实现成熟度">
+            <article class="maturity-row">
+              <h3>NVIDIA V100 <span>MEASURED</span></h3>
+              <p>真实 F0、Gaussian compiler、pair epilogue、marker Triton、FP32/FP16 原始测量及 trace 均已归档。只有这一行可以讨论性能结论。</p>
+            </article>
+            <article class="maturity-row pending">
+              <h3>Huawei Ascend 310 / CANN <span>SOURCE-COMPLETE</span></h3>
+              <p><a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vendor/ascendc_stofm">AscendC 项目</a>、lazy dispatch、FP32/FP16/BF16 guard、离线 AST/CMake/C++ syntax gate 已完成；无租赁设备，不宣称二进制或性能。</p>
+            </article>
+            <article class="maturity-row pending">
+              <h3>MTT S4000 / MUSA <span>SOURCE-COMPLETE</span></h3>
+              <p><a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vendor/musa_stofm">MUSA extension 项目</a>、lazy dispatch、FP32/FP16/BF16 guard、离线 AST/CMake/C++ syntax gate 已完成；同样尚无实机性能结论。</p>
+            </article>
           </div>
-        </figure>
-        <figure class="chart-card">
-          <figcaption>KRONOS marker-token FP32</figcaption>
-          <p class="chart-meta">F0 -> Triton: 1.077x [1.052x, 1.108x]</p>
-          <div class="bar-list">
-            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">0.2828 ms</span></div>
-            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 98.48%"></span></span><span class="bar-value">0.2785 ms</span></div>
-            <div class="bar-row"><span class="bar-name">NVIDIA Triton</span><span class="bar-track"><span class="bar optimized" style="width: 88.81%"></span></span><span class="bar-value">0.2512 ms</span></div>
-          </div>
-        </figure>
-        <figure class="chart-card">
-          <figcaption>KRONOS marker-token FP16</figcaption>
-          <p class="chart-meta">F0 -> Triton: 1.076x [1.049x, 1.095x]</p>
-          <div class="bar-list">
-            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">0.2974 ms</span></div>
-            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 91.25%"></span></span><span class="bar-value">0.2714 ms</span></div>
-            <div class="bar-row"><span class="bar-name">NVIDIA Triton</span><span class="bar-track"><span class="bar optimized" style="width: 82.68%"></span></span><span class="bar-value">0.2459 ms</span></div>
-          </div>
-        </figure>
-        <figure class="chart-card">
-          <figcaption>Uni2 packed SwiGLU FP32</figcaption>
-          <p class="chart-meta">F0 -> candidate: 0.439x [0.431x, 0.449x], rejected</p>
-          <div class="bar-list">
-            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 47.70%"></span></span><span class="bar-value">0.0585 ms</span></div>
-            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 44.28%"></span></span><span class="bar-value">0.0543 ms</span></div>
-            <div class="bar-row rejected"><span class="bar-name">FlagGems candidate</span><span class="bar-track"><span class="bar optimized" style="width: 100%"></span></span><span class="bar-value">0.1226 ms</span></div>
-          </div>
-        </figure>
-        <figure class="chart-card">
-          <figcaption>Uni2 packed SwiGLU FP16</figcaption>
-          <p class="chart-meta">F0 -> candidate: 0.421x [0.403x, 0.439x], rejected</p>
-          <div class="bar-list">
-            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 45.12%"></span></span><span class="bar-value">0.0587 ms</span></div>
-            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 42.52%"></span></span><span class="bar-value">0.0553 ms</span></div>
-            <div class="bar-row rejected"><span class="bar-name">FlagGems candidate</span><span class="bar-track"><span class="bar optimized" style="width: 100%"></span></span><span class="bar-value">0.1300 ms</span></div>
-          </div>
-        </figure>
-        <figure class="chart-card">
-          <figcaption>Uni2 residual LayerNorm FP32</figcaption>
-          <p class="chart-meta">没有胜出的复合候选，保持 reference fallback</p>
-          <div class="bar-list">
-            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">0.0573 ms</span></div>
-            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 91.79%"></span></span><span class="bar-value">0.0526 ms</span></div>
-            <div class="bar-row retained"><span class="bar-name">Optimized</span><span class="bar-track"></span><span class="bar-value">no candidate</span></div>
-          </div>
-        </figure>
-        <figure class="chart-card">
-          <figcaption>Uni2 residual LayerNorm FP16</figcaption>
-          <p class="chart-meta">没有胜出的复合候选，保持 reference fallback</p>
-          <div class="bar-list">
-            <div class="bar-row"><span class="bar-name">Torch</span><span class="bar-track"><span class="bar torch" style="width: 100%"></span></span><span class="bar-value">0.0637 ms</span></div>
-            <div class="bar-row"><span class="bar-name">Frozen F0</span><span class="bar-track"><span class="bar stock" style="width: 93.25%"></span></span><span class="bar-value">0.0594 ms</span></div>
-            <div class="bar-row retained"><span class="bar-name">Optimized</span><span class="bar-track"></span><span class="bar-value">no candidate</span></div>
-          </div>
-        </figure>
+        </div>
       </div>
     </section>
 
-    <section aria-labelledby="operator-heading">
-      <h2 id="operator-heading">逐算子完整三基线表</h2>
-      <p>
-        所有数字均为三个独立进程、90 个原始样本聚合后的 p50。Gaussian、pair 和最终组合是 SToFM 端到端消融，
-        Vision 三行则是独立算子边界；二者不应横向比较绝对毫秒。
-      </p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>算子边界 / 计时范围</th>
-              <th>Torch FP32</th>
-              <th>冻结 FlagOS F0 FP32</th>
-              <th>优化 FlagOS FP32</th>
-              <th>F0 -> 优化 FP32</th>
-              <th>Torch FP16</th>
-              <th>冻结 FlagOS F0 FP16</th>
-              <th>优化 FlagOS FP16</th>
-              <th>F0 -> 优化 FP16</th>
-              <th>决策</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Gaussian pair bias<br><small>SToFM 端到端 C1 消融</small></td>
-              <td class="num">P1 23.0998 ms</td>
-              <td class="num">F0 21.7006 ms</td>
-              <td class="num">C1 10.5686 ms</td>
-              <td class="gain">2.054x<br><small>[2.052x, 2.055x]</small></td>
-              <td class="num">P1 21.0268 ms</td>
-              <td class="num">F0 19.3490 ms</td>
-              <td class="num">C1 8.1812 ms</td>
-              <td class="gain">2.352x<br><small>[2.319x, 2.365x]</small></td>
-              <td class="gain">
-                <a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm.py">FlagGems public Gaussian API</a>
-                + Inductor 全图编译，晋升。
-              </td>
-            </tr>
-            <tr>
-              <td>Pair-score epilogue<br><small>SToFM 端到端 C2 消融</small></td>
-              <td class="num">P1 23.0998 ms</td>
-              <td class="num">F0 21.7006 ms</td>
-              <td class="num">C2 20.6351 ms</td>
-              <td class="gain">1.052x<br><small>[1.052x, 1.053x]</small></td>
-              <td class="num">P1 21.0268 ms</td>
-              <td class="num">F0 19.3490 ms</td>
-              <td class="num">C2 18.9990 ms</td>
-              <td class="gain">1.018x<br><small>[1.018x, 1.018x]</small></td>
-              <td class="hold">
-                <a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm_backends/nvidia.py">NVIDIA Triton pair epilogue</a>
-                保留在组合路径，需更多 shape bucket 验证。
-              </td>
-            </tr>
-            <tr>
-              <td>Scoped FlagOS core ATen<br><small>SToFM F0 稳态</small></td>
-              <td class="num">P1 23.0998 ms</td>
-              <td class="num">F0 21.7006 ms</td>
-              <td class="num">F0（无额外候选）</td>
-              <td class="gain">F0/P1 1.064x</td>
-              <td class="num">P1 21.0268 ms</td>
-              <td class="num">F0 19.3490 ms</td>
-              <td class="num">F0（无额外候选）</td>
-              <td class="gain">F0/P1 1.087x</td>
-              <td class="gain">
-                <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py">Scoped runtime bridge</a>
-                的真实窄 ATen 路由，保留。
-              </td>
-            </tr>
-            <tr>
-              <td>SToFM 最终组合<br><small>Ffinal 稳态</small></td>
-              <td class="num">P1 23.0998 ms</td>
-              <td class="num">F0 21.7006 ms</td>
-              <td class="num">Ffinal 9.4850 ms</td>
-              <td class="gain">2.277x<br><small>[2.225x, 2.288x]</small></td>
-              <td class="num">P1 21.0268 ms</td>
-              <td class="num">F0 19.3490 ms</td>
-              <td class="num">Ffinal 8.8179 ms</td>
-              <td class="gain">2.151x<br><small>[2.098x, 2.181x]</small></td>
-              <td class="gain">Gaussian C1 + pair C2 + scoped ATen；端到端晋升。</td>
-            </tr>
-            <tr>
-              <td>KRONOS marker-token<br><small>独立算子边界</small></td>
-              <td class="num">0.2828 ms</td>
-              <td class="num">0.2785 ms</td>
-              <td class="num">0.2512 ms</td>
-              <td class="gain">1.077x<br><small>[1.052x, 1.108x]</small></td>
-              <td class="num">0.2974 ms</td>
-              <td class="num">0.2714 ms</td>
-              <td class="num">0.2459 ms</td>
-              <td class="gain">1.076x<br><small>[1.049x, 1.095x]</small></td>
-              <td class="gain">
-                <a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py">NVIDIA Triton marker kernel</a>
-                ，连续 inference 输入晋升。
-              </td>
-            </tr>
-            <tr>
-              <td>Uni2 packed SwiGLU<br><small>独立算子边界</small></td>
-              <td class="num">0.0585 ms</td>
-              <td class="num">0.0543 ms</td>
-              <td class="num">0.1226 ms</td>
-              <td class="reject">0.439x<br><small>[0.431x, 0.449x]</small></td>
-              <td class="num">0.0587 ms</td>
-              <td class="num">0.0553 ms</td>
-              <td class="num">0.1300 ms</td>
-              <td class="reject">0.421x<br><small>[0.403x, 0.439x]</small></td>
-              <td class="reject">
-                <a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py">Existing FlagGems SwiGLU candidate</a>
-                ，两种精度均拒绝。
-              </td>
-            </tr>
-            <tr>
-              <td>Uni2 residual LayerNorm<br><small>独立算子边界</small></td>
-              <td class="num">0.0573 ms</td>
-              <td class="num">0.0526 ms</td>
-              <td class="hold">无候选（F0 fallback）</td>
-              <td class="hold">不适用</td>
-              <td class="num">0.0637 ms</td>
-              <td class="num">0.0594 ms</td>
-              <td class="hold">无候选（F0 fallback）</td>
-              <td class="hold">不适用</td>
-              <td class="hold">
-                <a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision.py">Versioned Vision API</a>
-                保持 reference fallback。
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="chart-note">
-        Vision 的冻结 F0 使用冻结 FlagGems <code>03bf364</code> 的真实 scoped ATen 路由；由于该提交早于 Vision public API，
-        worker 在不导入 R2 实验 API 的前提下复现相同的输入验证、参考表达式和 dispatch 构造。它不是把缺失复合算子伪装成原生 FlagOS 覆盖。
-      </p>
-    </section>
+    <section id="evidence" class="section white" aria-labelledby="evidence-heading">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="section-label">严格验证</p>
+          <div>
+            <h2 id="evidence-heading">为什么这些数字可以被复查</h2>
+            <p>测试不是单次截图：环境、reference hash、测量控制、独立 worker、原始样本和 checksum 都被保留。任何跨环境 workload、timer 或 runtime identity 漂移都会被聚合器拒绝。</p>
+          </div>
+        </div>
 
-    <section aria-labelledby="implementation-heading">
-      <h2 id="implementation-heading">代码边界</h2>
-      <div class="status-list">
-        <article class="status-item">
-          <h3>SToFM fork</h3>
-          <p>
-            模型配置、<code>torch / stock / optimized</code> 三种模式、scoped FlagOS runtime、
-            端到端 worker、双环境 Vision worker、profile 与 checksum 验证工具均在
-            <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference">SToFM R2 分支</a>。
-          </p>
-        </article>
-        <article class="status-item">
-          <h3>FlagGems fork</h3>
-          <p>
-            SToFM 与 Vision 的 v2 public APIs、NVIDIA Triton 路径、CANN/AscendC 延迟构建项目、
-            MUSA 延迟扩展项目均在
-            <a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference">FlagGems R2 分支</a>。
-          </p>
-        </article>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>计算架构</th>
-              <th>已完成范围</th>
-              <th>当前结论</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>NVIDIA V100</td>
-              <td>真实 FlagOS F0、Gaussian compiler、pair epilogue、marker Triton、FP32/FP16 原始测量与 trace。</td>
-              <td class="gain">已测量并完成晋升/拒绝决策。</td>
-            </tr>
-            <tr>
-              <td>Huawei Ascend 310 / CANN</td>
-              <td>
-                <a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vendor/ascendc_stofm">AscendC deferred project</a>、
-                lazy dispatch、FP32/FP16/BF16 guard、离线 AST/CMake/C++ syntax gate。
-              </td>
-              <td class="hold">源码与静态检查完成；未租赁硬件，不能声明二进制、精度或性能。</td>
-            </tr>
-            <tr>
-              <td>MTT S4000 / MUSA</td>
-              <td>
-                <a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vendor/musa_stofm">MUSA deferred extension project</a>、
-                lazy dispatch、FP32/FP16/BF16 guard、离线 AST/CMake/C++ syntax gate。
-              </td>
-              <td class="hold">源码与静态检查完成；未租赁硬件，不能声明二进制、精度或性能。</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="method-flow">
+          <article class="method-step">
+            <span class="method-number">01</span>
+            <h3>固定工作负载</h3>
+            <p>SToFM 使用 B=1、N=1050、L=4、D=256、FFN=256、H=8、K=128；Vision 边界使用各自固定真实形状。</p>
+          </article>
+          <article class="method-step">
+            <span class="method-number">02</span>
+            <h3>先验正确性</h3>
+            <p>每个候选先与 Torch <code>assert_close</code>；FP32 为 rtol 3e-4 / atol 3e-5，FP16 为 rtol 3e-2 / atol 3e-3；marker mask 必须精确相同。</p>
+          </article>
+          <article class="method-step">
+            <span class="method-number">03</span>
+            <h3>独立进程计时</h3>
+            <p>每精度 3 个独立进程；10 次 warm-up、30 个 CUDA-event sample、每 sample 5 次调用。编译只在 warm-up 中发生。</p>
+          </article>
+          <article class="method-step">
+            <span class="method-number">04</span>
+            <h3>统计与可追溯</h3>
+            <p>每阶段 90 个原始样本，10,000 次 bootstrap 得到 95% CI；运行记录 pip freeze、GPU、driver、Torch backend 与环境变量。</p>
+          </article>
+        </div>
+
+        <div class="proof-grid">
+          <div class="test-counts" aria-label="回归测试结果">
+            <article class="test-count">
+              <strong>26</strong>
+              <p>FlagGems R2 回归通过：precision、shape、mask、padding、non-contiguous fallback、gradients 与 target static gate。</p>
+            </article>
+            <article class="test-count">
+              <strong>28</strong>
+              <p>SToFM 优化环境测试通过：三模式、双环境聚合、profile 分类、dispatch cleanup 与 checksum 验证。</p>
+            </article>
+            <article class="test-count">
+              <strong>3</strong>
+              <p>冻结环境测试通过：P1 语义等价与不导入 R2 Vision API 的 F0 worker。</p>
+            </article>
+          </div>
+          <div class="evidence-list" aria-label="证据目录">
+            <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-fp32-20260815">
+              <span><strong>SToFM FP32 原始证据</strong><span>三进程结果、CSV、日志、suite 与 checksum</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+            </a>
+            <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-fp16-20260815">
+              <span><strong>SToFM FP16 原始证据</strong><span>独立 FP16 聚合、日志、suite 与 checksum</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+            </a>
+            <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-vision-v100-fp32-20260815-stock-complete">
+              <span><strong>Vision FP32 三基线证据</strong><span>每次运行都有 Torch、冻结 F0、优化环境的 JSON、CSV、日志与 checksum</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+            </a>
+            <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-vision-v100-fp16-20260815-stock-complete">
+              <span><strong>Vision FP16 三基线证据</strong><span>独立 FP16 双环境测量，包含被拒绝候选</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+            </a>
+            <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-profiles-20260815">
+              <span><strong>SToFM 与 Vision trace</strong><span>清洗的 profile、分类 JSON 与 checksum</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+            </a>
+            <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/docs/flagos_inference_r2_checklist.md">
+              <span><strong>R2 implementation checklist</strong><span>逐项完成状态、命令、证据位置与 target-device 待办</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <aside class="limits">
+          <h3>结论的边界条件</h3>
+          <ul>
+            <li>V100 数字只适用于本报告声明的 synthetic SToFM 输入与 Vision 算子边界，不等价于完整 Uni2/KRONOS 模型吞吐。</li>
+            <li>峰值 allocation 仅是 timed window 内的增长，不是总进程或模型显存。FP32 的 P1/F0 为 1618.09 MiB，Ffinal 为 145.15 MiB；FP16 分别为 1617.07 MiB 与 71.40 MiB。</li>
+            <li>Ascend 310 与 MTT S4000 在完成实际 SDK 构建、正确性矩阵与 P1/F0 建立前，页面不包含任何目标性能数字。</li>
+          </ul>
+        </aside>
       </div>
     </section>
 
-    <section aria-labelledby="method-heading">
-      <h2 id="method-heading">严格测试与证据</h2>
-      <ol>
-        <li>每个精度使用三个独立进程对；每一对分别运行冻结与优化环境，10 次 warm-up、30 个 CUDA-event 样本、每样本 5 次调用；每个测量阶段有 90 个原始样本。</li>
-        <li>编译发生在 warm-up，未计入延迟。FP32 与 FP16 分开聚合，使用 10,000 次 bootstrap resample 得到 95% 置信区间。</li>
-        <li>每个候选先与 Torch reference 比较；FP32 为 <code>rtol=3e-4, atol=3e-5</code>，FP16 为 <code>rtol=3e-2, atol=3e-3</code>。marker padding mask 必须完全相同；跨环境聚合会拒绝 workload、reference hash、timer 设置或 runtime identity 漂移。</li>
-        <li>FlagGems R2 回归为 26 项通过；SToFM 优化环境 28 项、冻结环境 3 项通过。CANN/MUSA 仅通过离线源码门禁，保留为等待真实硬件的项目。</li>
-      </ol>
+    <section id="next-steps" class="section soft" aria-labelledby="next-heading">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="section-label">目标设备计划</p>
+          <div>
+            <h2 id="next-heading">租赁 Ascend / MTT 后，如何把“源码已备”变成可比较结果</h2>
+            <p>现在的 target 代码刻意不依赖真实芯片就能通过静态门禁；上机时应先建立目标自己的 P1/F0，再逐个启用已准备的边界。所有阈值均是计划门槛，不是预先声称的性能。</p>
+          </div>
+        </div>
 
-      <div class="evidence">
-        <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-fp32-20260815">
-          SToFM FP32 原始证据
-          <span>三进程结果、CSV、日志、suite、checksum</span>
-        </a>
-        <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-fp16-20260815">
-          SToFM FP16 原始证据
-          <span>三进程结果、CSV、日志、suite、checksum</span>
-        </a>
-        <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-vision-v100-fp32-20260815-stock-complete">
-          Vision FP32 三基线原始证据
-          <span>每次运行都有 Torch、冻结 F0 与优化环境的独立 JSON、CSV、日志和 checksum</span>
-        </a>
-        <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-vision-v100-fp16-20260815-stock-complete">
-          Vision FP16 三基线原始证据
-          <span>FP16 的双环境原始测量、拒绝项与 checksum</span>
-        </a>
-        <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-profiles-20260815">
-          SToFM 与 Vision trace
-          <span>已清洗的 profile、分类 JSON 与 checksum</span>
-        </a>
-        <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/docs/flagos_inference_r2_checklist.md">
-          R2 Checklist
-          <span>完成项、验证命令与 Ascend/MTT 后续门禁</span>
-        </a>
+        <div class="next-grid">
+          <div class="target-table">
+            <article class="target-row">
+              <h4>Ascend 310 / CANN</h4>
+              <p><strong>已有：</strong>Gaussian 与 pair-score 的 AscendC host/kernel/tiling/dtype dispatch，lazy adapter 与 reference fallback。<br><strong class="waiting">待实机：</strong>实际 <code>ASCEND_NPU_ARCH</code> 构建、FP32/FP16/BF16 语义矩阵、P1/F0 与性能证据。</p>
+            </article>
+            <article class="target-row">
+              <h4>MTT S4000 / MUSA</h4>
+              <p><strong>已有：</strong>MUSA extension、<code>.mu</code> Gaussian/pair kernels、PrivateUse1 schema、lazy Triton/extension selection。<br><strong class="waiting">待实机：</strong>mcc SDK 构建、dtype/mask/padding/non-contiguous 语义矩阵、P1/F0 与性能证据。</p>
+            </article>
+            <article class="target-row">
+              <h4>计划阈值</h4>
+              <p>相对各目标自己的 F0：Gaussian 至少 1.15x、pair 至少 1.05x、marker 至少 1.05x，端到端至少 1.10x；否则保留 fallback 或标为 rejected。</p>
+            </article>
+          </div>
+
+          <ol class="rental-sequence" aria-label="实机验证步骤">
+            <li>记录租赁机型、driver、SDK、Torch 扩展、编译命令与 Git SHA；先运行 deferred target gate，确认 lazy import 没有掩盖环境错误。</li>
+            <li>对每种支持 dtype 跑 Torch reference 与 target fallback/native 的 shape、mask、padding、pair-state、non-contiguous、gradient 矩阵；任何不一致先停止性能工作。</li>
+            <li>分别测目标 P1、真实 scoped F0、每个 promoted candidate 与最终组合；沿用 3 个独立进程、warm-up、90 原始样本和 bootstrap CI。</li>
+            <li>保存 JSON、CSV、日志、trace 与 checksum，更新 checklist 后再把 target 数字放进本报告；未跨阈值的路线写为 reject 或 retain fallback。</li>
+          </ol>
+        </div>
       </div>
     </section>
-
-    <footer>
-      本 HTML 仅链接已推送的 SToFM 与 FlagGems fork。V100 数字仅适用于声明的工作负载；
-      Ascend 310 与 MTT S4000 在真实设备运行前不包含任何性能结论。
-    </footer>
   </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p>本页面仅链接已推送的 <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference">SToFM</a> 与 <a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference">FlagGems</a> fork。数据来源、限制与拒绝候选均在同一页显式保留。</p>
+      <p><a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/docs/flagos_inference_r2_report.md">查看 Markdown 证据说明</a></p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const tabs = Array.from(document.querySelectorAll(".precision-tab"));
+      const panels = Array.from(document.querySelectorAll(".precision-panel"));
+
+      function selectPrecision(tab) {
+        const panelId = tab.getAttribute("aria-controls");
+        tabs.forEach((item) => {
+          item.setAttribute("aria-selected", String(item === tab));
+        });
+        panels.forEach((panel) => {
+          panel.hidden = panel.id !== panelId;
+        });
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => selectPrecision(tab));
+        tab.addEventListener("keydown", (event) => {
+          if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+            return;
+          }
+          event.preventDefault();
+          const index = tabs.indexOf(tab);
+          const nextIndex = event.key === "ArrowRight"
+            ? (index + 1) % tabs.length
+            : (index - 1 + tabs.length) % tabs.length;
+          tabs[nextIndex].focus();
+          selectPrecision(tabs[nextIndex]);
+        });
+      });
+    }());
+  </script>
 </body>
 </html>
