@@ -188,7 +188,7 @@ def _activate_flaggems_source_root(root: Path) -> Path:
     return source_root
 
 
-def _stage_specs(role: str, suite: str = "legacy") -> List[StageSpec]:
+def _stage_specs(role: str, suite: str = "registered_ops") -> List[StageSpec]:
     if suite == "registered_ops":
         return _registered_operator_stage_specs(role)
     if suite != "legacy":
@@ -449,7 +449,7 @@ def _write_result(output_dir: Path, result: Dict[str, Any]) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--role", choices=["stock", "optimized"], required=True)
-    parser.add_argument("--suite", choices=["legacy", "registered_ops"], default="legacy")
+    parser.add_argument("--suite", choices=["legacy", "registered_ops"], default="registered_ops")
     parser.add_argument("--precision", choices=["fp32", "fp16"], required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--run-index", type=int, required=True)

@@ -1,79 +1,56 @@
-# SToFM Operator Benchmark Protocol
+# SToFM FlagOS 注册算子基准协议
 
-> Historical R1 protocol. R2 uses P1/F0/C1/C2/Ffinal, frozen-stock process
-> isolation, raw checksum manifests, and 10,000-resample bootstrap intervals.
-> See `docs/flagos_inference_r2_report.md` for the executable R2 evidence.
+本协议用于验证真实 FlagOS 自定义算子，不把编译器优化当作算子补齐。历史编译器实验可以
+保留，但必须用显式 `--suite legacy` 运行，且不能用于注册算子性能结论。
 
-This protocol is the evidence contract for the FlagGems integration.  It
-separates a measured result from an optimization target so benchmark reports
-cannot turn an unverified estimate into a performance claim.
+## 运行路线
 
-## Scope and Baselines
-
-| ID | Scope | Implementation | Purpose |
+| 路线 | FlagOS ATen 接管 | SToFM 注册算子 | 用途 |
 | --- | --- | --- | --- |
-| B0 | Gaussian / attention / end-to-end | Unmodified SToFM tensor expressions | Semantic and performance baseline |
-| B1 | End-to-end | B0 with final unused `pair_rep` omitted | Allocation-elimination baseline |
-| B2 | End-to-end | Generic `use_gems` monkey patch | Explicitly excluded; it does not preserve the direct-op contract |
-| O1 | Gaussian bias | FlagGems `stofm_gaussian_pair_bias` | Inductor dense fusion on CUDA; tiled reference elsewhere |
-| O2 | Pair-state attention | FlagGems `stofm_pair_attention` | `baddbmm` score construction and no clone when pair state is unused |
-| O3 | End-to-end | O1 + B1 + native attention | End-to-end comparator reported against B1 |
-| O4 | End-to-end | O1 + O2 + B1 | End-to-end comparator reported against B1 |
+| 纯 PyTorch | 关闭 | 关闭 | 语义与端到端参考 |
+| 固定版本的未优化 FlagOS | 开启 | 关闭 | 独立包环境的真实基线 |
+| 仅 Gaussian 自定义算子 | 关闭 | Gaussian | 隔离新 Gaussian 收益 |
+| 仅 pair-score 自定义算子 | 关闭 | pair-score | 隔离新 pair-score 收益 |
+| 两个自定义算子 | 关闭 | 两者 | 只归因于新算子的端到端结果 |
+| 两个自定义算子 + ATen 接管 | 开启 | 两者 | 新算子和既有 FlagOS 的组合结果 |
 
-The V100 report must use `B0` as the baseline for O1 and O2, and `B1` as the
-baseline for O3.  B2 is listed only to make its exclusion auditable.
+默认运行器使用 `--suite registered_ops`。该套件在 profiler 中要求看到
+`flagos_stofm::gaussian_pair_bias`、`flagos_stofm::pair_score_epilogue`，并在仅新算子
+阶段确认普通 ATen 接管处于关闭状态。
 
-## Correctness Gates
+## 正确性门槛
 
-1. Parse every new Python source with `compileall` and run the target-adapter
-   static contract checker.
-2. Compare Gaussian output to the original formula in FP32, including zero
-   distance masking.  Use `rtol=3e-4`, `atol=3e-5`.
-3. Compare gradients for all Gaussian learnable tensors against the dense
-   reference with the same tolerance.
-4. Compare attention output, attention weights, next pair state, and the
-   gradient of `pair_bias`, with and without a key-padding mask.
-5. Compare the end-to-end `last_hidden_state` for equal model parameters.
-   A final `pair_rep` may be omitted only when the caller explicitly sets
-   `return_pair_rep=False`; intermediate layers must still propagate it.
-6. Record any unsupported dtype or target runtime as `skipped`, never as a
-   passing result.
+1. 解析新增 Python，并运行 FlagGems 目标延迟项目的离线静态检查。
+2. Gaussian 对比密集参考公式，包括零距离 mask；FP32 使用 `rtol=3e-4, atol=3e-5`。
+3. 直接注册算子必须覆盖 CPU、CUDA、Autograd、FP32、FP16、非连续输入安全回退。
+4. Pair-score 比较 context、可选 pair state、attention weights、key padding mask 和梯度
+   回退。
+5. 完整 SToFM 比较 `last_hidden_state`；只有调用方显式设置 `return_pair_rep=False` 时，
+   才允许省略最终 pair state。
+6. 每个优化阶段先经 profiler 证明所声明的自定义算子事件出现，才允许记录计时数据。
 
-## V100 Measurement
+## V100 测量协议
 
-The benchmark uses CUDA events, fixed seed 42, inference mode, disabled
-dropout, a ten-iteration warm-up, 30 measured samples, and five calls per
-sample.  Compilation occurs during warm-up and is excluded from latency.
+使用独立的固定版与优化版 Python 进程。每种精度运行 3 个独立进程对，固定
+`B=1,N=1050,L=4,D=256,FFN=256,H=8,K=128`，禁用 dropout 和 TF32，启用 inference mode。
+每阶段使用 10 次预热、30 个 CUDA-event 样本、每样本 5 次调用；因此每阶段保留 90 个原始
+样本。10,000 次 bootstrap 对原始样本计算 95% 区间。
 
-The canonical workload is `batch=1`, `nodes=1050`, `layers=4`,
-`embedding_dim=256`, `heads=8`, `gaussian_hidden_dim=128`, and
-`input_dim=256`.  A smoke workload may be used to validate the harness but
-cannot replace the canonical report.
+每个工作进程把指定 FlagGems checkout 的 `src` 置于导入路径首位，并写入实际导入的包位置。
+聚合前必须验证纯 PyTorch 参考哈希、工作负载、精度、套件名称、源码根和提交一致。输出必须
+包含 JSON、CSV、工作日志、聚合结果和 SHA-256 manifest。
 
-Each result directory contains:
+执行结束后运行：
 
-- `result.json`: immutable inputs, runtime versions, commits, raw samples, and
-  summary statistics.
-- `samples.csv`: one latency per row for future statistical reanalysis.
-- `report.md` and `report.html`: a human-readable p50 comparison.
+```bash
+python benchmarks/verify_stofm_registered_ops_evidence.py \
+  benchmark-results/r3-v100-registered-ops-fp32-20260816 \
+  benchmark-results/r3-v100-registered-ops-fp16-20260816
+```
 
-The report must present p20/p50/p80/p95, mean, peak allocated MiB, raw sample
-count, and the exact commit IDs.  A speedup is `baseline_p50 / candidate_p50`.
+## 目标设备协议
 
-## Acceptance Targets, Not Results
-
-Before measurement, the engineering targets on a V100 are O1 >= 1.30x versus
-B0 Gaussian and at least one of O3/O4 >= 1.10x versus B1 end-to-end at p50.
-O2 must be assessed both in isolation and as part of O4; the selected default
-is the faster end-to-end candidate after correctness validation.  These targets
-are decision thresholds, not performance claims.  The generated report is the
-only source for measured values.
-
-## Deferred Ascend 310 and MTT S4000 Validation
-
-The target adapters are source-validated before rental but make no performance
-claim.  On each rented target, first capture a new B0/B1 baseline under the
-vendor PyTorch extension, then rerun all correctness gates and the canonical
-benchmark.  Keep the V100 and target reports separate: their compiler,
-operator library, memory hierarchy, and precision support are not comparable
-as a single speedup number.
+Ascend 310 与 MTT S4000 必须重新建立目标自己的纯 PyTorch、固定版本未优化 FlagOS、仅新
+算子和组合路线基线。V100 结果不得外推。租赁设备前只能声称 Python/AST/schema/CMake/C++
+静态检查通过；必须在目标 SDK 上成功编译、完成 FP32/FP16/BF16 正确性矩阵并保存同等原始
+样本后，才可发表任何目标设备性能结论。

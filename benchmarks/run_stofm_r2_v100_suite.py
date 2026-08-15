@@ -17,6 +17,22 @@ ROOT = Path(__file__).parents[1]
 WORKER = ROOT / "benchmarks" / "stofm_r2_v100_worker.py"
 DEFAULT_WORKSPACE = ROOT.parent
 
+REGISTERED_OPERATOR_STAGE_NAMES = {
+    "pure_pytorch_reference": "纯 PyTorch",
+    "unoptimized_flagos_lifecycle": "固定版本未优化 FlagOS（每调用创建作用域）",
+    "unoptimized_flagos_steady": "固定版本未优化 FlagOS（作用域保持）",
+    "gaussian_registered_operator_only": "仅 Gaussian 注册算子（关闭 ATen 接管）",
+    "pair_score_registered_operator_only": "仅 pair-score 注册算子（关闭 ATen 接管）",
+    "registered_operators_only_combined": "两个注册算子（关闭 ATen 接管）",
+    "registered_operators_with_flagos_aten_steady": "两个注册算子 + 既有 ATen 接管（作用域保持）",
+    "registered_operators_with_flagos_aten_lifecycle": "两个注册算子 + 既有 ATen 接管（每调用创建作用域）",
+}
+
+REGISTERED_OPERATOR_BASELINES = {
+    "pure_pytorch_reference": "纯 PyTorch",
+    "unoptimized_flagos_steady": "固定版本未优化 FlagOS（作用域保持）",
+}
+
 
 def _read_json(path: Path) -> Dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -183,14 +199,27 @@ def _write_report(output_dir: Path, suite: Dict[str, Any]) -> None:
     (output_dir / "suite.json").write_text(
         json.dumps(suite, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
-    lines = [
-        "# SToFM FlagOS Inference R2 V100 Suite",
-        "",
-        f"Precision: `{suite['precision']}`; independent trials: `{suite['run_count']}`.",
-        "",
-        "| Stage | Gain kind | p50 median ms | p50 min/max ms | Baseline | Speedup | 95% bootstrap CI | Raw samples |",
-        "| --- | --- | ---: | ---: | --- | ---: | --- | ---: |",
-    ]
+    registered_ops = suite.get("benchmark_suite") == "registered_ops"
+    if registered_ops:
+        lines = [
+            "# SToFM FlagOS 注册算子 V100 基准证据",
+            "",
+            f"精度：`{suite['precision']}`；独立进程对：`{suite['run_count']}`。",
+            "",
+            "| 测量路线 | p50 中位数（ms） | p50 最小/最大（ms） | 比较基线 | 速度比 | 95% bootstrap 区间 | 原始样本 |",
+            "| --- | ---: | ---: | --- | ---: | --- | ---: |",
+        ]
+    else:
+        lines = [
+            "# SToFM FlagOS 历史编译器实验 V100 证据",
+            "",
+            f"精度：`{suite['precision']}`；独立进程对：`{suite['run_count']}`。",
+            "",
+            "该套件用于历史编译器候选，不可作为注册 FlagOS 算子的完成证明。",
+            "",
+            "| 内部阶段标识 | p50 中位数（ms） | p50 最小/最大（ms） | 比较基线 | 速度比 | 95% bootstrap 区间 | 原始样本 |",
+            "| --- | ---: | ---: | --- | ---: | --- | ---: |",
+        ]
     for row in suite["aggregate"]["stages"]:
         p50 = row["p50_ms"]
         speedup = row.get("speedup")
@@ -203,17 +232,19 @@ def _write_report(output_dir: Path, suite: Dict[str, Any]) -> None:
                 f"[{speedup['bootstrap_95_ci']['lower']:.3f}x, "
                 f"{speedup['bootstrap_95_ci']['upper']:.3f}x]"
             )
+        stage = REGISTERED_OPERATOR_STAGE_NAMES.get(row["stage"], row["stage"])
+        baseline = REGISTERED_OPERATOR_BASELINES.get(
+            row["comparison_baseline"], row["comparison_baseline"]
+        )
         lines.append(
-            f"| {row['stage']} | {row['gain_kind']} | {p50['median']:.4f} | "
-            f"{p50['min']:.4f}/{p50['max']:.4f} | {row['comparison_baseline']} | "
-            f"{speedup_text} | {interval} | {row['total_raw_samples']} |"
+            f"| {stage} | {p50['median']:.4f} | {p50['min']:.4f}/{p50['max']:.4f} | "
+            f"{baseline} | {speedup_text} | {interval} | {row['total_raw_samples']} |"
         )
     lines.extend(
         [
             "",
-        "The fixed-version unoptimized FlagOS result is collected in a separate process "
-        "and package environment. Compiler, registered custom-operator, and "
-        "scope-lifecycle stages are not conflated.",
+            "固定版本未优化 FlagOS 在独立进程和独立包环境中测量。注册算子、既有 ATen 接管和"
+            "作用域生命周期的贡献在表中分开，不把编译器实验混入注册算子结论。",
         ]
     )
     (output_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -224,7 +255,7 @@ def main() -> None:
     parser.add_argument(
         "--suite",
         choices=["legacy", "registered_ops"],
-        default="legacy",
+        default="registered_ops",
         help="Use registered_ops for the post-correction custom-operator evidence suite.",
     )
     parser.add_argument("--precision", choices=["fp32", "fp16"], required=True)

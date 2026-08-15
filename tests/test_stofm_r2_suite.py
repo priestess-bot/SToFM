@@ -6,7 +6,13 @@ ROOT = Path(__file__).parents[1]
 sys.path.insert(0, str(ROOT / "benchmarks"))
 
 from stofm_r2_v100_worker import _stage_specs
-from run_stofm_r2_v100_suite import _aggregate, _bootstrap_speedup, _validate_trial
+from run_stofm_r2_v100_suite import (
+    REGISTERED_OPERATOR_BASELINES,
+    REGISTERED_OPERATOR_STAGE_NAMES,
+    _aggregate,
+    _bootstrap_speedup,
+    _validate_trial,
+)
 
 
 def _row(stage, baseline, samples, gain_kind="test"):
@@ -71,6 +77,8 @@ def test_validate_trial_rejects_cross_environment_torch_semantic_drift():
 
 
 def test_registered_operator_suite_separates_new_ops_from_aten_dispatch():
+    assert _stage_specs("stock") == _stage_specs("stock", "registered_ops")
+    assert _stage_specs("optimized") == _stage_specs("optimized", "registered_ops")
     stock = _stage_specs("stock", "registered_ops")
     optimized = _stage_specs("optimized", "registered_ops")
 
@@ -91,3 +99,6 @@ def test_registered_operator_suite_separates_new_ops_from_aten_dispatch():
     assert all(not stage.aten_dispatch for stage in isolated)
     assert all(stage.expected_custom_ops for stage in isolated)
     assert all(stage.gaussian_backend != "inductor" for stage in optimized)
+    for stage in stock + optimized:
+        assert stage.name in REGISTERED_OPERATOR_STAGE_NAMES
+        assert stage.comparison_baseline in REGISTERED_OPERATOR_BASELINES

@@ -191,10 +191,10 @@
   预热和目标设备描述均已使用解释性中文。
 - [x] 版本控制-0 先提交并推送 FlagGems；仅在匹配的 FlagGems SHA 已测试并推送后，
   才推进 SToFM 的优化锁定。
-  证据：FlagGems `r2/stofm-flagos-inference` 已推送至
-  `a9a96bbcc3d685482c656343e0759b7b4a5c38bc`；SToFM 已测试该精确 SHA，
-  推进优化锁定，并将原始证据提交
-  `56a307af4f5bc7e9a79acf9ef486c2202ec4b2c3` 推送至 `r2/flagos-inference`。
+  证据：FlagGems `r2/stofm-flagos-inference` 已先推送注册算子提交
+  `399d0381ed63a79018f3112ecc43894fd58ba052`；SToFM 仅在该提交可用后，锁定该 SHA、
+  通过 18 项本地接口/基准测试，并推送调用链提交
+  `fc37f17c25f1c925da451134c979a45d2dbec6bb` 至 `r2/flagos-inference`。
 
 ## 5. 纠偏：真实 FlagOS 算子交付
 
@@ -219,18 +219,36 @@
 - [x] 算子补齐-3 让 SToFM 的优化 FlagOS 模式通过 `torch.ops.flagos_stofm` 调用
   Gaussian 与 pair attention；将 Inductor 保留为显式实验后端，而不是默认优化路线。
   证据：`SToFM/model/flagos_backend.py` 与 `se2transformer.py` 已调用公开 FlagGems
-  接口；1050 节点 V100 冒烟运行在禁用 ATen 接管时通过 profiler 观测到
+  接口；正式 1050 节点三轮 V100 测量在禁用 ATen 接管时每轮都通过 profiler 观测到
   `flagos_stofm::gaussian_pair_bias` 和 `flagos_stofm::pair_score_epilogue`。
-- [ ] 算子补齐-4 为 KRONOS/Uni2 的 marker-token 路径接入同一自定义算子 ABI，
+- [!] 算子补齐-4 为 KRONOS/Uni2 的 marker-token 路径接入同一自定义算子 ABI，
   并确认其不会被普通 `use_gems()` ATen 覆盖掩盖。
-- [ ] 测试补齐-0 覆盖 schema 存在性、CUDA 实现选择、CPU/梯度/非连续输入回退、
+  当前可完成部分：`marker_token_embed` 已注册到同一 ABI，Vision 公共 API 和 CUDA
+  profiler 测试均通过。阻塞原因：用户提供的 UNI checkout 是标准 patch-token encoder，
+  不包含 KRONOS marker-token assembly 调用点；当前工作区也没有 KRONOS 源码，不能伪造
+  Uni2/KRONOS 端到端接入或性能结论。取得该模型调用点后，此项可直接复用现有 ABI。
+- [x] 测试补齐-0 覆盖 schema 存在性、CUDA 实现选择、CPU/梯度/非连续输入回退、
   mask、padding、FP32/FP16 数值一致性和 SToFM 真实模型调用链。
-- [ ] 测试补齐-1 在 V100 分别记录纯 PyTorch、固定版本未优化 FlagOS、仅新算子
+  证据：`FlagGems/tests/test_flagos_stofm_registered_ops.py`、
+  `test_stofm_experimental.py`、`test_vision_experimental.py` 于 2026-08-16 通过 29 项；
+  `SToFM/tests/test_flagos_adapter.py`、`test_r2_provenance.py`、
+  `test_stofm_r2_suite.py` 于同日通过 18 项。
+- [x] 测试补齐-1 在 V100 分别记录纯 PyTorch、固定版本未优化 FlagOS、仅新算子
   FlagOS、以及新算子与既有 FlagOS 算子优化组合的独立原始样本与跟踪。
-- [ ] 报告补齐-0 用新的原始测量替换“编译优化即算子补齐”的表述；单独列出编译器、
+  证据：`r3-v100-registered-ops-fp32-20260816/` 与
+  `r3-v100-registered-ops-fp16-20260816/` 各含 3 个独立进程对、每阶段 90 个原始样本、
+  profiler trace、CSV、日志和 20 文件 checksum manifest；
+  `tests/test_registered_ops_evidence.py` 于 2026-08-16 通过 2 项只读验证。
+- [x] 报告补齐-0 用新的原始测量替换“编译优化即算子补齐”的表述；单独列出编译器、
   新算子和既有 FlagOS 算子优化的贡献，拒绝无正向端到端收益的组合。
-- [ ] 目标设备补齐-0 令 Ascend/MTT 延迟项目使用相同的 `flagos_stofm` schema 与 ABI，
+  证据：`docs/flagos_inference_r2_report.md` 与 HTML 报告现在用“纯 PyTorch”“固定版本
+  未优化 FlagOS”“仅新算子”“新算子加既有 ATen 接管”完整名称呈现；pair-score FP16 的
+  独立 1.015x 未被晋升为独立默认路线。
+- [x] 目标设备补齐-0 令 Ascend/MTT 延迟项目使用相同的 `flagos_stofm` schema 与 ABI，
   并通过无目标设备的 Python/AST/schema/CMake 检查；真实性能结论仍等待租赁设备。
+  证据：AscendC 已使用 `flagos_stofm`，MUSA 扩展现只向相同命名空间的 `PrivateUse1`
+  注册实现；`PYTHONPATH=src python tools/check_deferred_native_projects.py` 于 2026-08-16
+  通过 C++ 语法与 CMake 延迟构建检查，且明确不声称 CANN/MUSA 二进制或性能。
 
 ## 更新规则
 
