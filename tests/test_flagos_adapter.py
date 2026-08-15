@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "geneformer_001"))
 
 from model.se2transformer import GaussianModule, MultiheadAttention, SToFMModel, TransformerEncoder
+from model.flagos_backend import _operator_backend
 from model.utils import SToFMConfig
 
 
@@ -40,6 +41,13 @@ def test_default_flaggems_route_inherits_the_global_backend_for_attention():
 
     overridden = _config("flaggems", attention_backend="torch")
     assert MultiheadAttention(overridden).flagos_backend == "torch"
+
+
+def test_explicit_target_backend_names_reach_the_public_bridge_without_vendor_imports():
+    assert _operator_backend("ascend") == "ascend"
+    assert _operator_backend("mthreads") == "mthreads"
+    assert GaussianModule(_config("ascend")).flagos_backend == "ascend"
+    assert MultiheadAttention(_config("mthreads")).flagos_backend == "mthreads"
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="FlagGems V100 integration requires CUDA")

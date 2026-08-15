@@ -3,9 +3,9 @@
   "package": "flag-gems",
   "experimental_api": "stofm/v1",
   "repository": "https://github.com/priestess-bot/FlagGems.git",
-  "commit": "dde373fe33c71e5819584685781182b0ad2cb144",
+  "commit": "2e0ab4ffa5447e2647383faf22d2bb93590f519c",
   "branch": "integration/stofm",
-  "production_install": "git+https://github.com/priestess-bot/FlagGems.git@dde373fe33c71e5819584685781182b0ad2cb144",
+  "production_install": "git+https://github.com/priestess-bot/FlagGems.git@2e0ab4ffa5447e2647383faf22d2bb93590f519c",
   "local_development_path": "../FlagGems-stofm",
   "update_policy": "Advance this lock only with a tested FlagGems commit and a matching SToFM integration commit."
 }
