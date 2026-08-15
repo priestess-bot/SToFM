@@ -66,20 +66,38 @@ required and is not a completed item.
 
 ## 3. Target-Device Preparation
 
-- [ ] ASC-0 Add FP32/FP16/BF16 lazy Ascend dispatch, capability guards, and
+- [x] ASC-0 Add FP32/FP16/BF16 lazy Ascend dispatch, capability guards, and
   reference fallback for every public SToFM/Vision API.
-- [ ] ASC-1 Add the complete deferred CANN/AscendC source project for Gaussian
+  Evidence: FlagGems `a9a96bbcc`; target adapters defer `torch_npu` import,
+  require inference mode, a supported dtype, contiguous native inputs, and an
+  explicit enable variable before consulting `torch.ops`.
+- [x] ASC-1 Add the complete deferred CANN/AscendC source project for Gaussian
   and pair-score epilogue, including host registration, tiling metadata,
   dtype dispatch, CMake presets, and deployment instructions.
-- [ ] ASC-2 Pass offline Python, AST, schema, CMake, and source-structure gates
+  Evidence: FlagGems `a9a96bbcc`,
+  `experimental_ops/vendor/ascendc_stofm`; the project exposes separate
+  FP32/FP16/BF16 kernel symbols and requires an actual `ASCEND_NPU_ARCH` for a
+  target build rather than guessing one from the product name.
+- [x] ASC-2 Pass offline Python, AST, schema, CMake, and source-structure gates
   without importing `torch_npu` or requiring CANN.
+  Evidence: `PYTHONPATH=src ../.venv-flagos-r2/bin/python \
+  tools/check_deferred_native_projects.py` passed on 2026-08-15; this runs
+  Python AST checks, host-visible C++ syntax checks, manifest checks, and a
+  deferred CMake configure/build. It does not claim a CANN binary.
 - [!] ASC-3 On rented Ascend 310 hardware: compile, validate FP32/FP16/BF16
   capability matrix, establish P1/F0, and measure promoted candidates.
-- [ ] MTT-0 Add FP32/FP16/BF16 lazy MUSA dispatch and native Triton/extension
+- [x] MTT-0 Add FP32/FP16/BF16 lazy MUSA dispatch and native Triton/extension
   candidates for Gaussian and pair-score epilogue.
-- [ ] MTT-1 Add MUSA extension registration, CMake integration, tile metadata,
+  Evidence: FlagGems `a9a96bbcc`; the adapter selects a lazy Triton candidate
+  or a `PrivateUse1` extension only after MUSA inference capability checks.
+- [x] MTT-1 Add MUSA extension registration, CMake integration, tile metadata,
   and safe fallback without import-time `torch_musa` dependency.
-- [ ] MTT-2 Pass offline Python, AST, schema, CMake, and source-structure gates.
+  Evidence: `experimental_ops/vendor/musa_stofm` provides extension schemas,
+  `.mu` Gaussian/pair kernels, manifests, and an SDK `musa_add_library` build
+  path using `mcc`; non-target environments remain on the reference path.
+- [x] MTT-2 Pass offline Python, AST, schema, CMake, and source-structure gates.
+  Evidence: the same `check_deferred_native_projects.py` run passed the MUSA
+  source/manifest/CMake gate without importing `torch_musa` or an MUSA SDK.
 - [!] MTT-3 On rented MTT S4000 hardware: compile, validate FP32/FP16/BF16
   capability matrix, establish P1/F0, and measure promoted candidates.
 
@@ -88,8 +106,14 @@ required and is not a completed item.
 - [ ] TEST-0 Add unit tests for every precision, shape bucket, mask, padding,
   pair-state/weights return contract, non-contiguous fallback, and gradients.
 - [ ] TEST-1 Add full SToFM P1/F0/optimized consistency tests and dispatch tests.
-- [ ] TEST-2 Add CPU-only target static validation for all public APIs and
+- [x] TEST-2 Add CPU-only target static validation for all public APIs and
   deferred native-project metadata.
+  Evidence: FlagGems `tests/test_deferred_native_projects.py` plus
+  `tests/test_stofm_experimental.py` and `tests/test_vision_experimental.py`;
+  `CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src ../.venv-flagos-r2/bin/python -m
+  pytest -q tests/test_stofm_experimental.py tests/test_vision_experimental.py
+  tests/test_deferred_native_projects.py tests/test_target_runtime_harness.py`
+  passed 26 tests on 2026-08-15.
 - [ ] REPORT-0 Publish raw benchmark files, checksums, bootstrap confidence
   intervals, rejected candidates, and separate compiler/kernel/lifecycle gains.
 - [ ] REPORT-1 Publish the R2 operator coverage matrix and final promotion
