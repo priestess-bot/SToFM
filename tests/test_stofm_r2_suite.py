@@ -5,6 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).parents[1]
 sys.path.insert(0, str(ROOT / "benchmarks"))
 
+from stofm_r2_v100_worker import _stage_specs
 from run_stofm_r2_v100_suite import _aggregate, _bootstrap_speedup, _validate_trial
 
 
@@ -67,3 +68,26 @@ def test_validate_trial_rejects_cross_environment_torch_semantic_drift():
         assert "checksum" in str(exc)
     else:
         raise AssertionError("expected semantic drift to be rejected")
+
+
+def test_registered_operator_suite_separates_new_ops_from_aten_dispatch():
+    stock = _stage_specs("stock", "registered_ops")
+    optimized = _stage_specs("optimized", "registered_ops")
+
+    assert [stage.name for stage in stock] == [
+        "pure_pytorch_reference",
+        "unoptimized_flagos_lifecycle",
+        "unoptimized_flagos_steady",
+    ]
+    assert {stage.name for stage in optimized} == {
+        "gaussian_registered_operator_only",
+        "pair_score_registered_operator_only",
+        "registered_operators_only_combined",
+        "registered_operators_with_flagos_aten_steady",
+        "registered_operators_with_flagos_aten_lifecycle",
+    }
+    isolated = [stage for stage in optimized if stage.name.endswith("operator_only")]
+    assert isolated
+    assert all(not stage.aten_dispatch for stage in isolated)
+    assert all(stage.expected_custom_ops for stage in isolated)
+    assert all(stage.gaussian_backend != "inductor" for stage in optimized)

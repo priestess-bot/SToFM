@@ -20,7 +20,7 @@ from model.flagos_runtime import (
 from model.utils import SToFMConfig
 
 
-def _config(backend, attention_backend=None, mode="torch"):
+def _config(backend, attention_backend=None, mode="torch", aten_dispatch=True):
     return SToFMConfig(
         num_hidden_layers=2,
         embedding_dim=32,
@@ -34,6 +34,7 @@ def _config(backend, attention_backend=None, mode="torch"):
         flagos_mode=mode,
         flagos_backend=backend,
         flagos_attention_backend=attention_backend,
+        flagos_aten_dispatch=aten_dispatch,
     )
 
 
@@ -50,6 +51,7 @@ def test_config_preserves_torch_default_and_optimized_backend_selection():
     assert restored.flagos_mode == "optimized"
     assert restored.flagos_backend == "flaggems"
     assert restored.flagos_attention_backend == "flaggems"
+    assert restored.flagos_aten_dispatch
 
     overridden = _config("flaggems", attention_backend="torch", mode="optimized")
     assert MultiheadAttention(overridden).flagos_backend == "torch"
@@ -88,7 +90,7 @@ def test_gaussian_adapter_matches_torch_fallback():
         actual = optimized(distances)
     torch.testing.assert_close(actual, expected, rtol=3e-4, atol=3e-5)
     assert optimized.last_flagos_dispatch is not None
-    assert optimized.last_flagos_dispatch.selected == "inductor"
+    assert optimized.last_flagos_dispatch.selected == "nvidia"
     assert optimized.last_flagos_dispatch.precision == "fp32"
 
 
@@ -188,13 +190,61 @@ def test_explicit_nvidia_inference_path_preserves_full_stofm_semantics():
     torch.testing.assert_close(actual["last_hidden_state"], expected["last_hidden_state"], rtol=3e-4, atol=3e-5)
     torch.testing.assert_close(actual["pair_rep"], expected["pair_rep"], rtol=3e-4, atol=3e-5)
     assert default.gaussian.last_flagos_dispatch is not None
-    assert default.gaussian.last_flagos_dispatch.selected == "inductor"
+    assert default.gaussian.last_flagos_dispatch.selected == "nvidia"
     assert default.encoder.layers[0].self_attn.last_flagos_dispatch is not None
     assert default.encoder.layers[0].self_attn.last_flagos_dispatch.selected == "nvidia"
     assert native.gaussian.last_flagos_dispatch is not None
     assert native.gaussian.last_flagos_dispatch.selected == "nvidia"
     assert native.encoder.layers[0].self_attn.last_flagos_dispatch is not None
     assert native.encoder.layers[0].self_attn.last_flagos_dispatch.selected == "nvidia"
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="registered FlagOS custom operators require CUDA")
+def test_optimized_stofm_model_executes_registered_flagos_custom_operators():
+    device = torch.device("cuda")
+    torch.manual_seed(71)
+    model = SToFMModel(_config("flaggems", mode="optimized")).to(device).eval()
+    token_embeddings = torch.randn(1, 13, 16, device=device)
+    distances = torch.rand(1, 13, 13, device=device)
+    distances[:, 0, 0] = 0.0
+    token_types = torch.zeros(1, 13, dtype=torch.long, device=device)
+
+    with torch.inference_mode(), torch.profiler.profile(
+        activities=[torch.profiler.ProfilerActivity.CPU, torch.profiler.ProfilerActivity.CUDA]
+    ) as profiler:
+        output = model(token_embeddings, distances, token_types, return_pair_rep=True)
+        torch.cuda.synchronize()
+
+    assert output["last_hidden_state"].shape == (1, 13, 32)
+    assert output["pair_rep"].shape == (1, 13, 13, 4)
+    assert model.gaussian.last_flagos_dispatch.selected == "nvidia"
+    assert model.encoder.layers[0].self_attn.last_flagos_dispatch.selected == "nvidia"
+    keys = {event.key for event in profiler.key_averages()}
+    assert "flagos_stofm::gaussian_pair_bias" in keys
+    assert "flagos_stofm::pair_score_epilogue" in keys
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="registered FlagOS custom operators require CUDA")
+def test_custom_operator_only_mode_does_not_enable_aten_overrides():
+    device = torch.device("cuda")
+    torch.manual_seed(73)
+    model = SToFMModel(_config("nvidia", mode="optimized", aten_dispatch=False)).to(device).eval()
+    token_embeddings = torch.randn(1, 11, 16, device=device)
+    distances = torch.rand(1, 11, 11, device=device)
+    distances[:, 0, 0] = 0.0
+    token_types = torch.zeros(1, 11, dtype=torch.long, device=device)
+
+    with torch.inference_mode(), torch.profiler.profile(
+        activities=[torch.profiler.ProfilerActivity.CPU, torch.profiler.ProfilerActivity.CUDA]
+    ) as profiler:
+        model(token_embeddings, distances, token_types, return_pair_rep=False)
+        torch.cuda.synchronize()
+
+    assert not model.last_flagos_runtime_dispatch.active
+    assert "custom-operator isolation" in model.last_flagos_runtime_dispatch.reason
+    keys = {event.key for event in profiler.key_averages()}
+    assert "flagos_stofm::gaussian_pair_bias" in keys
+    assert "flagos_stofm::pair_score_epilogue" in keys
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="FlagGems stock scope requires CUDA")

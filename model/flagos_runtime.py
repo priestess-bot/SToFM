@@ -86,6 +86,7 @@ def flagos_inference_scope(
     mode: str,
     *,
     enabled: bool = True,
+    disabled_reason: Optional[str] = None,
 ) -> Iterator[FlagOSRuntimeDispatch]:
     """Install a temporary FlagGems ATen dispatch scope for inference only.
 
@@ -108,7 +109,7 @@ def flagos_inference_scope(
             mode=normalized,
             active=False,
             registered_aten_ops=(),
-            reason="FlagOS dispatch is inference-only; training or autograd is active",
+            reason=disabled_reason or "FlagOS dispatch is inference-only; training or autograd is active",
         )
         return
 

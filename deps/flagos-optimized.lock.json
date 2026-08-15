@@ -3,9 +3,9 @@
   "role": "optimized-flagos-r2",
   "package": "flag-gems",
   "repository": "https://github.com/priestess-bot/FlagGems.git",
-  "commit": "a9a96bbcc3d685482c656343e0759b7b4a5c38bc",
+  "commit": "399d0381ed63a79018f3112ecc43894fd58ba052",
   "branch": "r2/stofm-flagos-inference",
-  "production_install": "git+https://github.com/priestess-bot/FlagGems.git@a9a96bbcc3d685482c656343e0759b7b4a5c38bc",
+  "production_install": "git+https://github.com/priestess-bot/FlagGems.git@399d0381ed63a79018f3112ecc43894fd58ba052",
   "local_development_path": "../FlagGems-stofm",
   "environment_manifest": "requirements/flagos-r2-optimized.txt",
   "required_environment": {

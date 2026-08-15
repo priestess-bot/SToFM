@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 import torch
 
 
-STOFM_FLAGGEMS_API_VERSION = 2
+STOFM_FLAGGEMS_API_VERSION = 3
 
 
 @dataclass(frozen=True)

@@ -203,9 +203,9 @@ class MultiheadAttention(nn.Module):
             from .flagos_backend import pair_attention
 
             direct_result = pair_attention(
-                q.view(bsz, self.num_heads, tgt_len, self.head_dim),
-                k.view(bsz, self.num_heads, src_len, self.head_dim),
-                v.view(bsz, self.num_heads, src_len, self.head_dim),
+                q.view(bsz, self.num_heads, tgt_len, self.head_dim).contiguous(),
+                k.view(bsz, self.num_heads, src_len, self.head_dim).contiguous(),
+                v.view(bsz, self.num_heads, src_len, self.head_dim).contiguous(),
                 attn_bias.contiguous().view(bsz, self.num_heads, tgt_len, src_len),
                 key_padding_mask=key_padding_mask,
                 dropout_p=self.attention_dropout_module.p,
@@ -505,6 +505,7 @@ class SToFMModel(SToFMPreTrainedModel):
         from .flagos_runtime import validate_flagos_mode
 
         self.flagos_mode = validate_flagos_mode(getattr(config, "flagos_mode", "torch"))
+        self.flagos_aten_dispatch = bool(getattr(config, "flagos_aten_dispatch", True))
         self.last_flagos_runtime_dispatch = None
         self.post_init()
 
@@ -517,7 +518,12 @@ class SToFMModel(SToFMPreTrainedModel):
 
         return flagos_inference_scope(
             self.flagos_mode,
-            enabled=not self.training and not torch.is_grad_enabled(),
+            enabled=self.flagos_aten_dispatch and not self.training and not torch.is_grad_enabled(),
+            disabled_reason=(
+                "FlagOS ATen dispatch is disabled for custom-operator isolation"
+                if not self.flagos_aten_dispatch
+                else None
+            ),
         )
 
     def forward(

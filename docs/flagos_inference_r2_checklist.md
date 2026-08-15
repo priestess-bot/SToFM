@@ -30,7 +30,7 @@
 - [x] 环境-2 记录固定版本与优化后 FlagGems 的精确锁定信息、包来源和基准环境。
   证据：`deps/flagos-stock.lock.json` 固定未优化提交
   `03bf364ede763d573d5c30124d554283a209ab85`；优化锁定文件和安装依赖固定已推送的
-  FlagGems `a9a96bbcc3d685482c656343e0759b7b4a5c38bc`。
+  FlagGems `399d0381ed63a79018f3112ecc43894fd58ba052`。
   `tests/test_r2_provenance.py` 在该环境中于 2026-08-15 通过；
   `benchmarks/r2_benchmark_common.py::runtime_capture()` 会为每个计时进程记录
   Python、包清单、CUDA 运行时、驱动、GPU、Torch 后端控制项与相关环境变量。
@@ -195,6 +195,42 @@
   `a9a96bbcc3d685482c656343e0759b7b4a5c38bc`；SToFM 已测试该精确 SHA，
   推进优化锁定，并将原始证据提交
   `56a307af4f5bc7e9a79acf9ef486c2202ec4b2c3` 推送至 `r2/flagos-inference`。
+
+## 5. 纠偏：真实 FlagOS 算子交付
+
+本节取代“编译路线即可视为补齐 FlagOS 算子”的错误结论。此前 V100 数据仍保留为
+编译器与直调 Triton 候选的历史证据，但不能作为下列任务的完成证明。只有模型经由
+已注册的 FlagOS 自定义算子运行，并且通过独立三基线测量后，才可报告为算子补齐。
+
+- [x] 算子补齐-0 审计现有调用链并确认缺口：当前 `use_gems()` 只接管已有 ATen
+  算子；Gaussian 与 pair-score 的 V100 路线尚未以 FlagOS 自定义算子身份注册。
+  证据：`model/flagos_runtime.py` 的白名单仅含 `addmm,baddbmm,bmm,softmax`；
+  `benchmarks/stofm_r2_v100_worker.py` 将 Gaussian 的主候选设为 Inductor。
+- [x] 算子补齐-1 在 FlagGems 定义并保持存活的 `torch.ops.flagos_stofm` 算子 schema：
+  `gaussian_pair_bias`、`pair_score_epilogue` 和 `marker_token_embed`。
+  证据：`FlagGems/src/flag_gems/experimental_ops/_flagos_stofm_ops.py` 用模块级
+  `torch.library.Library` 句柄注册 CPU、CUDA 和 Autograd 实现；
+  `tests/test_flagos_stofm_registered_ops.py` 于 2026-08-16 通过 5 项 ABI/调度测试。
+- [x] 算子补齐-2 为 V100 将上述 schema 绑定到 Triton 实现；明确输入约束、推理条件、
+  FP32/FP16 支持范围和 CPU/训练/非连续输入的参考回退。
+  证据：`stofm_backends/nvidia.py` 与 `vision_backends/nvidia.py` 是 CUDA 实现，
+  注册层将 CPU/Autograd 路由到参考表达式；同一测试文件连同 SToFM/Vision 公共接口测试
+  于 2026-08-16 通过 29 项，覆盖 FP32、FP16、CUDA profiler 和梯度回退。
+- [x] 算子补齐-3 让 SToFM 的优化 FlagOS 模式通过 `torch.ops.flagos_stofm` 调用
+  Gaussian 与 pair attention；将 Inductor 保留为显式实验后端，而不是默认优化路线。
+  证据：`SToFM/model/flagos_backend.py` 与 `se2transformer.py` 已调用公开 FlagGems
+  接口；1050 节点 V100 冒烟运行在禁用 ATen 接管时通过 profiler 观测到
+  `flagos_stofm::gaussian_pair_bias` 和 `flagos_stofm::pair_score_epilogue`。
+- [ ] 算子补齐-4 为 KRONOS/Uni2 的 marker-token 路径接入同一自定义算子 ABI，
+  并确认其不会被普通 `use_gems()` ATen 覆盖掩盖。
+- [ ] 测试补齐-0 覆盖 schema 存在性、CUDA 实现选择、CPU/梯度/非连续输入回退、
+  mask、padding、FP32/FP16 数值一致性和 SToFM 真实模型调用链。
+- [ ] 测试补齐-1 在 V100 分别记录纯 PyTorch、固定版本未优化 FlagOS、仅新算子
+  FlagOS、以及新算子与既有 FlagOS 算子优化组合的独立原始样本与跟踪。
+- [ ] 报告补齐-0 用新的原始测量替换“编译优化即算子补齐”的表述；单独列出编译器、
+  新算子和既有 FlagOS 算子优化的贡献，拒绝无正向端到端收益的组合。
+- [ ] 目标设备补齐-0 令 Ascend/MTT 延迟项目使用相同的 `flagos_stofm` schema 与 ABI，
+  并通过无目标设备的 Python/AST/schema/CMake 检查；真实性能结论仍等待租赁设备。
 
 ## 更新规则
 

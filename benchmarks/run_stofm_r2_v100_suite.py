@@ -73,6 +73,8 @@ def _worker_command(
         str(WORKER),
         "--role",
         role,
+        "--suite",
+        args.suite,
         "--precision",
         precision,
         "--output-dir",
@@ -127,6 +129,15 @@ def _validate_trial(stock: Dict[str, Any], optimized: Dict[str, Any]) -> None:
         raise ValueError("pure Torch P1 reference checksum differs between stock and optimized environments")
     if stock["role"] != "stock" or optimized["role"] != "optimized":
         raise ValueError("unexpected worker role")
+    stock_suite = stock.get("benchmark_suite", "legacy")
+    optimized_suite = optimized.get("benchmark_suite", "legacy")
+    if stock_suite != optimized_suite:
+        raise ValueError("stock and optimized benchmark suites differ")
+    for result in (stock, optimized):
+        source = Path(result["flaggems_source"]["source_path"]).resolve()
+        imported = Path(result["flaggems_source"]["imported_package"]).resolve()
+        if not imported.is_relative_to(source):
+            raise ValueError("worker imported FlagGems from outside its requested source root")
 
 
 def _aggregate(trials: List[Dict[str, Any]], *, bootstrap_resamples: int) -> Dict[str, Any]:
@@ -200,8 +211,9 @@ def _write_report(output_dir: Path, suite: Dict[str, Any]) -> None:
     lines.extend(
         [
             "",
-            "The frozen F0 result is collected in a separate process and package environment. "
-            "Compiler, custom-kernel, and scope-lifecycle stages are not conflated.",
+        "The fixed-version unoptimized FlagOS result is collected in a separate process "
+        "and package environment. Compiler, registered custom-operator, and "
+        "scope-lifecycle stages are not conflated.",
         ]
     )
     (output_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -209,6 +221,12 @@ def _write_report(output_dir: Path, suite: Dict[str, Any]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--suite",
+        choices=["legacy", "registered_ops"],
+        default="legacy",
+        help="Use registered_ops for the post-correction custom-operator evidence suite.",
+    )
     parser.add_argument("--precision", choices=["fp32", "fp16"], required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--runs", type=int, default=3)
@@ -307,7 +325,8 @@ def main() -> None:
 
     workload = _read_json(args.output_dir / "run-01" / "stock" / "result.json")["workload"]
     suite = {
-        "schema_version": 2,
+        "schema_version": 3,
+        "benchmark_suite": args.suite,
         "precision": args.precision,
         "run_count": args.runs,
         "workload": workload,

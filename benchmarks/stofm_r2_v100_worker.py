@@ -14,7 +14,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 import sys
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import torch
 
@@ -45,9 +45,154 @@ class StageSpec:
     comparison_baseline: str
     gain_kind: str
     description: str
+    aten_dispatch: bool = True
+    expected_custom_ops: Tuple[str, ...] = ()
 
 
-def _stage_specs(role: str) -> List[StageSpec]:
+def _registered_operator_stage_specs(role: str) -> List[StageSpec]:
+    if role == "stock":
+        return [
+            StageSpec(
+                "pure_pytorch_reference",
+                "torch",
+                "torch",
+                "torch",
+                False,
+                "none",
+                "pure_pytorch_reference",
+                "reference",
+                "Canonical pure PyTorch inference without a FlagOS scope.",
+            ),
+            StageSpec(
+                "unoptimized_flagos_lifecycle",
+                "stock",
+                "torch",
+                "torch",
+                False,
+                "per_call",
+                "pure_pytorch_reference",
+                "flaggems_lifecycle",
+                "Fixed-version unoptimized FlagOS with an ATen scope per call.",
+            ),
+            StageSpec(
+                "unoptimized_flagos_steady",
+                "stock",
+                "torch",
+                "torch",
+                False,
+                "steady",
+                "pure_pytorch_reference",
+                "stock_aten",
+                "Fixed-version unoptimized FlagOS with its ATen scope held open.",
+            ),
+        ]
+    if role == "optimized":
+        baseline = "unoptimized_flagos_steady"
+        return [
+            StageSpec(
+                "gaussian_registered_operator_only",
+                "optimized",
+                "nvidia",
+                "torch",
+                False,
+                "steady",
+                baseline,
+                "registered_custom_operator",
+                "Only the registered Gaussian custom operator; ATen overrides are disabled.",
+                False,
+                ("flagos_stofm::gaussian_pair_bias",),
+            ),
+            StageSpec(
+                "pair_score_registered_operator_only",
+                "optimized",
+                "torch",
+                "nvidia",
+                False,
+                "steady",
+                baseline,
+                "registered_custom_operator",
+                "Only the registered pair-score custom operator; ATen overrides are disabled.",
+                False,
+                ("flagos_stofm::pair_score_epilogue",),
+            ),
+            StageSpec(
+                "registered_operators_only_combined",
+                "optimized",
+                "nvidia",
+                "nvidia",
+                False,
+                "steady",
+                baseline,
+                "registered_custom_operator_combined",
+                "Both registered SToFM custom operators; ATen overrides are disabled.",
+                False,
+                (
+                    "flagos_stofm::gaussian_pair_bias",
+                    "flagos_stofm::pair_score_epilogue",
+                ),
+            ),
+            StageSpec(
+                "registered_operators_with_flagos_aten_steady",
+                "optimized",
+                "flaggems",
+                "flaggems",
+                False,
+                "steady",
+                baseline,
+                "registered_custom_operator_plus_flagos_aten",
+                "Registered SToFM custom operators plus the existing FlagOS ATen scope held open.",
+                True,
+                (
+                    "flagos_stofm::gaussian_pair_bias",
+                    "flagos_stofm::pair_score_epilogue",
+                ),
+            ),
+            StageSpec(
+                "registered_operators_with_flagos_aten_lifecycle",
+                "optimized",
+                "flaggems",
+                "flaggems",
+                False,
+                "per_call",
+                baseline,
+                "registered_custom_operator_plus_flagos_lifecycle",
+                "Registered SToFM custom operators plus the existing FlagOS ATen scope per call.",
+                True,
+                (
+                    "flagos_stofm::gaussian_pair_bias",
+                    "flagos_stofm::pair_score_epilogue",
+                ),
+            ),
+        ]
+    raise ValueError(f"unsupported worker role: {role}")
+
+
+def _activate_flaggems_source_root(root: Path) -> Path:
+    """Make the worker's requested FlagGems checkout win over inherited paths."""
+    source_root = (root.resolve() / "src")
+    package_root = source_root / "flag_gems"
+    if not package_root.is_dir():
+        raise FileNotFoundError(f"FlagGems source package is missing: {package_root}")
+    loaded = sys.modules.get("flag_gems")
+    if loaded is not None:
+        loaded_file = getattr(loaded, "__file__", None)
+        if loaded_file is None or not Path(loaded_file).resolve().is_relative_to(source_root):
+            raise RuntimeError(
+                "flag_gems was imported before the worker could select its requested source root"
+            )
+    try:
+        sys.path.remove(str(source_root))
+    except ValueError:
+        pass
+    sys.path.insert(0, str(source_root))
+    return source_root
+
+
+def _stage_specs(role: str, suite: str = "legacy") -> List[StageSpec]:
+    if suite == "registered_ops":
+        return _registered_operator_stage_specs(role)
+    if suite != "legacy":
+        raise ValueError(f"unsupported benchmark suite: {suite}")
     if role == "stock":
         return [
             StageSpec(
@@ -159,6 +304,7 @@ def _config(spec: StageSpec, args: argparse.Namespace) -> SToFMConfig:
         flagos_mode=spec.mode,
         flagos_backend=spec.gaussian_backend,
         flagos_attention_backend=spec.attention_backend,
+        flagos_aten_dispatch=spec.aten_dispatch,
     )
 
 
@@ -194,6 +340,21 @@ def _dispatch_snapshot(model: SToFMModel) -> Dict[str, Any]:
     )
 
 
+def _custom_operator_trace(invoke, expected_custom_ops: Tuple[str, ...]) -> List[str]:
+    if not expected_custom_ops:
+        return []
+    with torch.profiler.profile(
+        activities=[torch.profiler.ProfilerActivity.CPU, torch.profiler.ProfilerActivity.CUDA]
+    ) as profiler:
+        invoke()
+        torch.cuda.synchronize()
+    keys = {event.key for event in profiler.key_averages()}
+    missing = [name for name in expected_custom_ops if name not in keys]
+    if missing:
+        raise AssertionError(f"registered custom operators were not observed in the profiler: {missing}")
+    return [name for name in expected_custom_ops if name in keys]
+
+
 def _run_stage(
     spec: StageSpec,
     args: argparse.Namespace,
@@ -221,6 +382,8 @@ def _run_stage(
             raise AssertionError(f"{spec.name} must materialize pair_rep")
     elif "pair_rep" in output:
         raise AssertionError(f"{spec.name} must omit the final pair_rep")
+
+    custom_operator_trace = _custom_operator_trace(invoke, spec.expected_custom_ops)
 
     if spec.measurement_scope == "steady" and spec.mode != "torch":
         with model.flagos_inference_scope() as scope_dispatch:
@@ -255,6 +418,7 @@ def _run_stage(
             **tolerance,
         },
         "dispatch": dispatch,
+        "custom_operator_trace": custom_operator_trace,
         **measured,
     }
 
@@ -285,6 +449,7 @@ def _write_result(output_dir: Path, result: Dict[str, Any]) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--role", choices=["stock", "optimized"], required=True)
+    parser.add_argument("--suite", choices=["legacy", "registered_ops"], default="legacy")
     parser.add_argument("--precision", choices=["fp32", "fp16"], required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--run-index", type=int, required=True)
@@ -303,6 +468,8 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=20260815)
     parser.add_argument("--flaggems-source-root", type=Path, required=True)
     args = parser.parse_args()
+
+    flaggems_source = _activate_flaggems_source_root(args.flaggems_source_root)
 
     if not torch.cuda.is_available():
         raise RuntimeError("SToFM R2 V100 benchmark requires CUDA")
@@ -349,18 +516,24 @@ def main() -> None:
         expected = reference_output["last_hidden_state"].detach().clone()
         results = [
             _run_stage(spec, args, state_dict, inputs, expected, device, dtype)
-            for spec in _stage_specs(args.role)
+            for spec in _stage_specs(args.role, args.suite)
         ]
 
     result = {
-        "schema_version": 2,
-        "run_id": f"stofm-r2-{args.precision}-{args.role}-{args.run_index:02d}",
+        "schema_version": 3,
+        "benchmark_suite": args.suite,
+        "run_id": f"stofm-{args.suite}-{args.precision}-{args.role}-{args.run_index:02d}",
         "role": args.role,
         "precision": args.precision,
         "runtime": runtime_capture(device),
         "commits": {
             "stofm": git_sha(ROOT),
             "flaggems": git_sha(args.flaggems_source_root),
+        },
+        "flaggems_source": {
+            "requested_root": str(args.flaggems_source_root.resolve()),
+            "imported_package": str(Path(sys.modules["flag_gems"].__file__).resolve()),
+            "source_path": str(flaggems_source),
         },
         "workload": {
             "batch_size": args.batch_size,
@@ -384,7 +557,7 @@ def main() -> None:
             "inference_mode": True,
         },
         "reference": {
-            "stage": "P1_canonical_torch",
+            "stage": "pure_pytorch_reference" if args.suite == "registered_ops" else "P1_canonical_torch",
             "last_hidden_state_sha256": tensor_sha256(expected),
             **_tolerance(dtype),
         },
