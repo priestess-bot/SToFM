@@ -132,7 +132,9 @@ def test_explicit_nvidia_inference_path_preserves_full_stofm_semantics():
     device = torch.device("cuda")
     torch.manual_seed(53)
     baseline = SToFMModel(_config("torch")).to(device).eval()
+    default = SToFMModel(_config("flaggems")).to(device).eval()
     native = SToFMModel(_config("nvidia")).to(device).eval()
+    default.load_state_dict(baseline.state_dict())
     native.load_state_dict(baseline.state_dict())
     token_embeddings = torch.randn(1, 17, 16, device=device)
     distances = torch.rand(1, 17, 17, device=device)
@@ -141,9 +143,16 @@ def test_explicit_nvidia_inference_path_preserves_full_stofm_semantics():
 
     with torch.inference_mode():
         expected = baseline(token_embeddings, distances, token_types, return_pair_rep=True)
+        default_output = default(token_embeddings, distances, token_types, return_pair_rep=True)
         actual = native(token_embeddings, distances, token_types, return_pair_rep=True)
+    torch.testing.assert_close(default_output["last_hidden_state"], expected["last_hidden_state"], rtol=3e-4, atol=3e-5)
+    torch.testing.assert_close(default_output["pair_rep"], expected["pair_rep"], rtol=3e-4, atol=3e-5)
     torch.testing.assert_close(actual["last_hidden_state"], expected["last_hidden_state"], rtol=3e-4, atol=3e-5)
     torch.testing.assert_close(actual["pair_rep"], expected["pair_rep"], rtol=3e-4, atol=3e-5)
+    assert default.gaussian.last_flagos_dispatch is not None
+    assert default.gaussian.last_flagos_dispatch.selected == "inductor"
+    assert default.encoder.layers[0].self_attn.last_flagos_dispatch is not None
+    assert default.encoder.layers[0].self_attn.last_flagos_dispatch.selected == "nvidia"
     assert native.gaussian.last_flagos_dispatch is not None
     assert native.gaussian.last_flagos_dispatch.selected == "nvidia"
     assert native.encoder.layers[0].self_attn.last_flagos_dispatch is not None
