@@ -40,28 +40,50 @@ class GaussianModule(nn.Module):
             nn.ReLU(),
             nn.Linear(K, config.num_attention_heads),
         )
+        self.flagos_mode = getattr(config, "flagos_mode", "torch")
         self.flagos_backend = getattr(config, "flagos_backend", "torch")
         self.last_flagos_dispatch = None
 
     def _forward_torch(self, x: torch.Tensor) -> torch.Tensor:
         """Original SToFM implementation retained as the semantic fallback."""
+        output_dtype = x.dtype
+        compute_dtype = torch.float32 if x.dtype in {torch.float16, torch.bfloat16} else x.dtype
         zero_mask = x.eq(0.)
-        x = self.linear(x.unsqueeze(-1))
+        x = F.linear(
+            x.to(dtype=compute_dtype).unsqueeze(-1),
+            self.linear.weight.to(dtype=compute_dtype),
+            None if self.linear.bias is None else self.linear.bias.to(dtype=compute_dtype),
+        )
         x = x.expand(-1, -1, -1, self.K) # [bs, n_node, n_node, K]
-        mean = self.means.weight.float().view(-1)
-        std = self.stds.weight.float().view(-1).abs() + 1e-5
+        mean = self.means.weight.to(dtype=compute_dtype).view(-1)
+        std = self.stds.weight.to(dtype=compute_dtype).view(-1).abs() + 1e-5
         x = torch.exp(-0.5 * (((x - mean) / std) ** 2)) / ((2 * np.pi) ** 0.5 * std)
 
-        x = self.proj(x) # [bs, n_node, n_node, num_heads]
+        x = F.relu(
+            F.linear(
+                x,
+                self.proj[0].weight.to(dtype=compute_dtype),
+                None if self.proj[0].bias is None else self.proj[0].bias.to(dtype=compute_dtype),
+            )
+        )
+        x = F.linear(
+            x,
+            self.proj[2].weight.to(dtype=compute_dtype),
+            None if self.proj[2].bias is None else self.proj[2].bias.to(dtype=compute_dtype),
+        ) # [bs, n_node, n_node, num_heads]
         x = x.permute(0, 3, 1, 2).contiguous() # [bs, num_heads, n_node, n_node]
         x = x.masked_fill(zero_mask.unsqueeze(1).expand_as(x), 0.)
-        return x
+        return x.to(dtype=output_dtype)
 
     def forward(
         self,
         x: torch.Tensor, # [bs, n_node, n_node]
     ) -> torch.Tensor:
-        if self.flagos_backend != "torch":
+        if (
+            self.flagos_mode == "optimized"
+            and self.flagos_backend != "torch"
+            and not torch.is_grad_enabled()
+        ):
             from .flagos_backend import gaussian_pair_bias
 
             result = gaussian_pair_bias(self, x, self.flagos_backend)
@@ -98,6 +120,7 @@ class MultiheadAttention(nn.Module):
         self.out_proj = nn.Linear(config.embedding_dim, config.embedding_dim, bias=config.bias)
 
         self.onnx_trace = False
+        self.flagos_mode = getattr(config, "flagos_mode", "torch")
         self.flagos_backend = getattr(config, "flagos_attention_backend", "torch")
         self.last_flagos_dispatch = None
 
@@ -170,7 +193,13 @@ class MultiheadAttention(nn.Module):
                     "The shape of the generated padding mask for the key does not match expected dimensions."
                 )
         direct_result = None
-        if self.flagos_backend != "torch" and attn_bias is not None and not before_softmax:
+        if (
+            self.flagos_mode == "optimized"
+            and self.flagos_backend != "torch"
+            and attn_bias is not None
+            and not before_softmax
+            and not torch.is_grad_enabled()
+        ):
             from .flagos_backend import pair_attention
 
             direct_result = pair_attention(
@@ -473,12 +502,47 @@ class SToFMModel(SToFMPreTrainedModel):
         self.encoder = TransformerEncoder(config)
         self.lm_output_learned_bias = None
         self.load_softmax = not getattr(config, "remove_head", False)
+        from .flagos_runtime import validate_flagos_mode
+
+        self.flagos_mode = validate_flagos_mode(getattr(config, "flagos_mode", "torch"))
+        self.last_flagos_runtime_dispatch = None
         self.post_init()
 
     def reset_output_layer_parameters(self):
         self.lm_output_learned_bias = nn.Parameter(torch.zeros(1))
 
+    def flagos_inference_scope(self):
+        """Return a re-entrant, temporary FlagGems scope for this model."""
+        from .flagos_runtime import flagos_inference_scope
+
+        return flagos_inference_scope(
+            self.flagos_mode,
+            enabled=not self.training and not torch.is_grad_enabled(),
+        )
+
     def forward(
+        self,
+        token_embeddings: Optional[torch.Tensor], # [bs, n_node, dim]
+        attn_bias: torch.Tensor, # [bs, n_node, n_node]
+        token_types: Optional[torch.LongTensor], # [bs, n_node]
+        need_attn: Optional[bool] = False,
+        no_attn_bias: Optional[bool] = False,
+        return_pair_rep: bool = True,
+        **unused,
+    ) -> Union[Tuple[torch.LongTensor], BaseModelOutputWithNoAttention]:
+        with self.flagos_inference_scope() as runtime_dispatch:
+            self.last_flagos_runtime_dispatch = runtime_dispatch
+            return self._forward_impl(
+                token_embeddings,
+                attn_bias,
+                token_types,
+                need_attn=need_attn,
+                no_attn_bias=no_attn_bias,
+                return_pair_rep=return_pair_rep,
+                **unused,
+            )
+
+    def _forward_impl(
         self,
         token_embeddings: Optional[torch.Tensor], # [bs, n_node, dim]
         attn_bias: torch.Tensor, # [bs, n_node, n_node]

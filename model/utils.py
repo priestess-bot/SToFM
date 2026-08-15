@@ -109,6 +109,7 @@ class SToFMConfig(PretrainedConfig):
         vdim: int = None,
         bias: bool = True,
         self_attention: bool = True,
+        flagos_mode: str = "torch",
         flagos_backend: str = "torch",
         flagos_attention_backend: Optional[str] = None,
         norm_type_id=0,
@@ -143,6 +144,7 @@ class SToFMConfig(PretrainedConfig):
         self.vdim = vdim
         self.self_attention = self_attention
         self.bias = bias
+        self.flagos_mode = flagos_mode
         self.flagos_backend = flagos_backend
         self.flagos_attention_backend = (
             flagos_backend if flagos_attention_backend is None else flagos_attention_backend

@@ -19,12 +19,21 @@ required and is not a completed item.
 
 ## 1. Real FlagOS Inference Modes
 
-- [ ] API-0 Add `flagos_mode={torch,stock,optimized}` to SToFM configuration
+- [x] API-0 Add `flagos_mode={torch,stock,optimized}` to SToFM configuration
   and extraction CLI while preserving default Torch behavior.
-- [ ] API-1 Add a scoped `flag_gems.use_gems()` inference context with a
+  Evidence: `tests/test_flagos_adapter.py::test_config_preserves_torch_default_and_optimized_backend_selection`
+  passed on 2026-08-15 using the R2 V100 environment.
+- [x] API-1 Add a scoped `flag_gems.use_gems()` inference context with a
   recorded, tested ATen allowlist and no global persistent registration.
-- [ ] API-2 Add versioned FlagGems SToFM/Vision public APIs and dispatch records
+  Evidence: `model/flagos_runtime.py`; the tested scope registered exactly
+  `addmm,baddbmm,bmm,softmax` (plus FlagGems' `softmax_out` alias) and
+  `current_flagos_runtime_dispatch()` was empty after scope exit.
+- [x] API-2 Add versioned FlagGems SToFM/Vision public APIs and dispatch records
   for selected backend, precision, fallback reason, and registered ATen ops.
+  Evidence: FlagGems commit `e69ee3aa04a16d84108bd9ca9a41fd9d6c2d94d7`;
+  `CUDA_VISIBLE_DEVICES=0 PYTHONPATH=../FlagGems-stofm/src \
+  ../.venv-flagos-r2/bin/python -m pytest -q tests/test_flagos_adapter.py \
+  tests/test_benchmark_aggregation.py` passed 14 tests on 2026-08-15.
 - [ ] API-3 Prove P1 Torch, F0 frozen-stock FlagOS, and optimized FlagOS retain
   the same SToFM output semantics before timing.
 

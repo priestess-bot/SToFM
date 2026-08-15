@@ -21,6 +21,12 @@ parser.add_argument("--leiden_res", type=float, default=1.0)
 parser.add_argument("--leiden_alpha", type=float, default=0.2)
 parser.add_argument("--seed", type=int, default=42)
 parser.add_argument(
+    "--flagos_mode",
+    choices=["torch", "stock", "optimized"],
+    default="torch",
+    help="Torch baseline, frozen FlagGems ATen dispatch, or R2 ATen plus composite operators.",
+)
+parser.add_argument(
     "--flagos_backend",
     choices=["torch", "auto", "flaggems", "inductor", "nvidia", "ascend", "mthreads"],
     default="torch",
@@ -53,6 +59,7 @@ torch.cuda.manual_seed(seed)
 np.random.seed(seed)
 
 config = SToFMConfig.from_pretrained(config_path)
+config.flagos_mode = args.flagos_mode
 config.flagos_backend = args.flagos_backend
 config.flagos_attention_backend = (
     config.flagos_backend
@@ -120,16 +127,20 @@ for data_info in data_infos:
                             batch_size=batch_size, shuffle=False)
     
     embeddings = torch.zeros(data_num, 256)
-    for i, graph in tqdm(enumerate(dataloader), desc=f"Get embedding"):
-        step += 1
-        indices = graph['indices']
-        graph = {k: v.to(device) for k, v in graph.items()}
-        with torch.inference_mode():
+    with torch.inference_mode(), model.flagos_inference_scope() as runtime_dispatch:
+        print(
+            f"SToFM FlagOS mode={runtime_dispatch.mode} active={runtime_dispatch.active} "
+            f"aten_ops={','.join(runtime_dispatch.registered_aten_ops) or 'none'}"
+        )
+        for i, graph in tqdm(enumerate(dataloader), desc=f"Get embedding"):
+            step += 1
+            indices = graph['indices']
+            graph = {k: v.to(device) for k, v in graph.items()}
             output = model(**graph, return_pair_rep=False)
-        node_rep = output['last_hidden_state']
-        embeddings[indices[indices != -1]] = node_rep[indices != -1].clone().detach().cpu()
+            node_rep = output['last_hidden_state']
+            embeddings[indices[indices != -1]] = node_rep[indices != -1].clone().detach().cpu()
 
-        del graph, output, node_rep
+            del graph, output, node_rep
     del dataloader, graphs
 
     np.save(f"{data_info['data_root']}/{output_filename}", embeddings.cpu().numpy())

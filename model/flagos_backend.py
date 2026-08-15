@@ -6,12 +6,15 @@ from typing import Optional, Tuple
 import torch
 
 
-STOFM_FLAGGEMS_API_VERSION = 1
+STOFM_FLAGGEMS_API_VERSION = 2
 
 
 @dataclass(frozen=True)
 class FlagOSDispatch:
+    operator: str
+    requested: str
     selected: str
+    precision: str
     reason: str
 
 
@@ -47,6 +50,16 @@ def _operator_backend(backend: str) -> str:
     return backend if backend in {"inductor", "nvidia", "ascend", "mthreads"} else "auto"
 
 
+def _dispatch_from_public(dispatch) -> FlagOSDispatch:
+    return FlagOSDispatch(
+        operator=dispatch.operator,
+        requested=dispatch.requested,
+        selected=dispatch.selected,
+        precision=dispatch.precision,
+        reason=dispatch.reason,
+    )
+
+
 def gaussian_pair_bias(module, distances: torch.Tensor, backend: str) -> Optional[Tuple[torch.Tensor, FlagOSDispatch]]:
     """Return ``None`` only for the optional auto fallback path."""
     ops = _get_ops(backend)
@@ -56,7 +69,7 @@ def gaussian_pair_bias(module, distances: torch.Tensor, backend: str) -> Optiona
     resolution = ops.resolve_stofm_backend(distances, operator_backend)
     if backend in {"flaggems", "inductor", "nvidia", "ascend", "mthreads"} and resolution.selected == "torch":
         raise RuntimeError(f"FlagGems has no accelerated backend for this input: {resolution.reason}")
-    output = ops.stofm_gaussian_pair_bias(
+    output, dispatch = ops.stofm_gaussian_pair_bias(
         distances,
         module.linear.weight,
         module.linear.bias,
@@ -67,8 +80,12 @@ def gaussian_pair_bias(module, distances: torch.Tensor, backend: str) -> Optiona
         module.proj[2].weight,
         module.proj[2].bias,
         backend=operator_backend,
+        return_dispatch=True,
     )
-    return output, FlagOSDispatch(resolution.selected, resolution.reason)
+    dispatch = _dispatch_from_public(dispatch)
+    if backend in {"flaggems", "inductor", "nvidia", "ascend", "mthreads"} and dispatch.selected == "torch":
+        raise RuntimeError(f"FlagGems fell back to Torch for Gaussian pair bias: {dispatch.reason}")
+    return output, dispatch
 
 
 def pair_attention(
@@ -98,7 +115,7 @@ def pair_attention(
     resolution = ops.resolve_stofm_backend(query, operator_backend)
     if backend in {"flaggems", "inductor", "nvidia", "ascend", "mthreads"} and resolution.selected == "torch":
         raise RuntimeError(f"FlagGems has no accelerated backend for this input: {resolution.reason}")
-    result = ops.stofm_pair_attention(
+    result, dispatch = ops.stofm_pair_attention(
         query,
         key,
         value,
@@ -112,5 +129,9 @@ def pair_attention(
         return_weights=return_weights,
         assume_finite_pair_bias=key_padding_mask is None,
         backend=operator_backend,
+        return_dispatch=True,
     )
-    return result, FlagOSDispatch(resolution.selected, resolution.reason)
+    dispatch = _dispatch_from_public(dispatch)
+    if backend in {"flaggems", "inductor", "nvidia", "ascend", "mthreads"} and dispatch.selected == "torch":
+        raise RuntimeError(f"FlagGems fell back to Torch for pair attention: {dispatch.reason}")
+    return result, dispatch
