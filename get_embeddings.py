@@ -20,10 +20,14 @@ parser.add_argument("--split_num", type=int, default=1000)
 parser.add_argument("--leiden_res", type=float, default=1.0)
 parser.add_argument("--leiden_alpha", type=float, default=0.2)
 parser.add_argument("--seed", type=int, default=42)
-parser.add_argument("--flagos_backend", choices=["torch", "auto", "flaggems", "inductor", "nvidia"], default="torch")
+parser.add_argument(
+    "--flagos_backend",
+    choices=["torch", "auto", "flaggems", "inductor", "nvidia", "ascend", "mthreads"],
+    default="torch",
+)
 parser.add_argument(
     "--flagos_attention_backend",
-    choices=["inherit", "torch", "auto", "flaggems", "inductor", "nvidia"],
+    choices=["inherit", "torch", "auto", "flaggems", "inductor", "nvidia", "ascend", "mthreads"],
     default="inherit",
 )
 args = parser.parse_args()
