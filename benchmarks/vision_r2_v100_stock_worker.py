@@ -29,6 +29,17 @@ class StockStageSpec:
     description: str
 
 
+@dataclass(frozen=True)
+class StockVisionDispatch:
+    """Frozen-environment record shaped like the R2 public Vision dispatch."""
+
+    operator: str
+    requested: str
+    selected: str
+    precision: str
+    reason: str
+
+
 STOCK_STAGES = (
     StockStageSpec(
         "V0s_marker_token_stock_flagos",
@@ -48,8 +59,76 @@ STOCK_STAGES = (
 )
 
 
-def _invoke(operation: str, tensors: Dict[str, torch.Tensor]) -> Tuple[torch.Tensor, Any]:
-    return torch_invoke(operation, tensors)
+def _precision_name(tensor: torch.Tensor) -> str:
+    if tensor.dtype == torch.float32:
+        return "fp32"
+    if tensor.dtype == torch.float16:
+        return "fp16"
+    if tensor.dtype == torch.bfloat16:
+        return "bf16"
+    return str(tensor.dtype).replace("torch.", "")
+
+
+def _validate_marker_token_inputs(tensors: Dict[str, torch.Tensor]) -> None:
+    """Mirror the versioned R2 public API validation without importing it.
+
+    The frozen checkout predates the Vision API.  Keeping its reference wrapper
+    equivalent to the Torch/optimized public boundary prevents host-side
+    validation and dispatch construction from biasing the F0 comparison.
+    """
+    patch_tokens = tensors["patch_tokens"]
+    marker_ids = tensors["marker_ids"]
+    marker_weight = tensors["marker_weight"]
+    position = tensors["position"]
+    token = tensors["token"]
+    padding = tensors["marker_padding"]
+    if patch_tokens.ndim != 4:
+        raise ValueError("patch_tokens must have shape [batch, markers, tokens, embedding_dim]")
+    batch, markers, tokens, embedding_dim = patch_tokens.shape
+    if marker_ids.shape != (batch, markers) or marker_ids.dtype != torch.long:
+        raise ValueError("marker_ids must be a torch.long tensor with shape [batch, markers]")
+    if marker_weight.ndim != 2 or marker_weight.shape[1] != embedding_dim:
+        raise ValueError("marker_embedding_weight must have shape [num_markers, embedding_dim]")
+    if position.shape != (tokens, embedding_dim):
+        raise ValueError("position_embedding must have shape [tokens, embedding_dim]")
+    if token.shape not in {(embedding_dim,), (tokens, embedding_dim)}:
+        raise ValueError("token_embedding must have shape [embedding_dim] or [tokens, embedding_dim]")
+    if padding.shape != (batch, markers):
+        raise ValueError("marker_padding_mask must have shape [batch, markers]")
+    values = (marker_ids, marker_weight, position, token, padding)
+    if any(value.device != patch_tokens.device for value in values):
+        raise ValueError("all marker-token tensors must share patch_tokens.device")
+
+
+def _validate_residual_layer_norm_inputs(tensors: Dict[str, torch.Tensor]) -> None:
+    input_tensor = tensors["residual_input"]
+    if input_tensor.shape != tensors["residual"].shape:
+        raise ValueError("input_tensor and residual must have the same shape")
+    if tuple(input_tensor.shape[-1:]) != (input_tensor.shape[-1],):
+        raise ValueError("normalized_shape does not match input_tensor")
+
+
+def _invoke(operation: str, tensors: Dict[str, torch.Tensor]) -> Tuple[torch.Tensor, StockVisionDispatch, Any]:
+    input_tensor = tensors["patch_tokens"] if operation == "marker_token_embed" else tensors["residual_input"]
+    if operation == "swiglu":
+        input_tensor = tensors["packed_swiglu"]
+        if input_tensor.shape[-1] % 2:
+            raise ValueError("packed SwiGLU input must have an even final dimension")
+    elif operation == "marker_token_embed":
+        _validate_marker_token_inputs(tensors)
+    elif operation == "residual_layer_norm":
+        _validate_residual_layer_norm_inputs(tensors)
+    else:
+        raise ValueError(f"unsupported operation: {operation}")
+    output, mask = torch_invoke(operation, tensors)
+    dispatch = StockVisionDispatch(
+        operator=operation,
+        requested="stock",
+        selected="torch",
+        precision=_precision_name(input_tensor),
+        reason="frozen FlagOS has no Vision composite API; reference boundary executes inside scoped ATen dispatch",
+    )
+    return output, dispatch, mask
 
 
 def _run_stage(
@@ -66,7 +145,7 @@ def _run_stage(
         return _invoke(spec.operation, tensors)
 
     with flagos_inference_scope("stock") as scope_dispatch:
-        output, mask = invoke()
+        output, dispatch, mask = invoke()
         torch.testing.assert_close(output, expected, **tolerance)
         if expected_mask is not None and not torch.equal(mask, expected_mask):
             raise AssertionError(f"{spec.name} changed the marker padding mask")
@@ -87,13 +166,7 @@ def _run_stage(
         "description": spec.description,
         "validation": {"status": "passed", "output_sha256": tensor_sha256(output), **tolerance},
         "dispatch": {
-            "public": {
-                "operator": spec.operation,
-                "requested": "stock",
-                "selected": "torch",
-                "precision": args.precision,
-                "reason": "frozen FlagOS has no Vision composite API; Torch reference executes inside scoped ATen dispatch",
-            },
+            "public": jsonable(dispatch),
             "flagos_scope": runtime,
         },
         **measured,
@@ -151,7 +224,7 @@ def main() -> None:
 
     with torch.inference_mode():
         references = {
-            operation: _invoke(operation, tensors)
+            operation: _invoke(operation, tensors)[::2]
             for operation in ("marker_token_embed", "swiglu", "residual_layer_norm")
         }
         results = [_run_stage(spec, args, tensors, references, dtype) for spec in STOCK_STAGES]
