@@ -1,0 +1,18 @@
+{
+  "schema_version": 2,
+  "role": "optimized-flagos-r2",
+  "package": "flag-gems",
+  "repository": "https://github.com/priestess-bot/FlagGems.git",
+  "commit": "e69ee3aa04a16d84108bd9ca9a41fd9d6c2d94d7",
+  "branch": "r2/stofm-flagos-inference",
+  "production_install": "git+https://github.com/priestess-bot/FlagGems.git@e69ee3aa04a16d84108bd9ca9a41fd9d6c2d94d7",
+  "local_development_path": "../FlagGems-stofm",
+  "environment_manifest": "requirements/flagos-r2-optimized.txt",
+  "required_environment": {
+    "python": "3.11.15",
+    "torch": "2.6.0+cu124",
+    "cuda": "12.4",
+    "triton": "3.2.0"
+  },
+  "update_policy": "Advance only after FlagGems tests pass, the commit is pushed, and the matching SToFM result captures both SHAs."
+}

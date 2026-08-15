@@ -1,0 +1,4 @@
+# Development-only equivalent of flagos-r2-optimized.txt. Do not use this file
+# for published timing; record the resolved git SHA in every benchmark result.
+-r flagos-r2-v100.txt
+-e ../FlagGems-stofm

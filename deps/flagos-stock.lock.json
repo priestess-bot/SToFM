@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "role": "frozen-stock-baseline",
+  "package": "flag-gems",
+  "repository": "https://github.com/priestess-bot/FlagGems.git",
+  "commit": "03bf364ede763d573d5c30124d554283a209ab85",
+  "branch_at_fork": "upstream mainline before SToFM R2 extensions",
+  "production_install": "git+https://github.com/priestess-bot/FlagGems.git@03bf364ede763d573d5c30124d554283a209ab85",
+  "local_validation_worktree": "../FlagGems-stock-r2",
+  "environment_manifest": "requirements/flagos-r2-stock.txt",
+  "required_environment": {
+    "python": "3.11.15",
+    "torch": "2.6.0+cu124",
+    "cuda": "12.4",
+    "triton": "3.2.0"
+  },
+  "v100_vendor_override": {
+    "variable": "FLAGGEMS_VENDOR",
+    "value": "nvidia",
+    "scope": "temporary import and use_gems registration only",
+    "reason": "Tesla V100-SXM2-16GB lacks the literal NVIDIA substring required by this frozen detector"
+  },
+  "update_policy": "Never advance this lock. It is the F0 baseline for all R2 reports."
+}

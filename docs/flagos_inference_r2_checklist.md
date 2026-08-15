@@ -12,8 +12,11 @@ required and is not a completed item.
   `SToFM:r2/flagos-inference` from `2354d5799347867578793752e8c2dd93ae6587b7`.
   Evidence: local branch heads created on 2026-08-15; R1 `integration/*`
   branches remain unchanged.
-- [ ] R2-1 Add immutable Torch, stock-FlagOS, and optimized-FlagOS environment
+- [x] R2-1 Add immutable Torch, stock-FlagOS, and optimized-FlagOS environment
   manifests using the same PyTorch/CUDA versions.
+  Evidence: `requirements/flagos-r2-v100.txt`, `flagos-r2-stock.txt`, and
+  `flagos-r2-optimized.txt` pin Python 3.11 / PyTorch 2.6.0+cu124 / CUDA 12.4
+  / Triton 3.2.0; `tests/test_r2_provenance.py` passed (2 tests, 2026-08-15).
 - [ ] R2-2 Add exact stock and optimized FlagGems locks, package provenance,
   and benchmark environment capture.
 
@@ -34,8 +37,15 @@ required and is not a completed item.
   `CUDA_VISIBLE_DEVICES=0 PYTHONPATH=../FlagGems-stofm/src \
   ../.venv-flagos-r2/bin/python -m pytest -q tests/test_flagos_adapter.py \
   tests/test_benchmark_aggregation.py` passed 14 tests on 2026-08-15.
-- [ ] API-3 Prove P1 Torch, F0 frozen-stock FlagOS, and optimized FlagOS retain
+- [x] API-3 Prove P1 Torch, F0 frozen-stock FlagOS, and optimized FlagOS retain
   the same SToFM output semantics before timing.
+  Evidence: frozen commit `03bf364ede763d573d5c30124d554283a209ab85` was
+  installed in `.venv-flagos-stock-r2`; `tests/test_frozen_stock_flagos.py`
+  passed on V100 (1 test, 2026-08-15) against canonical P1
+  `return_pair_rep=False`. Optimized P1/F0 equivalence is covered by the
+  14-test R2 suite recorded under API-2. The frozen package needed the scoped
+  official `FLAGGEMS_VENDOR=nvidia` hint because the V100 name lacks the word
+  `NVIDIA`; the hint is restored after registration and does not modify stock.
 
 ## 2. V100 Operators and Precision Matrix
 

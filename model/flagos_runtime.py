@@ -9,8 +9,11 @@ extraction job returns.
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
+import os
 from threading import RLock
 from typing import Iterator, Optional, Tuple
+
+import torch
 
 
 FLAGOS_MODES = ("torch", "stock", "optimized")
@@ -28,6 +31,7 @@ class FlagOSRuntimeDispatch:
     active: bool
     registered_aten_ops: Tuple[str, ...]
     reason: str
+    vendor_hint: Optional[str] = None
 
 
 _ACTIVE_SCOPE: ContextVar[Optional[FlagOSRuntimeDispatch]] = ContextVar(
@@ -55,6 +59,26 @@ def _registered_aten_ops(flag_gems) -> Tuple[str, ...]:
     except (AttributeError, NameError):
         return ()
     return tuple(sorted(str(item) for item in registered))
+
+
+@contextmanager
+def _temporary_vendor_hint() -> Iterator[Optional[str]]:
+    """Work around frozen FlagGems V100 detection without mutating its source.
+
+    The frozen stock commit identifies NVIDIA only when a device name contains
+    the literal word ``NVIDIA``. V100 reports ``Tesla V100-SXM2-16GB`` instead.
+    The official FlagGems vendor override is scoped around import/registration
+    and restored immediately, so the immutable stock package remains intact.
+    """
+    vendor_keys = ("GEMS_VENDOR", "FLAGGEMS_VENDOR", "GEMS_BACKEND", "FLAGGEMS_BACKEND")
+    if any(key in os.environ for key in vendor_keys) or not torch.cuda.is_available():
+        yield None
+        return
+    os.environ["FLAGGEMS_VENDOR"] = "nvidia"
+    try:
+        yield "nvidia"
+    finally:
+        os.environ.pop("FLAGGEMS_VENDOR", None)
 
 
 @contextmanager
@@ -97,26 +121,27 @@ def flagos_inference_scope(
         yield active
         return
 
-    try:
-        import flag_gems
-    except ImportError as exc:
-        raise RuntimeError(
-            f"flagos_mode='{normalized}' requires the pinned FlagGems package"
-        ) from exc
-
     # FlagGems' registrar owns a process-global ATen Library. Serializing
     # outer scopes prevents two Python threads from destroying each other's
     # temporary registration while retaining re-entrant use within one scope.
     with _FLAGGEMS_SCOPE_LOCK:
-        with flag_gems.use_gems(include=STOFM_ATEN_ALLOWLIST):
-            record = FlagOSRuntimeDispatch(
-                mode=normalized,
-                active=True,
-                registered_aten_ops=_registered_aten_ops(flag_gems),
-                reason="scoped FlagGems ATen dispatch",
-            )
-            token = _ACTIVE_SCOPE.set(record)
+        with _temporary_vendor_hint() as vendor_hint:
             try:
-                yield record
-            finally:
-                _ACTIVE_SCOPE.reset(token)
+                import flag_gems
+            except ImportError as exc:
+                raise RuntimeError(
+                    f"flagos_mode='{normalized}' requires the pinned FlagGems package"
+                ) from exc
+            with flag_gems.use_gems(include=STOFM_ATEN_ALLOWLIST):
+                record = FlagOSRuntimeDispatch(
+                    mode=normalized,
+                    active=True,
+                    registered_aten_ops=_registered_aten_ops(flag_gems),
+                    reason="scoped FlagGems ATen dispatch",
+                    vendor_hint=vendor_hint,
+                )
+                token = _ACTIVE_SCOPE.set(record)
+                try:
+                    yield record
+                finally:
+                    _ACTIVE_SCOPE.reset(token)
