@@ -40,6 +40,18 @@ ATEN_CLASSIFICATION = {
 }
 
 
+def classify_event(name: str) -> str:
+    if name in ATEN_CLASSIFICATION:
+        return ATEN_CLASSIFICATION[name]
+    if "_marker_token_embed_kernel" in name:
+        return "nvidia_custom_marker_token_kernel"
+    if "swiglu_kernel" in name:
+        return "flaggems_existing_swiglu_kernel_rejected"
+    if "layer_norm_kernel" in name:
+        return "torch_retained_candidate_rejected"
+    return "unclassified"
+
+
 def _event_value(event: Any, attribute: str) -> float:
     value = getattr(event, attribute, 0.0)
     return float(value) if value is not None else 0.0
@@ -57,7 +69,7 @@ def _profile_rows(profile: Any, limit: int) -> List[Dict[str, Any]]:
                 "count": int(getattr(event, "count", 0)),
                 "self_cuda_us": cuda_us,
                 "self_cpu_us": _event_value(event, "self_cpu_time_total"),
-                "classification": ATEN_CLASSIFICATION.get(event.key, "unclassified"),
+                "classification": classify_event(event.key),
             }
         )
     rows.sort(key=lambda row: (row["self_cuda_us"], row["self_cpu_us"]), reverse=True)
@@ -115,24 +127,24 @@ def main() -> None:
         reference_value = _invoke(operation, "torch", tensors)[::2]
         if use_flagos_scope:
             with flagos_inference_scope("optimized") as scope_dispatch:
-                _invoke_and_validate(operation, backend, tensors, reference_value, dtype)
+                output, dispatch, _ = _invoke_and_validate(
+                    operation, backend, tensors, reference_value, dtype
+                )
                 torch.cuda.synchronize()
                 with torch.profiler.profile(
                     activities=activities, record_shapes=True, profile_memory=True
                 ) as profile:
-                    output, dispatch, _ = _invoke_and_validate(
-                        operation, backend, tensors, reference_value, dtype
-                    )
+                    _invoke(operation, backend, tensors)
                 scope = jsonable(scope_dispatch)
         else:
-            _invoke_and_validate(operation, backend, tensors, reference_value, dtype)
+            output, dispatch, _ = _invoke_and_validate(
+                operation, backend, tensors, reference_value, dtype
+            )
             torch.cuda.synchronize()
             with torch.profiler.profile(
                 activities=activities, record_shapes=True, profile_memory=True
             ) as profile:
-                output, dispatch, _ = _invoke_and_validate(
-                    operation, backend, tensors, reference_value, dtype
-                )
+                _invoke(operation, backend, tensors)
             scope = None
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
