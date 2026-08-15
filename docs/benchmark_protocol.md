@@ -1,5 +1,9 @@
 # SToFM Operator Benchmark Protocol
 
+> Historical R1 protocol. R2 uses P1/F0/C1/C2/Ffinal, frozen-stock process
+> isolation, raw checksum manifests, and 10,000-resample bootstrap intervals.
+> See `docs/flagos_inference_r2_report.md` for the executable R2 evidence.
+
 This protocol is the evidence contract for the FlagGems integration.  It
 separates a measured result from an optimization target so benchmark reports
 cannot turn an unverified estimate into a performance claim.

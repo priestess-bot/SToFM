@@ -1,5 +1,9 @@
 # SToFM Operator Roadmap
 
+> Historical R1 roadmap. The current R2 coverage, measurements, and promotion
+> decisions are in `docs/flagos_inference_r2_report.md`; do not compare the
+> older O-stage values below with R2 results.
+
 The integration narrows the optimization surface to the two operations that
 dominate SToFM's pair-state path.  The stages below distinguish implemented
 code from deferred hardware work.

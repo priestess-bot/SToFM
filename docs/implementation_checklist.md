@@ -1,5 +1,8 @@
 # FlagOS Operator Optimization Execution Checklist
 
+> Historical R1 checklist. The active completion record is
+> `docs/flagos_inference_r2_checklist.md`.
+
 Last updated: 2026-08-15
 
 This is the source of truth for the work requested for SToFM, Uni2, KRONOS,

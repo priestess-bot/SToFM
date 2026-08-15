@@ -256,7 +256,11 @@ def _write_result(output_dir: Path, result: Dict[str, Any]) -> None:
         json.dumps(jsonable(result), indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     with (output_dir / "samples.csv").open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["stage", "sample_index", "latency_ms"])
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=["stage", "sample_index", "latency_ms"],
+            lineterminator="\n",
+        )
         writer.writeheader()
         for row in result["results"]:
             for index, sample in enumerate(row["samples_ms"]):

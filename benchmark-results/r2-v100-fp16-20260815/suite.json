@@ -1,0 +1,2297 @@
+{
+  "aggregate": {
+    "bootstrap_resamples": 10000,
+    "stages": [
+      {
+        "comparison_baseline": "F0_stock_steady",
+        "gain_kind": "compiler_routing",
+        "p50_ms": {
+          "max": 8.371814346313478,
+          "mean": 8.227840042114257,
+          "median": 8.181248092651366,
+          "min": 8.13045768737793
+        },
+        "peak_delta_allocated_mib": {
+          "max": 79.294921875,
+          "mean": 79.294921875,
+          "median": 79.294921875,
+          "min": 79.294921875
+        },
+        "run_count": 3,
+        "speedup": {
+          "bootstrap_95_ci": {
+            "lower": 2.3185203333783355,
+            "upper": 2.364913159728961
+          },
+          "point_estimate": 2.352464338925428,
+          "resamples": 10000
+        },
+        "stage": "C1_gaussian_compiler",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "F0_stock_steady",
+        "gain_kind": "custom_kernel",
+        "p50_ms": {
+          "max": 19.015270233154297,
+          "mean": 19.003221130371095,
+          "median": 18.998988342285156,
+          "min": 18.99540481567383
+        },
+        "peak_delta_allocated_mib": {
+          "max": 1617.068359375,
+          "mean": 1617.068359375,
+          "median": 1617.068359375,
+          "min": 1617.068359375
+        },
+        "run_count": 3,
+        "speedup": {
+          "bootstrap_95_ci": {
+            "lower": 1.0177800414739178,
+            "upper": 1.0182207118890236
+          },
+          "point_estimate": 1.0179814812242396,
+          "resamples": 10000
+        },
+        "stage": "C2_pair_native_epilogue",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "P1_canonical_torch",
+        "gain_kind": "flaggems_lifecycle",
+        "p50_ms": {
+          "max": 19.403775787353517,
+          "mean": 19.396675872802735,
+          "median": 19.401625061035155,
+          "min": 19.38462677001953
+        },
+        "peak_delta_allocated_mib": {
+          "max": 1617.068359375,
+          "mean": 1617.068359375,
+          "median": 1617.068359375,
+          "min": 1617.068359375
+        },
+        "run_count": 3,
+        "speedup": {
+          "bootstrap_95_ci": {
+            "lower": 1.0835871100986518,
+            "upper": 1.0840380283619957
+          },
+          "point_estimate": 1.083813238888392,
+          "resamples": 10000
+        },
+        "stage": "F0_stock_lifecycle",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "P1_canonical_torch",
+        "gain_kind": "stock_aten",
+        "p50_ms": {
+          "max": 19.350118255615236,
+          "mean": 19.34247258504232,
+          "median": 19.348992156982423,
+          "min": 19.3283073425293
+        },
+        "peak_delta_allocated_mib": {
+          "max": 1617.068359375,
+          "mean": 1617.068359375,
+          "median": 1617.068359375,
+          "min": 1617.068359375
+        },
+        "run_count": 3,
+        "speedup": {
+          "bootstrap_95_ci": {
+            "lower": 1.0866094685228946,
+            "upper": 1.087073437429312
+          },
+          "point_estimate": 1.0868423664905338,
+          "resamples": 10000
+        },
+        "stage": "F0_stock_steady",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "F0_stock_steady",
+        "gain_kind": "flaggems_lifecycle",
+        "p50_ms": {
+          "max": 9.980620956420898,
+          "mean": 9.472887420654297,
+          "median": 9.300479888916016,
+          "min": 9.137561416625978
+        },
+        "peak_delta_allocated_mib": {
+          "max": 71.39599609375,
+          "mean": 71.39599609375,
+          "median": 71.39599609375,
+          "min": 71.39599609375
+        },
+        "run_count": 3,
+        "speedup": {
+          "bootstrap_95_ci": {
+            "lower": 1.991146158048743,
+            "upper": 2.0807664945483086
+          },
+          "point_estimate": 2.051483425111744,
+          "resamples": 10000
+        },
+        "stage": "Ffinal_optimized_lifecycle",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "F0_stock_steady",
+        "gain_kind": "combined",
+        "p50_ms": {
+          "max": 9.402982330322265,
+          "mean": 8.979933929443359,
+          "median": 8.81786880493164,
+          "min": 8.718950653076172
+        },
+        "peak_delta_allocated_mib": {
+          "max": 71.39599609375,
+          "mean": 71.39599609375,
+          "median": 71.39599609375,
+          "min": 71.39599609375
+        },
+        "run_count": 3,
+        "speedup": {
+          "bootstrap_95_ci": {
+            "lower": 2.0984839576465086,
+            "upper": 2.181135976961863
+          },
+          "point_estimate": 2.1511352565579323,
+          "resamples": 10000
+        },
+        "stage": "Ffinal_optimized_steady",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "P0_legacy_pair_output",
+        "gain_kind": "model_lifecycle",
+        "p50_ms": {
+          "max": 21.27831115722656,
+          "mean": 21.27496566772461,
+          "median": 21.276364898681642,
+          "min": 21.270220947265628
+        },
+        "peak_delta_allocated_mib": {
+          "max": 1617.068359375,
+          "mean": 1617.068359375,
+          "median": 1617.068359375,
+          "min": 1617.068359375
+        },
+        "run_count": 3,
+        "stage": "P0_legacy_pair_output",
+        "total_raw_samples": 90
+      },
+      {
+        "comparison_baseline": "P1_canonical_torch",
+        "gain_kind": "model_lifecycle",
+        "p50_ms": {
+          "max": 21.03060455322266,
+          "mean": 21.025450642903646,
+          "median": 21.026815795898436,
+          "min": 21.018931579589843
+        },
+        "peak_delta_allocated_mib": {
+          "max": 1617.068359375,
+          "mean": 1617.068359375,
+          "median": 1617.068359375,
+          "min": 1617.068359375
+        },
+        "run_count": 3,
+        "stage": "P1_canonical_torch",
+        "total_raw_samples": 90
+      }
+    ]
+  },
+  "precision": "fp16",
+  "run_count": 3,
+  "schema_version": 2,
+  "trials": [
+    {
+      "commits": {
+        "optimized_flaggems": "a9a96bbcc3d685482c656343e0759b7b4a5c38bc",
+        "stock_flaggems": "03bf364ede763d573d5c30124d554283a209ab85",
+        "stofm": "e01b0a9d8348101815fba63224910a25830c29a9"
+      },
+      "optimized_result": "run-01/optimized/result.json",
+      "optimized_sha256": "46987b66f1444248b1427c2f3b05fc380cdce8e2bdf5b31aaf78bd4b6c707b42",
+      "reference_sha256": "a2cfaf2864fd99869b1496997b2ef73b517996de83341c23dc6e0f8ac851fa7d",
+      "results": [
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P0_legacy_pair_output",
+          "description": "Legacy end-to-end Torch inference that materializes the final pair representation.",
+          "dispatch": {
+            "gaussian": null,
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": false,
+              "mode": "torch",
+              "reason": "Torch baseline mode",
+              "registered_aten_ops": [],
+              "vendor_hint": null
+            }
+          },
+          "gain_kind": "model_lifecycle",
+          "mean_ms": 21.276658274332682,
+          "measurement_scope": "none",
+          "p20_ms": 21.2645068359375,
+          "p50_ms": 21.270220947265628,
+          "p80_ms": 21.28056365966797,
+          "p95_ms": 21.306542205810544,
+          "peak_allocated_mib": 1659.82958984375,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            21.282815551757814,
+            21.28035888671875,
+            21.26499786376953,
+            21.273190307617188,
+            21.267251586914064,
+            21.289984130859374,
+            21.270527648925782,
+            21.269503784179687,
+            21.267660522460936,
+            21.26192626953125,
+            21.262541198730467,
+            21.282611083984374,
+            21.260287475585937,
+            21.272781372070312,
+            21.26991424560547,
+            21.277285766601562,
+            21.281382751464843,
+            21.268888854980467,
+            21.26929931640625,
+            21.264588928222658,
+            21.27605743408203,
+            21.320089721679686,
+            21.27626190185547,
+            21.270732116699218,
+            21.264178466796874,
+            21.263360595703126,
+            21.259674072265625,
+            21.268275451660156,
+            21.272370910644533,
+            21.390950012207032
+          ],
+          "scope": "end_to_end",
+          "stage": "P0_legacy_pair_output",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "a2cfaf2864fd99869b1496997b2ef73b517996de83341c23dc6e0f8ac851fa7d",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P1_canonical_torch",
+          "description": "Canonical Torch inference that omits the unused final pair representation.",
+          "dispatch": {
+            "gaussian": null,
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": false,
+              "mode": "torch",
+              "reason": "Torch baseline mode",
+              "registered_aten_ops": [],
+              "vendor_hint": null
+            }
+          },
+          "gain_kind": "model_lifecycle",
+          "mean_ms": 21.02131383260091,
+          "measurement_scope": "none",
+          "p20_ms": 21.014938354492188,
+          "p50_ms": 21.018931579589843,
+          "p80_ms": 21.02403076171875,
+          "p95_ms": 21.038356170654296,
+          "peak_allocated_mib": 1643.00634765625,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            21.033984375,
+            21.024359130859374,
+            21.016986083984374,
+            21.01678009033203,
+            21.01227569580078,
+            21.01903381347656,
+            21.018214416503906,
+            21.023948669433594,
+            21.036441040039062,
+            21.023129272460938,
+            21.011251831054686,
+            21.039923095703124,
+            21.018829345703125,
+            21.019442749023437,
+            21.020877075195312,
+            21.014938354492188,
+            21.014323425292968,
+            21.013912963867188,
+            21.013299560546876,
+            21.05016326904297,
+            21.020262145996092,
+            21.01862335205078,
+            21.018829345703125,
+            21.021900939941407,
+            21.017190551757814,
+            21.01985321044922,
+            21.02783966064453,
+            21.018829345703125,
+            21.014938354492188,
+            21.01903381347656
+          ],
+          "scope": "end_to_end",
+          "stage": "P1_canonical_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "a2cfaf2864fd99869b1496997b2ef73b517996de83341c23dc6e0f8ac851fa7d",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P1_canonical_torch",
+          "description": "Frozen FlagGems stock ATen scope created and destroyed for every model call.",
+          "dispatch": {
+            "gaussian": null,
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "flaggems_lifecycle",
+          "mean_ms": 19.393563232421876,
+          "measurement_scope": "per_call",
+          "p20_ms": 19.369860839843753,
+          "p50_ms": 19.38462677001953,
+          "p80_ms": 19.402301025390624,
+          "p95_ms": 19.45950210571289,
+          "peak_allocated_mib": 1643.00634765625,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            19.386572265625,
+            19.387802124023438,
+            19.41033020019531,
+            19.401522827148437,
+            19.385752868652343,
+            19.370393371582033,
+            19.39087371826172,
+            19.439411926269532,
+            19.467059326171874,
+            19.38268127441406,
+            19.371212768554688,
+            19.35810546875,
+            19.38841552734375,
+            19.45026550292969,
+            19.52686004638672,
+            19.38165740966797,
+            19.366297912597656,
+            19.387596130371094,
+            19.378585815429688,
+            19.405413818359374,
+            19.365682983398436,
+            19.360563659667967,
+            19.383091735839844,
+            19.379405212402343,
+            19.399679565429686,
+            19.39210205078125,
+            19.38350067138672,
+            19.37305603027344,
+            19.367730712890626,
+            19.365274047851564
+          ],
+          "scope": "end_to_end",
+          "stage": "F0_stock_lifecycle",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "7751b5d6e69de32f481b6fee101ca0efc228f8c9fd6abe1f47ab83f5393e7da0",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P1_canonical_torch",
+          "description": "Frozen FlagGems stock ATen scope kept open across timed calls.",
+          "dispatch": {
+            "gaussian": null,
+            "outer_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "stock_aten",
+          "mean_ms": 19.32993184407552,
+          "measurement_scope": "steady",
+          "p20_ms": 19.32185546875,
+          "p50_ms": 19.3283073425293,
+          "p80_ms": 19.340410766601565,
+          "p95_ms": 19.346749038696288,
+          "peak_allocated_mib": 1643.00634765625,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            19.34028778076172,
+            19.324517822265626,
+            19.34868469238281,
+            19.309158325195312,
+            19.335577392578124,
+            19.322674560546876,
+            19.318170166015626,
+            19.323699951171875,
+            19.312229919433594,
+            19.32472381591797,
+            19.317964172363283,
+            19.34192657470703,
+            19.32984313964844,
+            19.3396728515625,
+            19.323085021972656,
+            19.34950408935547,
+            19.332505798339845,
+            19.327180480957033,
+            19.3185791015625,
+            19.344383239746094,
+            19.33701171875,
+            19.327180480957033,
+            19.329434204101563,
+            19.340902709960936,
+            19.332095336914062,
+            19.325541687011718,
+            19.325337219238282,
+            19.344383239746094,
+            19.318170166015626,
+            19.333529663085937
+          ],
+          "scope": "end_to_end",
+          "stage": "F0_stock_steady",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "7751b5d6e69de32f481b6fee101ca0efc228f8c9fd6abe1f47ab83f5393e7da0",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "FlagGems ATen plus the explicit SToFM Gaussian compiler candidate.",
+          "dispatch": {
+            "gaussian": {
+              "operator": "gaussian_pair_bias",
+              "precision": "fp16",
+              "reason": "explicit CUDA compiler backend",
+              "requested": "inductor",
+              "selected": "inductor"
+            },
+            "outer_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "compiler_routing",
+          "mean_ms": 8.37143892923991,
+          "measurement_scope": "steady",
+          "p20_ms": 8.06334442138672,
+          "p50_ms": 8.181248092651366,
+          "p80_ms": 8.633589935302735,
+          "p95_ms": 9.101496391296386,
+          "peak_allocated_mib": 97.10888671875,
+          "peak_delta_allocated_mib": 79.294921875,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 1478.0,
+          "sample_count": 30,
+          "samples_ms": [
+            8.631501007080079,
+            8.494489288330078,
+            8.523366546630859,
+            9.020620727539063,
+            8.06461410522461,
+            8.052735900878906,
+            8.058265686035156,
+            8.081613159179687,
+            8.020787048339844,
+            8.035533142089843,
+            8.069529724121093,
+            8.076697540283202,
+            8.02344970703125,
+            8.054169464111329,
+            8.6255615234375,
+            8.845107269287109,
+            9.497395324707032,
+            8.64194564819336,
+            8.406835174560547,
+            8.431820678710938,
+            8.75335693359375,
+            9.167667388916016,
+            8.518246459960938,
+            8.156364440917969,
+            8.067481231689452,
+            8.080793762207032,
+            8.113356781005859,
+            8.205926513671875,
+            8.267366027832031,
+            8.156569671630859
+          ],
+          "scope": "end_to_end",
+          "stage": "C1_gaussian_compiler",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "87fe066c198fbea52a23cf00f442a3e4eaae30b27850d3d0f41f2e9cc143d2a4",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "FlagGems ATen plus the native SToFM pair-score epilogue candidate.",
+          "dispatch": {
+            "gaussian": null,
+            "outer_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": {
+              "operator": "pair_attention",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA native inference backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            },
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "custom_kernel",
+          "mean_ms": 19.02075210571289,
+          "measurement_scope": "steady",
+          "p20_ms": 19.00457946777344,
+          "p50_ms": 19.015270233154297,
+          "p80_ms": 19.035791015624998,
+          "p95_ms": 19.055779418945313,
+          "peak_allocated_mib": 1634.88232421875,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 3098.0,
+          "sample_count": 30,
+          "samples_ms": [
+            19.03267822265625,
+            19.065855407714842,
+            19.01096954345703,
+            19.004620361328126,
+            19.012608337402344,
+            19.02100524902344,
+            19.007078552246092,
+            19.022438049316406,
+            19.00052490234375,
+            19.005030822753906,
+            19.010560607910158,
+            19.012608337402344,
+            19.0097412109375,
+            19.033497619628907,
+            19.000729370117188,
+            19.01793212890625,
+            19.03574981689453,
+            19.005644226074217,
+            19.001344299316408,
+            19.002777099609375,
+            19.004415893554686,
+            19.00195770263672,
+            19.018751525878905,
+            19.026124572753908,
+            19.030426025390625,
+            19.059097290039062,
+            19.03759307861328,
+            19.043122863769533,
+            19.035955810546874,
+            19.051724243164063
+          ],
+          "scope": "end_to_end",
+          "stage": "C2_pair_native_epilogue",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "7927776905738c57fbd29fc45dda6fdf1e6146026e2ebd211441ca812bb9963e",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "Combined optimized FlagGems route including temporary scope lifecycle.",
+          "dispatch": {
+            "gaussian": {
+              "operator": "gaussian_pair_bias",
+              "precision": "fp16",
+              "reason": "CUDA compiler backend",
+              "requested": "auto",
+              "selected": "inductor"
+            },
+            "pair_attention_layer0": {
+              "operator": "pair_attention",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA native inference backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            },
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "flaggems_lifecycle",
+          "mean_ms": 10.025792872111003,
+          "measurement_scope": "per_call",
+          "p20_ms": 9.812991943359375,
+          "p50_ms": 9.980620956420898,
+          "p80_ms": 10.188349151611328,
+          "p95_ms": 10.430965728759766,
+          "peak_allocated_mib": 89.2099609375,
+          "peak_delta_allocated_mib": 71.39599609375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 3098.0,
+          "sample_count": 30,
+          "samples_ms": [
+            9.997926330566406,
+            10.354483032226563,
+            9.836953735351562,
+            10.302259063720703,
+            10.050355529785156,
+            10.184294128417969,
+            9.89818878173828,
+            9.816883087158203,
+            9.775513458251954,
+            9.938329315185547,
+            9.791693115234375,
+            9.774899291992188,
+            9.863782501220703,
+            9.956966400146484,
+            10.090290832519532,
+            10.204569244384766,
+            10.131251525878906,
+            9.797427368164062,
+            9.735987091064453,
+            9.913958740234374,
+            9.99178237915039,
+            9.917849731445312,
+            9.794969940185547,
+            9.974784088134765,
+            10.144358062744141,
+            10.49354248046875,
+            10.640589141845703,
+            10.071244812011718,
+            9.986457824707031,
+            10.342195129394531
+          ],
+          "scope": "end_to_end",
+          "stage": "Ffinal_optimized_lifecycle",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "8c816510d85fd01b63c76df20a0ff245b50d452232ed9de35121fcb7b489acf2",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "Combined FlagGems ATen, Gaussian compiler, and pair epilogue steady-state route.",
+          "dispatch": {
+            "gaussian": {
+              "operator": "gaussian_pair_bias",
+              "precision": "fp16",
+              "reason": "CUDA compiler backend",
+              "requested": "auto",
+              "selected": "inductor"
+            },
+            "outer_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": {
+              "operator": "pair_attention",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA native inference backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            },
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "combined",
+          "mean_ms": 9.595521647135417,
+          "measurement_scope": "steady",
+          "p20_ms": 9.24975082397461,
+          "p50_ms": 9.402982330322265,
+          "p80_ms": 9.974825134277344,
+          "p95_ms": 10.391234588623046,
+          "peak_allocated_mib": 89.2099609375,
+          "peak_delta_allocated_mib": 71.39599609375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 3098.0,
+          "sample_count": 30,
+          "samples_ms": [
+            9.551872253417969,
+            9.406463623046875,
+            9.879551696777344,
+            9.723494720458984,
+            10.105241394042968,
+            9.39315185546875,
+            9.379430389404297,
+            9.59447021484375,
+            9.214566040039063,
+            9.232383728027344,
+            9.089433288574218,
+            9.25265884399414,
+            9.568665313720704,
+            9.396018981933594,
+            9.341337585449219,
+            9.403392028808593,
+            9.1652099609375,
+            9.402572631835938,
+            9.190399932861329,
+            9.322291564941406,
+            9.942221069335938,
+            10.128793334960937,
+            10.139852905273438,
+            9.238118743896484,
+            9.393561553955077,
+            10.3372802734375,
+            10.521395111083985,
+            10.435379028320312,
+            9.726156616210938,
+            9.390284729003906
+          ],
+          "scope": "end_to_end",
+          "stage": "Ffinal_optimized_steady",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "8c816510d85fd01b63c76df20a0ff245b50d452232ed9de35121fcb7b489acf2",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        }
+      ],
+      "run_index": 1,
+      "stock_result": "run-01/stock/result.json",
+      "stock_sha256": "0ac476e7c8191d28e7006b38d8c9ac0d19de7462dd56681e21e6f5c6a90be167"
+    },
+    {
+      "commits": {
+        "optimized_flaggems": "a9a96bbcc3d685482c656343e0759b7b4a5c38bc",
+        "stock_flaggems": "03bf364ede763d573d5c30124d554283a209ab85",
+        "stofm": "e01b0a9d8348101815fba63224910a25830c29a9"
+      },
+      "optimized_result": "run-02/optimized/result.json",
+      "optimized_sha256": "4f00b2bc40ca3ec2b7da3b3c3e5b3d133f1a173d59c5020675e80255b0ef2627",
+      "reference_sha256": "a2cfaf2864fd99869b1496997b2ef73b517996de83341c23dc6e0f8ac851fa7d",
+      "results": [
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P0_legacy_pair_output",
+          "description": "Legacy end-to-end Torch inference that materializes the final pair representation.",
+          "dispatch": {
+            "gaussian": null,
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": false,
+              "mode": "torch",
+              "reason": "Torch baseline mode",
+              "registered_aten_ops": [],
+              "vendor_hint": null
+            }
+          },
+          "gain_kind": "model_lifecycle",
+          "mean_ms": 21.278023732503254,
+          "measurement_scope": "none",
+          "p20_ms": 21.269053649902343,
+          "p50_ms": 21.276364898681642,
+          "p80_ms": 21.285396728515625,
+          "p95_ms": 21.294100036621092,
+          "peak_allocated_mib": 1659.82958984375,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            21.30309143066406,
+            21.281996154785155,
+            21.2674560546875,
+            21.272166442871093,
+            21.28670654296875,
+            21.27667236328125,
+            21.267864990234376,
+            21.27298583984375,
+            21.281382751464843,
+            21.29387512207031,
+            21.285069274902344,
+            21.285069274902344,
+            21.28363494873047,
+            21.294284057617187,
+            21.288960266113282,
+            21.273394775390624,
+            21.27605743408203,
+            21.27298583984375,
+            21.2600830078125,
+            21.277081298828126,
+            21.274624633789063,
+            21.270118713378906,
+            21.275852966308594,
+            21.26622772216797,
+            21.291827392578124,
+            21.26929931640625,
+            21.277081298828126,
+            21.26807098388672,
+            21.26561279296875,
+            21.281178283691407
+          ],
+          "scope": "end_to_end",
+          "stage": "P0_legacy_pair_output",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "a2cfaf2864fd99869b1496997b2ef73b517996de83341c23dc6e0f8ac851fa7d",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P1_canonical_torch",
+          "description": "Canonical Torch inference that omits the unused final pair representation.",
+          "dispatch": {
+            "gaussian": null,
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": false,
+              "mode": "torch",
+              "reason": "Torch baseline mode",
+              "registered_aten_ops": [],
+              "vendor_hint": null
+            }
+          },
+          "gain_kind": "model_lifecycle",
+          "mean_ms": 21.031949615478517,
+          "measurement_scope": "none",
+          "p20_ms": 21.019197387695314,
+          "p50_ms": 21.026815795898436,
+          "p80_ms": 21.032918701171873,
+          "p95_ms": 21.0499373626709,
+          "peak_allocated_mib": 1643.00634765625,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            21.023948669433594,
+            21.011865234375,
+            21.01964874267578,
+            21.028659057617187,
+            21.023539733886718,
+            21.057125854492188,
+            21.01903381347656,
+            21.031936645507812,
+            21.025791931152344,
+            21.032550048828124,
+            21.181849670410156,
+            21.041151428222655,
+            21.01923828125,
+            21.014323425292968,
+            21.031526184082033,
+            21.037464904785157,
+            21.030911254882813,
+            21.03541717529297,
+            21.026406860351564,
+            21.029682922363282,
+            21.01923828125,
+            21.026815795898436,
+            21.0229248046875,
+            21.026815795898436,
+            21.034393310546875,
+            21.027430725097656,
+            21.018214416503906,
+            21.029478454589842,
+            21.01616668701172,
+            21.014938354492188
+          ],
+          "scope": "end_to_end",
+          "stage": "P1_canonical_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "a2cfaf2864fd99869b1496997b2ef73b517996de83341c23dc6e0f8ac851fa7d",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P1_canonical_torch",
+          "description": "Frozen FlagGems stock ATen scope created and destroyed for every model call.",
+          "dispatch": {
+            "gaussian": null,
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "flaggems_lifecycle",
+          "mean_ms": 19.424371999104817,
+          "measurement_scope": "per_call",
+          "p20_ms": 19.396771240234372,
+          "p50_ms": 19.401625061035155,
+          "p80_ms": 19.40852783203125,
+          "p95_ms": 19.478600158691407,
+          "peak_allocated_mib": 1643.00634765625,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            19.971891784667967,
+            19.533619689941407,
+            19.404185485839843,
+            19.404185485839843,
+            19.411354064941406,
+            19.410739135742187,
+            19.402137756347656,
+            19.403366088867188,
+            19.408486938476564,
+            19.405413818359374,
+            19.40869140625,
+            19.39189758300781,
+            19.388621520996093,
+            19.401727294921876,
+            19.401522827148437,
+            19.403570556640624,
+            19.399270629882814,
+            19.399066162109374,
+            19.398655700683594,
+            19.398655700683594,
+            19.407872009277344,
+            19.392921447753906,
+            19.39578857421875,
+            19.397222900390624,
+            19.397427368164063,
+            19.39701690673828,
+            19.409715270996095,
+            19.390463256835936,
+            19.400498962402345,
+            19.395173645019533
+          ],
+          "scope": "end_to_end",
+          "stage": "F0_stock_lifecycle",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "7751b5d6e69de32f481b6fee101ca0efc228f8c9fd6abe1f47ab83f5393e7da0",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P1_canonical_torch",
+          "description": "Frozen FlagGems stock ATen scope kept open across timed calls.",
+          "dispatch": {
+            "gaussian": null,
+            "outer_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "stock_aten",
+          "mean_ms": 19.35230972290039,
+          "measurement_scope": "steady",
+          "p20_ms": 19.343278503417967,
+          "p50_ms": 19.350118255615236,
+          "p80_ms": 19.355320434570313,
+          "p95_ms": 19.381729278564453,
+          "peak_allocated_mib": 1643.00634765625,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            19.395584106445312,
+            19.38329620361328,
+            19.359744262695312,
+            19.344793701171874,
+            19.37981414794922,
+            19.35503387451172,
+            19.35503387451172,
+            19.350323486328126,
+            19.34151611328125,
+            19.34192657470703,
+            19.343565368652342,
+            19.343974304199218,
+            19.342131042480467,
+            19.356466674804686,
+            19.346432495117188,
+            19.34151611328125,
+            19.352780151367188,
+            19.341722106933595,
+            19.34745635986328,
+            19.343565368652342,
+            19.347865295410156,
+            19.35667266845703,
+            19.352371215820312,
+            19.351756286621093,
+            19.349913024902342,
+            19.351551818847657,
+            19.34028778076172,
+            19.34888916015625,
+            19.35257568359375,
+            19.350732421875
+          ],
+          "scope": "end_to_end",
+          "stage": "F0_stock_steady",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "7751b5d6e69de32f481b6fee101ca0efc228f8c9fd6abe1f47ab83f5393e7da0",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "FlagGems ATen plus the explicit SToFM Gaussian compiler candidate.",
+          "dispatch": {
+            "gaussian": {
+              "operator": "gaussian_pair_bias",
+              "precision": "fp16",
+              "reason": "explicit CUDA compiler backend",
+              "requested": "inductor",
+              "selected": "inductor"
+            },
+            "outer_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "compiler_routing",
+          "mean_ms": 8.21794817606608,
+          "measurement_scope": "steady",
+          "p20_ms": 8.078131256103516,
+          "p50_ms": 8.13045768737793,
+          "p80_ms": 8.28452880859375,
+          "p95_ms": 8.807106475830077,
+          "peak_allocated_mib": 97.10888671875,
+          "peak_delta_allocated_mib": 79.294921875,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 1222.0,
+          "sample_count": 30,
+          "samples_ms": [
+            8.022425842285156,
+            8.078950500488281,
+            8.120524597167968,
+            8.206950378417968,
+            8.739635467529297,
+            8.464998626708985,
+            8.361779022216798,
+            8.266957092285157,
+            8.172953796386718,
+            8.084889221191407,
+            8.180735778808593,
+            8.074854278564453,
+            8.031436920166016,
+            8.043929290771484,
+            8.20162582397461,
+            8.038809967041015,
+            8.209407806396484,
+            8.084889221191407,
+            8.117657470703126,
+            8.087551879882813,
+            8.108441925048828,
+            8.87193603515625,
+            8.862310028076172,
+            8.354815673828124,
+            8.085913848876952,
+            8.148172760009766,
+            8.140390777587891,
+            8.085913848876952,
+            8.072806549072265,
+            8.216780853271484
+          ],
+          "scope": "end_to_end",
+          "stage": "C1_gaussian_compiler",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "87fe066c198fbea52a23cf00f442a3e4eaae30b27850d3d0f41f2e9cc143d2a4",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "FlagGems ATen plus the native SToFM pair-score epilogue candidate.",
+          "dispatch": {
+            "gaussian": null,
+            "outer_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": {
+              "operator": "pair_attention",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA native inference backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            },
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "custom_kernel",
+          "mean_ms": 19.002832183837892,
+          "measurement_scope": "steady",
+          "p20_ms": 18.98901550292969,
+          "p50_ms": 18.99540481567383,
+          "p80_ms": 19.019039001464844,
+          "p95_ms": 19.034142990112304,
+          "peak_allocated_mib": 1634.88232421875,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2842.0,
+          "sample_count": 30,
+          "samples_ms": [
+            19.004006958007814,
+            19.006668090820312,
+            18.992742919921874,
+            19.001548767089844,
+            18.985574340820314,
+            18.991513061523438,
+            18.990284729003907,
+            18.985369873046874,
+            18.992127990722658,
+            18.989056396484376,
+            19.00421142578125,
+            19.04517059326172,
+            19.018138122558593,
+            18.998681640625,
+            19.011378479003906,
+            18.995814514160156,
+            19.030015563964845,
+            18.991513061523438,
+            18.991513061523438,
+            18.987826538085937,
+            19.025920104980468,
+            19.022642517089842,
+            19.004620361328126,
+            19.037184143066405,
+            18.987213134765625,
+            18.992742919921874,
+            19.030426025390625,
+            18.988851928710936,
+            18.9949951171875,
+            18.987213134765625
+          ],
+          "scope": "end_to_end",
+          "stage": "C2_pair_native_epilogue",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "7927776905738c57fbd29fc45dda6fdf1e6146026e2ebd211441ca812bb9963e",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "Combined optimized FlagGems route including temporary scope lifecycle.",
+          "dispatch": {
+            "gaussian": {
+              "operator": "gaussian_pair_bias",
+              "precision": "fp16",
+              "reason": "CUDA compiler backend",
+              "requested": "auto",
+              "selected": "inductor"
+            },
+            "pair_attention_layer0": {
+              "operator": "pair_attention",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA native inference backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            },
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "flaggems_lifecycle",
+          "mean_ms": 9.220662562052409,
+          "measurement_scope": "per_call",
+          "p20_ms": 8.972779541015624,
+          "p50_ms": 9.137561416625978,
+          "p80_ms": 9.347112884521485,
+          "p95_ms": 9.878599739074707,
+          "peak_allocated_mib": 89.2099609375,
+          "peak_delta_allocated_mib": 71.39599609375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2842.0,
+          "sample_count": 30,
+          "samples_ms": [
+            9.108480072021484,
+            9.093734741210938,
+            8.820121765136719,
+            8.879923248291016,
+            9.090866851806641,
+            9.146572875976563,
+            8.952627563476563,
+            9.21743392944336,
+            9.214566040039063,
+            8.995225524902343,
+            9.324543762207032,
+            9.249587249755859,
+            9.068953704833984,
+            8.991744232177734,
+            9.144319915771485,
+            8.942591857910156,
+            9.401548767089844,
+            9.791078186035156,
+            9.334783935546875,
+            8.97781753540039,
+            8.936038208007812,
+            10.61560287475586,
+            9.950208282470703,
+            9.308159637451173,
+            8.930508422851563,
+            9.13080291748047,
+            9.432268524169922,
+            9.147392272949219,
+            9.025945281982422,
+            9.396428680419922
+          ],
+          "scope": "end_to_end",
+          "stage": "Ffinal_optimized_lifecycle",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "8c816510d85fd01b63c76df20a0ff245b50d452232ed9de35121fcb7b489acf2",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "Combined FlagGems ATen, Gaussian compiler, and pair epilogue steady-state route.",
+          "dispatch": {
+            "gaussian": {
+              "operator": "gaussian_pair_bias",
+              "precision": "fp16",
+              "reason": "CUDA compiler backend",
+              "requested": "auto",
+              "selected": "inductor"
+            },
+            "outer_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": {
+              "operator": "pair_attention",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA native inference backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            },
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "combined",
+          "mean_ms": 8.830259170532226,
+          "measurement_scope": "steady",
+          "p20_ms": 8.568094482421875,
+          "p50_ms": 8.718950653076172,
+          "p80_ms": 9.013534698486328,
+          "p95_ms": 9.511147804260254,
+          "peak_allocated_mib": 89.2099609375,
+          "peak_delta_allocated_mib": 71.39599609375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2842.0,
+          "sample_count": 30,
+          "samples_ms": [
+            8.575385284423827,
+            8.47790069580078,
+            8.638054656982423,
+            8.806809234619141,
+            8.884019470214843,
+            8.501862335205079,
+            8.459673309326172,
+            8.902655792236327,
+            8.997068786621094,
+            8.688639831542968,
+            8.563507080078125,
+            9.150259399414063,
+            9.224601745605469,
+            9.676799774169922,
+            8.80926742553711,
+            8.920883178710938,
+            9.079398345947265,
+            8.645426940917968,
+            8.649932861328125,
+            8.569241333007813,
+            8.890982055664063,
+            9.57870101928711,
+            9.428582763671875,
+            8.977613067626953,
+            8.725504302978516,
+            8.523161315917969,
+            8.712397003173828,
+            8.593612670898438,
+            8.55511016845703,
+            8.700723266601562
+          ],
+          "scope": "end_to_end",
+          "stage": "Ffinal_optimized_steady",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "8c816510d85fd01b63c76df20a0ff245b50d452232ed9de35121fcb7b489acf2",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        }
+      ],
+      "run_index": 2,
+      "stock_result": "run-02/stock/result.json",
+      "stock_sha256": "cd09407bd0cb9cf1eb9fc763357238465440dc9330bfbfc6534be9f6dd9f9a3b"
+    },
+    {
+      "commits": {
+        "optimized_flaggems": "a9a96bbcc3d685482c656343e0759b7b4a5c38bc",
+        "stock_flaggems": "03bf364ede763d573d5c30124d554283a209ab85",
+        "stofm": "e01b0a9d8348101815fba63224910a25830c29a9"
+      },
+      "optimized_result": "run-03/optimized/result.json",
+      "optimized_sha256": "8f7f833544e573d7619c3268e82d8c8f78f9a24981d67145e250f78e72aa2f2b",
+      "reference_sha256": "a2cfaf2864fd99869b1496997b2ef73b517996de83341c23dc6e0f8ac851fa7d",
+      "results": [
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P0_legacy_pair_output",
+          "description": "Legacy end-to-end Torch inference that materializes the final pair representation.",
+          "dispatch": {
+            "gaussian": null,
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": false,
+              "mode": "torch",
+              "reason": "Torch baseline mode",
+              "registered_aten_ops": [],
+              "vendor_hint": null
+            }
+          },
+          "gain_kind": "model_lifecycle",
+          "mean_ms": 21.278931732177735,
+          "measurement_scope": "none",
+          "p20_ms": 21.270855712890626,
+          "p50_ms": 21.27831115722656,
+          "p80_ms": 21.28797698974609,
+          "p95_ms": 21.292144317626953,
+          "peak_allocated_mib": 1659.82958984375,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            21.263973999023438,
+            21.261517333984376,
+            21.26561279296875,
+            21.262541198730467,
+            21.272781372070312,
+            21.301043701171874,
+            21.287321472167967,
+            21.286093139648436,
+            21.26909484863281,
+            21.278720092773437,
+            21.27626190185547,
+            21.275238037109375,
+            21.271142578125,
+            21.279539489746092,
+            21.275648498535155,
+            21.271757507324217,
+            21.271961975097657,
+            21.280972290039063,
+            21.291416931152344,
+            21.290599060058593,
+            21.28424987792969,
+            21.28363494873047,
+            21.291827392578124,
+            21.292236328125,
+            21.28711700439453,
+            21.27831115722656,
+            21.27831115722656,
+            21.292031860351564,
+            21.277285766601562,
+            21.269708251953126
+          ],
+          "scope": "end_to_end",
+          "stage": "P0_legacy_pair_output",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "a2cfaf2864fd99869b1496997b2ef73b517996de83341c23dc6e0f8ac851fa7d",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P1_canonical_torch",
+          "description": "Canonical Torch inference that omits the unused final pair representation.",
+          "dispatch": {
+            "gaussian": null,
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": false,
+              "mode": "torch",
+              "reason": "Torch baseline mode",
+              "registered_aten_ops": [],
+              "vendor_hint": null
+            }
+          },
+          "gain_kind": "model_lifecycle",
+          "mean_ms": 21.038523661295574,
+          "measurement_scope": "none",
+          "p20_ms": 21.023129272460938,
+          "p50_ms": 21.03060455322266,
+          "p80_ms": 21.04459197998047,
+          "p95_ms": 21.07374557495117,
+          "peak_allocated_mib": 1643.00634765625,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            21.049343872070313,
+            21.046885681152343,
+            21.023129272460938,
+            21.01780548095703,
+            21.022720336914062,
+            21.065522766113283,
+            21.080473327636717,
+            21.030911254882813,
+            21.04217529296875,
+            21.032960510253908,
+            21.020877075195312,
+            21.038490295410156,
+            21.026815795898436,
+            21.0229248046875,
+            21.0302978515625,
+            21.03459777832031,
+            21.029273986816406,
+            21.028863525390626,
+            21.03705596923828,
+            21.02783966064453,
+            21.0440185546875,
+            21.054464721679686,
+            21.026815795898436,
+            21.144985961914063,
+            21.023129272460938,
+            21.040742492675783,
+            21.037875366210937,
+            21.023744201660158,
+            21.021286010742188,
+            21.029682922363282
+          ],
+          "scope": "end_to_end",
+          "stage": "P1_canonical_torch",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "a2cfaf2864fd99869b1496997b2ef73b517996de83341c23dc6e0f8ac851fa7d",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P1_canonical_torch",
+          "description": "Frozen FlagGems stock ATen scope created and destroyed for every model call.",
+          "dispatch": {
+            "gaussian": null,
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "flaggems_lifecycle",
+          "mean_ms": 19.42704803466797,
+          "measurement_scope": "per_call",
+          "p20_ms": 19.395993957519533,
+          "p50_ms": 19.403775787353517,
+          "p80_ms": 19.415040588378908,
+          "p95_ms": 19.515422134399415,
+          "peak_allocated_mib": 1643.00634765625,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            19.895706176757812,
+            19.4050048828125,
+            19.40111389160156,
+            19.397222900390624,
+            19.398042297363283,
+            19.383705139160156,
+            19.394149780273438,
+            19.415040588378908,
+            19.403981018066407,
+            19.396607971191408,
+            19.411967468261718,
+            19.394149780273438,
+            19.394764709472657,
+            19.39886016845703,
+            19.395173645019533,
+            19.57007293701172,
+            19.42794189453125,
+            19.4123779296875,
+            19.448626708984374,
+            19.403570556640624,
+            19.414016723632812,
+            19.415858459472656,
+            19.405824279785158,
+            19.41053466796875,
+            19.401318359375,
+            19.396199035644532,
+            19.3902587890625,
+            19.39947509765625,
+            19.414834594726564,
+            19.415040588378908
+          ],
+          "scope": "end_to_end",
+          "stage": "F0_stock_lifecycle",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "7751b5d6e69de32f481b6fee101ca0efc228f8c9fd6abe1f47ab83f5393e7da0",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "P1_canonical_torch",
+          "description": "Frozen FlagGems stock ATen scope kept open across timed calls.",
+          "dispatch": {
+            "gaussian": null,
+            "outer_scope": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": true,
+              "mode": "stock",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "stock_aten",
+          "mean_ms": 19.34949727376302,
+          "measurement_scope": "steady",
+          "p20_ms": 19.34397399902344,
+          "p50_ms": 19.348992156982423,
+          "p80_ms": 19.35572937011719,
+          "p95_ms": 19.358576583862302,
+          "peak_allocated_mib": 1643.00634765625,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2206.0,
+          "sample_count": 30,
+          "samples_ms": [
+            19.35790100097656,
+            19.342745971679687,
+            19.346841430664064,
+            19.341311645507812,
+            19.356057739257814,
+            19.339878845214844,
+            19.340902709960936,
+            19.34745635986328,
+            19.34008331298828,
+            19.353395080566408,
+            19.355238342285155,
+            19.3617919921875,
+            19.35667266845703,
+            19.34745635986328,
+            19.350936889648438,
+            19.344178771972658,
+            19.343154907226562,
+            19.346432495117188,
+            19.349913024902342,
+            19.349095153808594,
+            19.34929962158203,
+            19.356057739257814,
+            19.359129333496092,
+            19.35564727783203,
+            19.345408630371093,
+            19.347865295410156,
+            19.34888916015625,
+            19.351962280273437,
+            19.351962280273437,
+            19.347251892089844
+          ],
+          "scope": "end_to_end",
+          "stage": "F0_stock_steady",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "7751b5d6e69de32f481b6fee101ca0efc228f8c9fd6abe1f47ab83f5393e7da0",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "FlagGems ATen plus the explicit SToFM Gaussian compiler candidate.",
+          "dispatch": {
+            "gaussian": {
+              "operator": "gaussian_pair_bias",
+              "precision": "fp16",
+              "reason": "explicit CUDA compiler backend",
+              "requested": "inductor",
+              "selected": "inductor"
+            },
+            "outer_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": null,
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "compiler_routing",
+          "mean_ms": 8.559704767862955,
+          "measurement_scope": "steady",
+          "p20_ms": 8.222679138183594,
+          "p50_ms": 8.371814346313478,
+          "p80_ms": 8.914206695556642,
+          "p95_ms": 9.397851982116698,
+          "peak_allocated_mib": 97.10888671875,
+          "peak_delta_allocated_mib": 79.294921875,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 1222.0,
+          "sample_count": 30,
+          "samples_ms": [
+            9.007308959960938,
+            9.100492858886719,
+            8.412774658203125,
+            8.19384307861328,
+            8.241561889648438,
+            8.165580749511719,
+            8.229888153076171,
+            8.189952087402343,
+            8.351334381103516,
+            8.392294311523438,
+            8.308531188964844,
+            8.267775726318359,
+            8.311808013916016,
+            8.970240020751953,
+            9.126502227783202,
+            8.696422576904297,
+            8.742912292480469,
+            8.797798156738281,
+            8.508006286621093,
+            8.15964126586914,
+            8.312217712402344,
+            8.18503646850586,
+            8.179917144775391,
+            8.351129913330078,
+            8.336589050292968,
+            9.619865417480469,
+            9.777356719970703,
+            8.900198364257813,
+            8.510873413085937,
+            8.443289947509765
+          ],
+          "scope": "end_to_end",
+          "stage": "C1_gaussian_compiler",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "87fe066c198fbea52a23cf00f442a3e4eaae30b27850d3d0f41f2e9cc143d2a4",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "FlagGems ATen plus the native SToFM pair-score epilogue candidate.",
+          "dispatch": {
+            "gaussian": null,
+            "outer_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": {
+              "operator": "pair_attention",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA native inference backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            },
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "custom_kernel",
+          "mean_ms": 19.001801401774088,
+          "measurement_scope": "steady",
+          "p20_ms": 18.992906494140627,
+          "p50_ms": 18.998988342285156,
+          "p80_ms": 19.005644836425784,
+          "p95_ms": 19.016141204833986,
+          "peak_allocated_mib": 1634.88232421875,
+          "peak_delta_allocated_mib": 1617.068359375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2842.0,
+          "sample_count": 30,
+          "samples_ms": [
+            19.071795654296874,
+            19.00257263183594,
+            19.007487487792968,
+            18.992742919921874,
+            18.995199584960936,
+            19.007693481445312,
+            18.990284729003907,
+            18.991719055175782,
+            18.999501037597657,
+            18.998886108398438,
+            18.996429443359375,
+            19.004620361328126,
+            18.99663391113281,
+            18.999501037597657,
+            18.992332458496094,
+            19.007487487792968,
+            19.005235290527345,
+            19.023052978515626,
+            18.99253692626953,
+            18.99683837890625,
+            19.001344299316408,
+            18.99663391113281,
+            19.001139831542968,
+            18.994790649414064,
+            18.992947387695313,
+            18.99253692626953,
+            18.99376678466797,
+            18.999090576171874,
+            19.00195770263672,
+            19.007283020019532
+          ],
+          "scope": "end_to_end",
+          "stage": "C2_pair_native_epilogue",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "7927776905738c57fbd29fc45dda6fdf1e6146026e2ebd211441ca812bb9963e",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "Combined optimized FlagGems route including temporary scope lifecycle.",
+          "dispatch": {
+            "gaussian": {
+              "operator": "gaussian_pair_bias",
+              "precision": "fp16",
+              "reason": "CUDA compiler backend",
+              "requested": "auto",
+              "selected": "inductor"
+            },
+            "pair_attention_layer0": {
+              "operator": "pair_attention",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA native inference backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            },
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "flaggems_lifecycle",
+          "mean_ms": 9.354035186767579,
+          "measurement_scope": "per_call",
+          "p20_ms": 9.104097137451172,
+          "p50_ms": 9.300479888916016,
+          "p80_ms": 9.536020202636719,
+          "p95_ms": 9.864447937011718,
+          "peak_allocated_mib": 89.2099609375,
+          "peak_delta_allocated_mib": 71.39599609375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2842.0,
+          "sample_count": 30,
+          "samples_ms": [
+            9.025126647949218,
+            9.513164520263672,
+            9.119948577880859,
+            9.102950286865234,
+            9.127526092529298,
+            9.526886749267579,
+            9.421414184570313,
+            9.57091827392578,
+            9.427353668212891,
+            9.047245025634766,
+            9.288703918457031,
+            9.372057342529297,
+            9.94140167236328,
+            9.481011199951173,
+            9.312255859375,
+            9.515007781982423,
+            10.113433837890625,
+            9.527295684814453,
+            9.13100814819336,
+            9.104383850097657,
+            9.213951873779298,
+            9.666150665283203,
+            9.694412994384766,
+            9.770393371582031,
+            9.13653793334961,
+            9.185485076904296,
+            9.118924713134765,
+            9.02103042602539,
+            9.051340484619141,
+            9.093734741210938
+          ],
+          "scope": "end_to_end",
+          "stage": "Ffinal_optimized_lifecycle",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "8c816510d85fd01b63c76df20a0ff245b50d452232ed9de35121fcb7b489acf2",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        },
+        {
+          "calls_per_sample": 5,
+          "comparison_baseline": "F0_stock_steady",
+          "description": "Combined FlagGems ATen, Gaussian compiler, and pair epilogue steady-state route.",
+          "dispatch": {
+            "gaussian": {
+              "operator": "gaussian_pair_bias",
+              "precision": "fp16",
+              "reason": "CUDA compiler backend",
+              "requested": "auto",
+              "selected": "inductor"
+            },
+            "outer_scope": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            },
+            "pair_attention_layer0": {
+              "operator": "pair_attention",
+              "precision": "fp16",
+              "reason": "explicit NVIDIA native inference backend",
+              "requested": "nvidia",
+              "selected": "nvidia"
+            },
+            "runtime": {
+              "active": true,
+              "mode": "optimized",
+              "reason": "scoped FlagGems ATen dispatch",
+              "registered_aten_ops": [
+                "addmm",
+                "baddbmm",
+                "bmm",
+                "softmax",
+                "softmax_out"
+              ],
+              "vendor_hint": "nvidia"
+            }
+          },
+          "gain_kind": "combined",
+          "mean_ms": 8.954518229166666,
+          "measurement_scope": "steady",
+          "p20_ms": 8.742625122070313,
+          "p50_ms": 8.81786880493164,
+          "p80_ms": 9.182371826171876,
+          "p95_ms": 9.610537071228027,
+          "peak_allocated_mib": 89.2099609375,
+          "peak_delta_allocated_mib": 71.39599609375,
+          "peak_delta_reserved_mib": 0.0,
+          "peak_reserved_mib": 2842.0,
+          "sample_count": 30,
+          "samples_ms": [
+            8.749874877929688,
+            8.781209564208984,
+            8.988877105712891,
+            8.915968322753907,
+            9.579110717773437,
+            9.789234924316407,
+            9.636249542236328,
+            9.258803558349609,
+            9.168281555175781,
+            8.849203491210938,
+            8.676966094970703,
+            8.855757141113282,
+            8.94238739013672,
+            9.061785888671874,
+            8.671231842041015,
+            9.451315307617188,
+            8.89917449951172,
+            8.766873931884765,
+            8.760320281982422,
+            8.775885009765625,
+            8.791244506835938,
+            8.729190063476562,
+            8.723455810546875,
+            8.74598388671875,
+            8.832204437255859,
+            8.803533172607422,
+            8.694989013671876,
+            8.720588684082031,
+            8.777113342285157,
+            9.23873291015625
+          ],
+          "scope": "end_to_end",
+          "stage": "Ffinal_optimized_steady",
+          "status": "measured",
+          "validation": {
+            "atol": 0.003,
+            "last_hidden_state_sha256": "8c816510d85fd01b63c76df20a0ff245b50d452232ed9de35121fcb7b489acf2",
+            "rtol": 0.03,
+            "status": "passed"
+          }
+        }
+      ],
+      "run_index": 3,
+      "stock_result": "run-03/stock/result.json",
+      "stock_sha256": "b0b055ede6b1bebfb8769ec5dd0ac811ff0e4cc97f51fd8b7888fbe5d6084afa"
+    }
+  ],
+  "workload": {
+    "batch_size": 1,
+    "embedding_dim": 256,
+    "ffn_embedding_dim": 256,
+    "gaussian_hidden_dim": 128,
+    "heads": 8,
+    "input_dim": 256,
+    "layers": 4,
+    "nodes": 1050,
+    "return_pair_rep": false,
+    "seed": 20260815
+  }
+}

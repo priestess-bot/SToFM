@@ -268,6 +268,7 @@ def _write_result(output_dir: Path, result: Dict[str, Any]) -> None:
         writer = csv.DictWriter(
             handle,
             fieldnames=["stage", "sample_index", "latency_ms"],
+            lineterminator="\n",
         )
         writer.writeheader()
         for row in result["results"]:

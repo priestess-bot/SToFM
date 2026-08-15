@@ -56,20 +56,42 @@ required and is not a completed item.
 
 ## 2. V100 Operators and Precision Matrix
 
-- [ ] V100-0 Build trace/profile coverage for SToFM and Vision hot ATen ops in
+- [x] V100-0 Build trace/profile coverage for SToFM and Vision hot ATen ops in
   FP32 and FP16; classify each as stock FlagOS, new composite kernel, reference,
   or rejected.
-- [ ] V100-1 Implement and validate FP32 Gaussian compiler and native candidates.
-- [ ] V100-2 Implement and validate FP16 Gaussian compiler and native candidates.
-- [ ] V100-3 Implement and validate FP32 pair-score epilogue native candidate.
-- [ ] V100-4 Implement and validate FP16 pair-score epilogue native candidate.
-- [ ] V100-5 Implement and validate FP32/FP16 KRONOS marker-token candidate.
-- [ ] V100-6 Re-evaluate SwiGLU and residual-LayerNorm under the R2 stock
+  Evidence: six SToFM and ten Vision clean traces under
+  `benchmark-results/r2-v100-profiles-20260815/`; profile scripts classify P1,
+  F0, Ffinal, marker Triton, rejected SwiGLU, and retained LayerNorm without
+  profiling numerical assertions.
+- [x] V100-1 Implement and validate FP32 Gaussian compiler and native candidates.
+  Evidence: C1 FP32 p50 10.5686 ms, 2.054x [2.052x, 2.055x] versus frozen F0
+  steady at 21.7006 ms; see `r2-v100-fp32-20260815/`.
+- [x] V100-2 Implement and validate FP16 Gaussian compiler and native candidates.
+  Evidence: C1 FP16 p50 8.1812 ms, 2.352x [2.319x, 2.365x] versus frozen F0
+  steady at 19.3490 ms; see `r2-v100-fp16-20260815/`.
+- [x] V100-3 Implement and validate FP32 pair-score epilogue native candidate.
+  Evidence: C2 FP32 p50 20.6351 ms, 1.052x [1.052x, 1.053x] versus frozen F0
+  steady; public dispatch and direct numerical checks selected NVIDIA inference.
+- [x] V100-4 Implement and validate FP16 pair-score epilogue native candidate.
+  Evidence: C2 FP16 p50 18.9990 ms, 1.018x [1.018x, 1.018x] versus frozen F0
+  steady; the low but positive gain is retained only in the composed route.
+- [x] V100-5 Implement and validate FP32/FP16 KRONOS marker-token candidate.
+  Evidence: marker Triton p50 is 0.2449 ms / 1.154x FP32 and 0.2651 ms /
+  1.106x FP16; both precisions have 90 raw samples and clean kernel traces.
+- [x] V100-6 Re-evaluate SwiGLU and residual-LayerNorm under the R2 stock
   baseline; add a native implementation only if profiling justifies it.
-- [ ] V100-7 Run three independent FP32 benchmark processes and aggregate P1,
+  Evidence: existing SwiGLU is rejected at 0.484x FP32 and 0.438x FP16;
+  residual LayerNorm remains Torch because no verified winner exists.
+- [x] V100-7 Run three independent FP32 benchmark processes and aggregate P1,
   F0, each candidate, and Ffinal.
-- [ ] V100-8 Run the equivalent independent FP16 benchmark suite and aggregate
+  Evidence: `benchmark-results/r2-v100-fp32-20260815/` and
+  `r2-vision-v100-fp32-20260815/`, each with three worker processes, 90 raw
+  samples per measured stage, checksums, and 10,000-resample intervals.
+- [x] V100-8 Run the equivalent independent FP16 benchmark suite and aggregate
   it separately from FP32.
+  Evidence: `benchmark-results/r2-v100-fp16-20260815/` and
+  `r2-vision-v100-fp16-20260815/`, with the same independent-process and raw
+  evidence rules.
 
 ## 3. Target-Device Preparation
 
@@ -110,9 +132,16 @@ required and is not a completed item.
 
 ## 4. Verification and Evidence
 
-- [ ] TEST-0 Add unit tests for every precision, shape bucket, mask, padding,
+- [x] TEST-0 Add unit tests for every precision, shape bucket, mask, padding,
   pair-state/weights return contract, non-contiguous fallback, and gradients.
-- [ ] TEST-1 Add full SToFM P1/F0/optimized consistency tests and dispatch tests.
+  Evidence: FlagGems `test_stofm_experimental.py` and
+  `test_vision_experimental.py` exercise FP32/FP16/BF16 paths, dynamic shapes,
+  masks, padding/CLS, gradients, and fallback contracts; selected R2 run passed
+  26 tests with target static gates on 2026-08-15.
+- [x] TEST-1 Add full SToFM P1/F0/optimized consistency tests and dispatch tests.
+  Evidence: SToFM R2 suite passed 25 tests on 2026-08-15, including frozen-stock
+  P1 equivalence, scoped dispatch cleanup, FP16 optimized inference, benchmark
+  aggregation drift rejection, profile classification, and checksum validation.
 - [x] TEST-2 Add CPU-only target static validation for all public APIs and
   deferred native-project metadata.
   Evidence: FlagGems `tests/test_deferred_native_projects.py` plus
@@ -121,10 +150,16 @@ required and is not a completed item.
   pytest -q tests/test_stofm_experimental.py tests/test_vision_experimental.py
   tests/test_deferred_native_projects.py tests/test_target_runtime_harness.py`
   passed 26 tests on 2026-08-15.
-- [ ] REPORT-0 Publish raw benchmark files, checksums, bootstrap confidence
+- [x] REPORT-0 Publish raw benchmark files, checksums, bootstrap confidence
   intervals, rejected candidates, and separate compiler/kernel/lifecycle gains.
-- [ ] REPORT-1 Publish the R2 operator coverage matrix and final promotion
+  Evidence: `docs/flagos_inference_r2_report.md` and five R2 evidence trees;
+  `benchmarks/write_r2_checksums.py --verify` passed for 20, 20, 11, 11, and
+  48 files respectively.
+- [x] REPORT-1 Publish the R2 operator coverage matrix and final promotion
   decision. Do not reuse R1 speedups as R2 results.
+  Evidence: `docs/flagos_inference_r2_report.md` contains the framework and
+  architecture matrix, V100 promotion/rejection decisions, and explicit
+  CANN/MUSA no-hardware limitations.
 - [ ] GIT-0 Commit and push FlagGems first; advance the SToFM optimized lock only
   after the matching FlagGems SHA is tested and pushed.
 
