@@ -160,8 +160,12 @@ required and is not a completed item.
   Evidence: `docs/flagos_inference_r2_report.md` contains the framework and
   architecture matrix, V100 promotion/rejection decisions, and explicit
   CANN/MUSA no-hardware limitations.
-- [ ] GIT-0 Commit and push FlagGems first; advance the SToFM optimized lock only
+- [x] GIT-0 Commit and push FlagGems first; advance the SToFM optimized lock only
   after the matching FlagGems SHA is tested and pushed.
+  Evidence: FlagGems `r2/stofm-flagos-inference` is pushed at
+  `a9a96bbcc3d685482c656343e0759b7b4a5c38bc`; SToFM tested that exact SHA,
+  advanced its optimized lock, and pushed the raw-evidence commit
+  `56a307af4f5bc7e9a79acf9ef486c2202ec4b2c3` on `r2/flagos-inference`.
 
 ## Update Rule
 
