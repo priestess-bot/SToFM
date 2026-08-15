@@ -36,15 +36,25 @@ external rental hardware.
   path is never selected for gradient-enabled calls without a verified backward.
   Evidence: FlagGems `experimental_ops/stofm_backends/nvidia.py`; V100 FP32
   smoke comparison compiled successfully with max absolute error `1.43e-6`.
-- [ ] V100-2. Add Gaussian shape/layout/mask regression tests and a separate
+- [x] V100-2. Add Gaussian shape/layout/mask regression tests and a separate
   native-versus-O1 microbenchmark report.
-- [ ] V100-3. Implement a real CUDA/Triton pair-score epilogue that fuses key
+  Evidence: FlagGems `tests/test_stofm_experimental.py` (7 passed); V100 run
+  `benchmark-results/v100-native-gaussian-20260815/`. O1n p50 was
+  `10.7886 ms` versus O1 `5.8256 ms` (`0.540x`), so O1n is explicitly
+  rejected as the default despite correct output.
+- [x] V100-3. Implement a real CUDA/Triton pair-score epilogue that fuses key
   masking, pair-state materialization, and row softmax after the QK GEMM.
   Acceptance: context, pair state, and attention weights match reference;
   gradient-enabled calls retain the verified reference path until backward is
   implemented.
-- [ ] V100-4. Add pair-score epilogue shape/layout/mask tests, including
+  Evidence: FlagGems `experimental_ops/stofm_backends/nvidia.py`; V100 smoke
+  maximum absolute errors were context `2.38e-7`, pair state `0`, and weights
+  `5.96e-8`.
+- [x] V100-4. Add pair-score epilogue shape/layout/mask tests, including
   non-contiguous inputs and no-pair-output inference.
+  Evidence: FlagGems `tests/test_stofm_experimental.py` (10 passed): padded
+  and unpadded rows, optional pair output, native inference, and gradient/
+  non-contiguous reference fallback.
 - [ ] V100-5. Extend the V100 benchmark with individual native stages and
   rerun a full end-to-end comparison. Select a default only from measured
   p50 and memory results; record a rejection when a native candidate loses.

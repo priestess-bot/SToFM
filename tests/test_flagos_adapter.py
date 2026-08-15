@@ -125,3 +125,26 @@ def test_end_to_end_adapter_preserves_input_gradients():
     torch.testing.assert_close(actual["pair_rep"], expected["pair_rep"], rtol=3e-4, atol=3e-5)
     for actual_grad, expected_grad in zip(actual_grads, expected_grads):
         torch.testing.assert_close(actual_grad, expected_grad, rtol=3e-4, atol=3e-5)
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="NVIDIA native inference path requires CUDA")
+def test_explicit_nvidia_inference_path_preserves_full_stofm_semantics():
+    device = torch.device("cuda")
+    torch.manual_seed(53)
+    baseline = SToFMModel(_config("torch")).to(device).eval()
+    native = SToFMModel(_config("nvidia")).to(device).eval()
+    native.load_state_dict(baseline.state_dict())
+    token_embeddings = torch.randn(1, 17, 16, device=device)
+    distances = torch.rand(1, 17, 17, device=device)
+    distances[:, 0, 0] = 0.0
+    token_types = torch.zeros(1, 17, dtype=torch.long, device=device)
+
+    with torch.inference_mode():
+        expected = baseline(token_embeddings, distances, token_types, return_pair_rep=True)
+        actual = native(token_embeddings, distances, token_types, return_pair_rep=True)
+    torch.testing.assert_close(actual["last_hidden_state"], expected["last_hidden_state"], rtol=3e-4, atol=3e-5)
+    torch.testing.assert_close(actual["pair_rep"], expected["pair_rep"], rtol=3e-4, atol=3e-5)
+    assert native.gaussian.last_flagos_dispatch is not None
+    assert native.gaussian.last_flagos_dispatch.selected == "nvidia"
+    assert native.encoder.layers[0].self_attn.last_flagos_dispatch is not None
+    assert native.encoder.layers[0].self_attn.last_flagos_dispatch.selected == "nvidia"

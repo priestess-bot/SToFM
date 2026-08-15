@@ -5,4 +5,4 @@
 torch==2.5.1+cu121
 transformers==4.39.1
 pytest==9.0.3
-git+https://github.com/priestess-bot/FlagGems.git@87e2526e530457102ca5cddc2c5f837aaff3c238
+git+https://github.com/priestess-bot/FlagGems.git@567297236ddc2db6fee498854fd0e493c6f4ea03
