@@ -205,7 +205,8 @@
 - [x] 算子补齐-0 审计现有调用链并确认缺口：当前 `use_gems()` 只接管已有 ATen
   算子；Gaussian 与 pair-score 的 V100 路线尚未以 FlagOS 自定义算子身份注册。
   证据：`model/flagos_runtime.py` 的白名单仅含 `addmm,baddbmm,bmm,softmax`；
-  `benchmarks/stofm_r2_v100_worker.py` 将 Gaussian 的主候选设为 Inductor。
+  当时的历史 `legacy` 基准套件将 Gaussian 候选设为 Inductor。当前默认
+  `registered_ops` 套件已改为注册算子，Inductor 只能显式请求。
 - [x] 算子补齐-1 在 FlagGems 定义并保持存活的 `torch.ops.flagos_stofm` 算子 schema：
   `gaussian_pair_bias`、`pair_score_epilogue` 和 `marker_token_embed`。
   证据：`FlagGems/src/flag_gems/experimental_ops/_flagos_stofm_ops.py` 用模块级
