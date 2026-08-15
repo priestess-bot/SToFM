@@ -144,7 +144,7 @@ def _write_reports(output_dir: Path, result: Dict[str, object]) -> None:
         "",
         f"Device: `{result['hardware']['name']}`; PyTorch `{result['hardware']['torch']}`; CUDA `{result['hardware']['cuda']}`",
         "",
-        "Correctness gate: `passed` for B1/O3/O4 end-to-end last hidden state before timing.",
+        "Correctness gate: `passed` for B1/O3/O4/O5 end-to-end last hidden state before timing.",
         "",
         "| Stage | Scope | Samples | p20 ms | p50 ms | p80 ms | p95 ms | Mean ms | Speedup | Peak delta MiB | Status |",
         "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
