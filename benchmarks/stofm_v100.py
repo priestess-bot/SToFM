@@ -217,7 +217,7 @@ def main() -> None:
 
     base_config = _config("torch", args.layers, args.embedding_dim, args.heads, args.gaussian_hidden_dim, args.input_dim)
     fast_config = _config("flaggems", args.layers, args.embedding_dim, args.heads, args.gaussian_hidden_dim, args.input_dim)
-    fast_native_attention_config = _config(
+    fast_torch_attention_config = _config(
         "flaggems",
         args.layers,
         args.embedding_dim,
@@ -273,11 +273,11 @@ def main() -> None:
     model_base = SToFMModel(base_config).to(device).eval()
     model_fast = SToFMModel(fast_config).to(device).eval()
     model_fast_reference_pair = SToFMModel(fast_reference_pair_config).to(device).eval()
-    model_fast_native_attention = SToFMModel(fast_native_attention_config).to(device).eval()
+    model_fast_torch_attention = SToFMModel(fast_torch_attention_config).to(device).eval()
     model_fast_native_epilogue = SToFMModel(fast_native_epilogue_config).to(device).eval()
     model_fast.load_state_dict(model_base.state_dict())
     model_fast_reference_pair.load_state_dict(model_base.state_dict())
-    model_fast_native_attention.load_state_dict(model_base.state_dict())
+    model_fast_torch_attention.load_state_dict(model_base.state_dict())
     model_fast_native_epilogue.load_state_dict(model_base.state_dict())
 
     distances = torch.rand(args.batch_size, args.nodes, args.nodes, device=device)
@@ -311,7 +311,7 @@ def main() -> None:
             atol=3e-5,
         )
         reference_e2e = model_base(token_embeddings, distances, token_types, return_pair_rep=False)["last_hidden_state"]
-        native_attention_e2e = model_fast_native_attention(
+        torch_attention_e2e = model_fast_torch_attention(
             token_embeddings, distances, token_types, return_pair_rep=False
         )["last_hidden_state"]
         pair_attention_e2e = model_fast_reference_pair(
@@ -321,7 +321,7 @@ def main() -> None:
         native_epilogue_e2e = model_fast_native_epilogue(
             token_embeddings, distances, token_types, return_pair_rep=False
         )["last_hidden_state"]
-        torch.testing.assert_close(native_attention_e2e, reference_e2e, rtol=3e-4, atol=3e-5)
+        torch.testing.assert_close(torch_attention_e2e, reference_e2e, rtol=3e-4, atol=3e-5)
         torch.testing.assert_close(pair_attention_e2e, reference_e2e, rtol=3e-4, atol=3e-5)
         torch.testing.assert_close(default_e2e, reference_e2e, rtol=3e-4, atol=3e-5)
         torch.testing.assert_close(native_epilogue_e2e, reference_e2e, rtol=3e-4, atol=3e-5)
@@ -373,8 +373,8 @@ def main() -> None:
                 "samples_ms": [],
             },
             _benchmark(
-                "O3_e2e_native_attention", "end_to_end", "B1_e2e",
-                lambda: model_fast_native_attention(token_embeddings, distances, token_types, return_pair_rep=False),
+                "O3_e2e_gaussian_lifecycle", "end_to_end", "B1_e2e",
+                lambda: model_fast_torch_attention(token_embeddings, distances, token_types, return_pair_rep=False),
                 args.warmup, args.repetitions, args.calls_per_sample,
             ),
             _benchmark(
@@ -412,7 +412,7 @@ def main() -> None:
                 "atol": 3e-5,
                 "reference": "B1_e2e",
                 "candidates": [
-                    "O3_e2e_native_attention",
+                    "O3_e2e_gaussian_lifecycle",
                     "O4_e2e_pair_attention",
                     "O5_e2e_triton_pair_epilogue",
                 ],
