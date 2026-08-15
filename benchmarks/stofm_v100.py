@@ -226,14 +226,14 @@ def main() -> None:
         args.input_dim,
         attention_backend="torch",
     )
-    attention_fast_config = _config(
+    attention_reference_config = _config(
         "torch",
         args.layers,
         args.embedding_dim,
         args.heads,
         args.gaussian_hidden_dim,
         args.input_dim,
-        attention_backend="flaggems",
+        attention_backend="inductor",
     )
     attention_native_config = _config(
         "torch",
@@ -243,6 +243,15 @@ def main() -> None:
         args.gaussian_hidden_dim,
         args.input_dim,
         attention_backend="nvidia",
+    )
+    fast_reference_pair_config = _config(
+        "flaggems",
+        args.layers,
+        args.embedding_dim,
+        args.heads,
+        args.gaussian_hidden_dim,
+        args.input_dim,
+        attention_backend="inductor",
     )
     fast_native_epilogue_config = _config(
         "flaggems",
@@ -257,15 +266,17 @@ def main() -> None:
     gaussian_fast = GaussianModule(fast_config).to(device).eval()
     gaussian_fast.load_state_dict(gaussian_base.state_dict())
     attention_base = MultiheadAttention(base_config).to(device).eval()
-    attention_fast = MultiheadAttention(attention_fast_config).to(device).eval()
+    attention_reference = MultiheadAttention(attention_reference_config).to(device).eval()
     attention_native = MultiheadAttention(attention_native_config).to(device).eval()
-    attention_fast.load_state_dict(attention_base.state_dict())
+    attention_reference.load_state_dict(attention_base.state_dict())
     attention_native.load_state_dict(attention_base.state_dict())
     model_base = SToFMModel(base_config).to(device).eval()
     model_fast = SToFMModel(fast_config).to(device).eval()
+    model_fast_reference_pair = SToFMModel(fast_reference_pair_config).to(device).eval()
     model_fast_native_attention = SToFMModel(fast_native_attention_config).to(device).eval()
     model_fast_native_epilogue = SToFMModel(fast_native_epilogue_config).to(device).eval()
     model_fast.load_state_dict(model_base.state_dict())
+    model_fast_reference_pair.load_state_dict(model_base.state_dict())
     model_fast_native_attention.load_state_dict(model_base.state_dict())
     model_fast_native_epilogue.load_state_dict(model_base.state_dict())
 
@@ -303,12 +314,16 @@ def main() -> None:
         native_attention_e2e = model_fast_native_attention(
             token_embeddings, distances, token_types, return_pair_rep=False
         )["last_hidden_state"]
-        pair_attention_e2e = model_fast(token_embeddings, distances, token_types, return_pair_rep=False)["last_hidden_state"]
+        pair_attention_e2e = model_fast_reference_pair(
+            token_embeddings, distances, token_types, return_pair_rep=False
+        )["last_hidden_state"]
+        default_e2e = model_fast(token_embeddings, distances, token_types, return_pair_rep=False)["last_hidden_state"]
         native_epilogue_e2e = model_fast_native_epilogue(
             token_embeddings, distances, token_types, return_pair_rep=False
         )["last_hidden_state"]
         torch.testing.assert_close(native_attention_e2e, reference_e2e, rtol=3e-4, atol=3e-5)
         torch.testing.assert_close(pair_attention_e2e, reference_e2e, rtol=3e-4, atol=3e-5)
+        torch.testing.assert_close(default_e2e, reference_e2e, rtol=3e-4, atol=3e-5)
         torch.testing.assert_close(native_epilogue_e2e, reference_e2e, rtol=3e-4, atol=3e-5)
 
         results = [
@@ -331,7 +346,7 @@ def main() -> None:
             ),
             _benchmark(
                 "O2_attention", "attention", "B0_attention",
-                lambda: attention_fast(query, query, query, pair_bias, need_weights=False, return_pair_rep=False),
+                lambda: attention_reference(query, query, query, pair_bias, need_weights=False, return_pair_rep=False),
                 args.warmup, args.repetitions, args.calls_per_sample,
             ),
             _benchmark(
@@ -364,12 +379,12 @@ def main() -> None:
             ),
             _benchmark(
                 "O4_e2e_pair_attention", "end_to_end", "B1_e2e",
-                lambda: model_fast(token_embeddings, distances, token_types, return_pair_rep=False),
+                lambda: model_fast_reference_pair(token_embeddings, distances, token_types, return_pair_rep=False),
                 args.warmup, args.repetitions, args.calls_per_sample,
             ),
             _benchmark(
                 "O5_e2e_triton_pair_epilogue", "end_to_end", "O4_e2e_pair_attention",
-                lambda: model_fast_native_epilogue(token_embeddings, distances, token_types, return_pair_rep=False),
+                lambda: model_fast(token_embeddings, distances, token_types, return_pair_rep=False),
                 args.warmup, args.repetitions, args.calls_per_sample,
             ),
         ]
