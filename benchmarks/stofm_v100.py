@@ -20,6 +20,7 @@ sys.path.insert(0, str(ROOT / "geneformer_001"))
 
 from model.se2transformer import GaussianModule, MultiheadAttention, SToFMModel
 from model.utils import SToFMConfig
+from flag_gems.experimental_ops import stofm_gaussian_pair_bias
 
 
 def _git_sha(path: Path) -> str:
@@ -253,7 +254,29 @@ def main() -> None:
     token_embeddings = torch.randn(args.batch_size, args.nodes, args.input_dim, device=device)
     token_types = torch.zeros(args.batch_size, args.nodes, dtype=torch.long, device=device)
 
+    def native_gaussian():
+        return stofm_gaussian_pair_bias(
+            distances,
+            gaussian_base.linear.weight,
+            gaussian_base.linear.bias,
+            gaussian_base.means.weight,
+            gaussian_base.stds.weight,
+            gaussian_base.proj[0].weight,
+            gaussian_base.proj[0].bias,
+            gaussian_base.proj[2].weight,
+            gaussian_base.proj[2].bias,
+            zero_mask=distances.eq(0.0),
+            backend="nvidia",
+        )
+
     with torch.inference_mode():
+        native_gaussian_output = native_gaussian()
+        torch.testing.assert_close(
+            native_gaussian_output,
+            gaussian_base._forward_torch(distances),
+            rtol=3e-4,
+            atol=3e-5,
+        )
         reference_e2e = model_base(token_embeddings, distances, token_types, return_pair_rep=False)["last_hidden_state"]
         native_attention_e2e = model_fast_native_attention(
             token_embeddings, distances, token_types, return_pair_rep=False
@@ -269,6 +292,10 @@ def main() -> None:
             ),
             _benchmark(
                 "O1_gaussian", "gaussian", "B0_gaussian", lambda: gaussian_fast(distances),
+                args.warmup, args.repetitions, args.calls_per_sample,
+            ),
+            _benchmark(
+                "O1n_gaussian_triton", "gaussian", "O1_gaussian", native_gaussian,
                 args.warmup, args.repetitions, args.calls_per_sample,
             ),
             _benchmark(
@@ -321,6 +348,13 @@ def main() -> None:
             "nvidia_smi": _nvidia_smi(),
         },
         "validation": {
+            "native_gaussian": {
+                "status": "passed",
+                "rtol": 3e-4,
+                "atol": 3e-5,
+                "reference": "B0_gaussian",
+                "candidate": "O1n_gaussian_triton",
+            },
             "end_to_end_last_hidden_state": {
                 "status": "passed",
                 "rtol": 3e-4,
