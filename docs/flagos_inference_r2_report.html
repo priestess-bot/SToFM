@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="FlagOS Inference R2: SToFM, Uni2, and KRONOS V100 three-baseline optimization review.">
-  <title>FlagOS Inference R2 | V100 技术评审报告</title>
+  <meta name="description" content="FlagOS 推理优化：SToFM、Uni2 与 KRONOS 的 V100 三基线技术评审。">
+  <title>FlagOS 推理优化 | V100 技术评审报告</title>
   <style>
     :root {
       --paper: #f4f6f7;
@@ -486,7 +486,7 @@
     }
 
     .precision-tab {
-      min-width: 84px;
+      min-width: 112px;
       min-height: 36px;
       padding: 7px 13px;
       border: 0;
@@ -736,7 +736,7 @@
 
     .micro-row {
       display: grid;
-      grid-template-columns: 60px minmax(60px, 1fr) 73px;
+      grid-template-columns: 74px minmax(60px, 1fr) 73px;
       gap: 8px;
       align-items: center;
       min-height: 25px;
@@ -1422,10 +1422,10 @@
 
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="#overview" aria-label="FlagOS Inference R2 报告首页">
+      <a class="brand" href="#overview" aria-label="FlagOS 推理优化报告首页">
         <span class="brand-mark" aria-hidden="true">F</span>
         <span>FlagOS</span>
-        <small>Inference R2</small>
+        <small>推理优化评审</small>
       </a>
       <nav class="topnav" aria-label="报告导航">
         <a href="#overview">结论</a>
@@ -1442,9 +1442,9 @@
     <section id="overview" class="hero" aria-labelledby="page-title">
       <div class="hero-inner">
         <div>
-          <h1 id="page-title">FlagOS Inference R2<br>SToFM、Uni2 与 KRONOS 的 V100 技术评审</h1>
+          <h1 id="page-title">FlagOS 推理优化<br>SToFM、Uni2 与 KRONOS 的 V100 技术评审</h1>
           <p class="lede">
-            这不是“把编译器改名为 FlagOS”的性能展示。报告将纯 Torch、冻结未优化 FlagOS 与优化后 FlagOS
+            这不是“把编译器改名为 FlagOS”的性能展示。报告将纯 PyTorch、固定版本的未优化 FlagOS 与优化后 FlagOS
             分开测量，明确指出哪些是已实测的后端能力，哪些是被拒绝的候选，以及 Ascend/MTT 目前只完成到什么程度。
           </p>
         </div>
@@ -1458,10 +1458,10 @@
         </aside>
         <div class="hero-meta">
           <span><strong>设备</strong> Tesla V100-SXM2-16GB / CUDA 12.4 / PyTorch 2.6.0</span>
-          <span><strong>精度</strong> FP32、FP16 独立测量</span>
+          <span><strong>精度</strong> 单精度 FP32、半精度 FP16 独立测量</span>
           <span><strong>样本</strong> 3 个独立进程，90 个原始 CUDA-event 样本 / 阶段</span>
-          <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference">SToFM fork</a>
-          <a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference">FlagGems fork</a>
+          <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference">SToFM 代码仓库</a>
+          <a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference">FlagGems 代码仓库</a>
         </div>
       </div>
     </section>
@@ -1473,19 +1473,19 @@
           <p>所有速度比必须说明相对哪一条基线；端到端消融与独立 Vision 算子边界不会混写。</p>
         </div>
         <article class="baseline-item">
-          <span class="baseline-id">P1 / TORCH</span>
+          <span class="baseline-id">纯 PyTorch 参考实现</span>
           <strong>规范纯 PyTorch</strong>
           <p>不返回未使用的最终 <code>pair_rep</code>，是端到端的可比较参考实现。</p>
         </article>
         <article class="baseline-item">
-          <span class="baseline-id">F0 / FROZEN FLAGOS</span>
-          <strong>冻结提交的 scoped ATen 路由</strong>
-          <p>独立虚拟环境、冻结 FlagGems <code>03bf364</code>；只注册窄 allowlist。</p>
+          <span class="baseline-id">未优化 FLAGOS 基线</span>
+          <strong>固定版本的局部算子接管</strong>
+          <p>独立虚拟环境、固定 FlagGems <code>03bf364</code>；只在指定推理区间接管少量通用算子。</p>
         </article>
         <article class="baseline-item">
-          <span class="baseline-id">R2 / OPTIMIZED FLAGOS</span>
-          <strong>显式复合算子与同一 scoped 路由</strong>
-          <p>Gaussian、pair epilogue 与 marker-token 由版本化 public API 选择后端。</p>
+          <span class="baseline-id">优化后 FLAGOS</span>
+          <strong>复合算子与同一局部接管</strong>
+          <p>Gaussian、pair epilogue 与 marker-token 由版本化公共 API 选择后端。</p>
         </article>
       </div>
     </section>
@@ -1496,36 +1496,36 @@
           <p class="section-label">结论摘要</p>
           <div>
             <h2 id="decision-heading">可以直接拿去讨论的结论</h2>
-            <p>V100 上的端到端收益主要来自 Gaussian pair bias 的编译复合路径；pair epilogue 是小幅正收益；marker-token Triton 已通过独立三基线验证。SwiGLU 候选明确拒绝，LayerNorm 不虚构新内核。</p>
+            <p>V100 上的端到端收益主要来自 Gaussian pair bias 的编译复合路径；Pair-score 后处理是小幅正收益；marker-token Triton 已通过独立三基线验证。SwiGLU 候选明确拒绝，LayerNorm 不虚构新内核。</p>
           </div>
         </div>
 
         <div class="key-results" aria-label="关键性能结论">
           <article class="key-result">
-            <div class="result-title"><span class="result-dot" aria-hidden="true"></span>SToFM FP32，F0 到优化 FlagOS</div>
+            <div class="result-title"><span class="result-dot" aria-hidden="true"></span>SToFM 单精度 FP32，未优化到优化后 FlagOS</div>
             <strong>2.277x</strong>
-            <p>21.7006 ms 到 9.4850 ms，95% CI 为 [2.225x, 2.288x]。</p>
+            <p>21.7006 ms 到 9.4850 ms，95% 置信区间为 [2.225x, 2.288x]。</p>
           </article>
           <article class="key-result">
-            <div class="result-title"><span class="result-dot" aria-hidden="true"></span>SToFM FP16，F0 到优化 FlagOS</div>
+            <div class="result-title"><span class="result-dot" aria-hidden="true"></span>SToFM 半精度 FP16，未优化到优化后 FlagOS</div>
             <strong>2.151x</strong>
-            <p>19.3490 ms 到 8.8179 ms，95% CI 为 [2.098x, 2.181x]。</p>
+            <p>19.3490 ms 到 8.8179 ms，95% 置信区间为 [2.098x, 2.181x]。</p>
           </article>
           <article class="key-result">
-            <div class="result-title"><span class="result-dot" aria-hidden="true"></span>KRONOS marker-token，F0 到 Triton</div>
+            <div class="result-title"><span class="result-dot" aria-hidden="true"></span>KRONOS marker-token，未优化 FlagOS 到 Triton</div>
             <strong>1.077x</strong>
-            <p>FP32 0.2785 ms 到 0.2512 ms；FP16 同为 1.076x，均可晋升。</p>
+            <p>单精度 FP32 为 0.2785 ms 到 0.2512 ms；半精度 FP16 同为 1.076x，均可晋升。</p>
           </article>
         </div>
 
         <div class="scope-note">
           <h3>应如何理解“FlagOS”</h3>
           <p>
-            <strong>F0 不是空壳，也不是全模型后端。</strong>
-            它是真实的、临时 scoped
-            <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py"><code>flag_gems.use_gems()</code> 路由</a>，
+            <strong>未优化 FlagOS 基线不是空壳，也不是全模型后端。</strong>
+            它会在一次指定推理区间内临时启用
+            <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py"><code>flag_gems.use_gems()</code> 算子路由</a>，
             覆盖 <code>addmm</code>、<code>baddbmm</code>、<code>bmm</code>、<code>softmax</code>。
-            R2 在这个冻结基线之上补齐明确的复合边界。Vision 的 F0 worker 使用冻结包、复现同等验证和 dispatch 开销，但不导入 R2 Vision API。
+            优化后 FlagOS 在这个固定版本基线之上补齐明确的复合边界。Vision 的未优化基线计时进程使用固定版本包、复现同等验证和路由开销，但不导入新版 Vision API。
           </p>
         </div>
       </div>
@@ -1536,16 +1536,16 @@
         <div class="section-heading">
           <p class="section-label">V100 端到端</p>
           <div>
-            <h2 id="v100-heading">SToFM 端到端：从 P1 到 F0，再到最终组合</h2>
-            <p>这里计时的是完整 SToFM 推理工作负载，而非单个 CUDA kernel。切换精度可查看两套独立原始样本的 p50；编译发生在 warm-up，不计入延迟。</p>
+            <h2 id="v100-heading">SToFM 端到端：从纯 PyTorch 到优化后 FlagOS</h2>
+            <p>这里计时的是完整 SToFM 推理工作负载，而非单个 CUDA 内核。切换精度可查看两套独立原始样本的中位延迟（p50）；编译发生在预热阶段，不计入延迟。</p>
           </div>
         </div>
 
         <div class="precision-control">
-          <p>每个条形只在所属图中按最大 p50 归一化，右侧永远是实际毫秒值。</p>
+          <p>每个条形只在所属图中按最大中位延迟（p50）归一化，右侧永远是实际毫秒值。</p>
           <div class="precision-tabs" role="tablist" aria-label="选择端到端精度">
-            <button id="tab-fp32" class="precision-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-fp32">FP32</button>
-            <button id="tab-fp16" class="precision-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-fp16">FP16</button>
+            <button id="tab-fp32" class="precision-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-fp32">单精度 FP32</button>
+            <button id="tab-fp16" class="precision-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-fp16">半精度 FP16</button>
           </div>
         </div>
 
@@ -1553,37 +1553,37 @@
           <div class="e2e-layout">
             <figure class="e2e-chart">
               <div class="e2e-chart-title">
-                <h3>端到端 p50 延迟 / FP32</h3>
-                <span>F0 到 Ffinal：2.277x [2.225x, 2.288x]</span>
+                <h3>端到端中位延迟（p50）/ 单精度 FP32</h3>
+                <span>未优化 FlagOS 到优化组合：2.277x，95% 置信区间 [2.225x, 2.288x]</span>
               </div>
               <div class="latency-row torch">
-                <span class="latency-name">Torch P1</span>
+                <span class="latency-name">纯 PyTorch</span>
                 <span class="latency-track"><span class="latency-fill" style="width:100%"></span></span>
                 <span class="latency-value">23.0998 ms</span>
               </div>
               <div class="latency-row stock">
-                <span class="latency-name">Frozen F0</span>
+                <span class="latency-name">未优化 FlagOS</span>
                 <span class="latency-track"><span class="latency-fill" style="width:93.94%"></span></span>
                 <span class="latency-value">21.7006 ms</span>
               </div>
               <div class="latency-row optimized">
-                <span class="latency-name">R2 Ffinal</span>
+                <span class="latency-name">优化组合</span>
                 <span class="latency-track"><span class="latency-fill" style="width:41.06%"></span></span>
                 <span class="latency-value">9.4850 ms</span>
               </div>
-              <figcaption class="e2e-caption">P1 到 Ffinal 的 aggregate-p50 比为 2.435x。移除未使用的最终 pair 表示只贡献 1.019x，不作为 kernel 优化归因。</figcaption>
+              <figcaption class="e2e-caption">纯 PyTorch 到优化组合的汇总 p50 比为 2.435x。移除未使用的最终 pair 表示只贡献 1.019x，不作为内核优化归因。</figcaption>
             </figure>
-            <aside class="route-summary" aria-label="FP32 路径消融">
+            <aside class="route-summary" aria-label="单精度 FP32 路径消融">
               <article>
-                <h3>冻结 F0 <span>1.064x vs P1</span></h3>
-                <p>真实 FlagOS 窄 ATen 覆盖，稳态 scope 保持开启。</p>
+                <h3>未优化 FlagOS <span>相对纯 PyTorch 1.064x</span></h3>
+                <p>真实 FlagOS 的少量通用算子接管，在整段推理期间保持开启。</p>
               </article>
               <article>
-                <h3>Gaussian C1 <span>2.054x vs F0</span></h3>
+                <h3>Gaussian 编译优化 <span>相对未优化 FlagOS 2.054x</span></h3>
                 <p>全图编译的 Gaussian pair bias 路径，是主收益来源。</p>
               </article>
               <article>
-                <h3>Pair C2 <span>1.052x vs F0</span></h3>
+                <h3>Pair-score 原生优化 <span>相对未优化 FlagOS 1.052x</span></h3>
                 <p>原生 score/mask/softmax/writeback epilogue，保留但继续扩 shape bucket。</p>
               </article>
             </aside>
@@ -1594,37 +1594,37 @@
           <div class="e2e-layout">
             <figure class="e2e-chart">
               <div class="e2e-chart-title">
-                <h3>端到端 p50 延迟 / FP16</h3>
-                <span>F0 到 Ffinal：2.151x [2.098x, 2.181x]</span>
+                <h3>端到端中位延迟（p50）/ 半精度 FP16</h3>
+                <span>未优化 FlagOS 到优化组合：2.151x，95% 置信区间 [2.098x, 2.181x]</span>
               </div>
               <div class="latency-row torch">
-                <span class="latency-name">Torch P1</span>
+                <span class="latency-name">纯 PyTorch</span>
                 <span class="latency-track"><span class="latency-fill" style="width:100%"></span></span>
                 <span class="latency-value">21.0268 ms</span>
               </div>
               <div class="latency-row stock">
-                <span class="latency-name">Frozen F0</span>
+                <span class="latency-name">未优化 FlagOS</span>
                 <span class="latency-track"><span class="latency-fill" style="width:92.02%"></span></span>
                 <span class="latency-value">19.3490 ms</span>
               </div>
               <div class="latency-row optimized">
-                <span class="latency-name">R2 Ffinal</span>
+                <span class="latency-name">优化组合</span>
                 <span class="latency-track"><span class="latency-fill" style="width:41.94%"></span></span>
                 <span class="latency-value">8.8179 ms</span>
               </div>
-              <figcaption class="e2e-caption">P1 到 Ffinal 的 aggregate-p50 比为 2.385x。FP16 的所有 speedup 均独立聚合，未从 FP32 推断。</figcaption>
+              <figcaption class="e2e-caption">纯 PyTorch 到优化组合的汇总 p50 比为 2.385x。半精度 FP16 的所有速度比均独立聚合，未从 FP32 推断。</figcaption>
             </figure>
-            <aside class="route-summary" aria-label="FP16 路径消融">
+            <aside class="route-summary" aria-label="半精度 FP16 路径消融">
               <article>
-                <h3>冻结 F0 <span>1.087x vs P1</span></h3>
-                <p>同一窄 ATen 范围，冻结环境与优化环境分开记录。</p>
+                <h3>未优化 FlagOS <span>相对纯 PyTorch 1.087x</span></h3>
+                <p>同一组通用算子接管范围，固定版本环境与优化环境分开记录。</p>
               </article>
               <article>
-                <h3>Gaussian C1 <span>2.352x vs F0</span></h3>
-                <p>FP16 中同样是主要收益，95% CI 为 [2.319x, 2.365x]。</p>
+                <h3>Gaussian 编译优化 <span>相对未优化 FlagOS 2.352x</span></h3>
+                <p>半精度 FP16 中同样是主要收益，95% 置信区间为 [2.319x, 2.365x]。</p>
               </article>
               <article>
-                <h3>Pair C2 <span>1.018x vs F0</span></h3>
+                <h3>Pair-score 原生优化 <span>相对未优化 FlagOS 1.018x</span></h3>
                 <p>仅微幅正收益；作为组合路径保留，不夸大成独立大幅加速。</p>
               </article>
             </aside>
@@ -1638,14 +1638,14 @@
         <div class="section-heading">
           <p class="section-label">逐算子决策</p>
           <div>
-            <h2 id="operator-heading">逐算子：每行都把 Torch、F0 与 R2 分开</h2>
+            <h2 id="operator-heading">逐算子：每行都区分纯 PyTorch、未优化 FlagOS 与优化后路线</h2>
             <p>SToFM 的 Gaussian、pair 和最终组合是端到端路线消融；Vision 的三项才是独立算子边界。两类结果共用统一的三基线语义，但不横向比较绝对毫秒。</p>
           </div>
         </div>
 
         <div class="operator-legend" aria-label="逐算子图例">
-          <span class="legend-item"><span class="legend-square torch" aria-hidden="true"></span>Torch P1</span>
-          <span class="legend-item"><span class="legend-square stock" aria-hidden="true"></span>冻结 FlagOS F0</span>
+          <span class="legend-item"><span class="legend-square torch" aria-hidden="true"></span>纯 PyTorch 参考实现</span>
+          <span class="legend-item"><span class="legend-square stock" aria-hidden="true"></span>未优化 FlagOS 基线</span>
           <span class="legend-item"><span class="legend-square optimized" aria-hidden="true"></span>优化 FlagOS / 候选</span>
           <span class="legend-item">每组条形按本精度、本行最大延迟归一化</span>
         </div>
@@ -1654,52 +1654,52 @@
           <article class="operator-row">
             <div class="operator-title">
               <h3>Gaussian pair bias</h3>
-              <p>SToFM 端到端 C1 消融。显示加入 Gaussian 编译路径后的完整路线变化，不把它伪装成孤立 kernel 延迟。</p>
-              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm.py#L113">public Gaussian API</a>
+              <p>SToFM 端到端的 Gaussian 路线消融。显示加入编译优化后的完整路线变化，不把它伪装成孤立内核延迟。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm.py#L113">Gaussian 公共 API</a>
             </div>
             <div class="precision-columns">
-              <section class="operator-precision" aria-label="Gaussian pair bias FP32">
-                <h4>FP32</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
-                <div class="micro-row optimized"><span class="micro-label">C1</span><span class="micro-track"><span class="micro-fill" style="width:45.75%"></span></span><span class="micro-value">10.5686 ms</span></div>
+              <section class="operator-precision" aria-label="Gaussian pair bias 单精度 FP32">
+                <h4>单精度 FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">Gaussian</span><span class="micro-track"><span class="micro-fill" style="width:45.75%"></span></span><span class="micro-value">10.5686 ms</span></div>
               </section>
-              <section class="operator-precision" aria-label="Gaussian pair bias FP16">
-                <h4>FP16</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
-                <div class="micro-row optimized"><span class="micro-label">C1</span><span class="micro-track"><span class="micro-fill" style="width:38.91%"></span></span><span class="micro-value">8.1812 ms</span></div>
+              <section class="operator-precision" aria-label="Gaussian pair bias 半精度 FP16">
+                <h4>半精度 FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">Gaussian</span><span class="micro-track"><span class="micro-fill" style="width:38.91%"></span></span><span class="micro-value">8.1812 ms</span></div>
               </section>
             </div>
             <aside class="operator-decision">
-              <span class="decision-label">PROMOTE</span>
+              <span class="decision-label">纳入 V100 优化路径</span>
               <strong>2.054x / 2.352x</strong>
-              <p>相对 F0 的 95% CI：FP32 [2.052x, 2.055x]；FP16 [2.319x, 2.365x]。V100 采用 compiler 路径。</p>
+              <p>相对未优化 FlagOS 的 95% 置信区间：单精度 FP32 [2.052x, 2.055x]；半精度 FP16 [2.319x, 2.365x]。V100 采用编译优化路径。</p>
             </aside>
           </article>
 
           <article class="operator-row">
             <div class="operator-title">
               <h3>Pair-score epilogue</h3>
-              <p>SToFM 端到端 C2 消融。原生路径融合 score mask、row softmax 与可选 pair-state writeback。</p>
-              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm_backends/nvidia.py#L159">NVIDIA pair epilogue kernel</a>
+              <p>SToFM 端到端的 Pair-score 路线消融。原生路径融合分数掩码、行 softmax 与可选 pair-state 写回。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm_backends/nvidia.py#L159">NVIDIA Pair-score 原生内核</a>
             </div>
             <div class="precision-columns">
-              <section class="operator-precision" aria-label="Pair score epilogue FP32">
-                <h4>FP32</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
-                <div class="micro-row optimized"><span class="micro-label">C2</span><span class="micro-track"><span class="micro-fill" style="width:89.33%"></span></span><span class="micro-value">20.6351 ms</span></div>
+              <section class="operator-precision" aria-label="Pair score epilogue 单精度 FP32">
+                <h4>单精度 FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">Pair 优化</span><span class="micro-track"><span class="micro-fill" style="width:89.33%"></span></span><span class="micro-value">20.6351 ms</span></div>
               </section>
-              <section class="operator-precision" aria-label="Pair score epilogue FP16">
-                <h4>FP16</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
-                <div class="micro-row optimized"><span class="micro-label">C2</span><span class="micro-track"><span class="micro-fill" style="width:90.35%"></span></span><span class="micro-value">18.9990 ms</span></div>
+              <section class="operator-precision" aria-label="Pair score epilogue 半精度 FP16">
+                <h4>半精度 FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">Pair 优化</span><span class="micro-track"><span class="micro-fill" style="width:90.35%"></span></span><span class="micro-value">18.9990 ms</span></div>
               </section>
             </div>
             <aside class="operator-decision hold">
-              <span class="decision-label">RETAIN WITH GUARD</span>
+              <span class="decision-label">保留，但限制启用</span>
               <strong>1.052x / 1.018x</strong>
               <p>小幅正收益，保留在组合路线；必须在更多 shape bucket 上复验，不能写成大幅独立加速。</p>
             </aside>
@@ -1707,141 +1707,141 @@
 
           <article class="operator-row">
             <div class="operator-title">
-              <h3>Scoped FlagOS core ATen</h3>
-              <p>冻结 FlagOS 的稳态路线，不是新增复合算子。allowlist 为 <code>addmm</code>、<code>baddbmm</code>、<code>bmm</code>、<code>softmax</code>。</p>
-              <a class="boundary" href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py">scoped runtime bridge</a>
+              <h3>FlagOS 通用算子接管</h3>
+              <p>未优化 FlagOS 的稳态路线，不是新增复合算子。一次推理中仅接管 <code>addmm</code>、<code>baddbmm</code>、<code>bmm</code>、<code>softmax</code>。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py">推理运行时桥接代码</a>
             </div>
             <div class="precision-columns">
-              <section class="operator-precision" aria-label="Scoped FlagOS FP32">
-                <h4>FP32</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
-                <div class="micro-row fallback"><span class="micro-label">R2</span><span class="micro-track"></span><span class="micro-value">same scope</span></div>
+              <section class="operator-precision" aria-label="FlagOS 通用算子接管 单精度 FP32">
+                <h4>单精度 FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
+                <div class="micro-row fallback"><span class="micro-label">优化后</span><span class="micro-track"></span><span class="micro-value">同一接管范围</span></div>
               </section>
-              <section class="operator-precision" aria-label="Scoped FlagOS FP16">
-                <h4>FP16</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
-                <div class="micro-row fallback"><span class="micro-label">R2</span><span class="micro-track"></span><span class="micro-value">same scope</span></div>
+              <section class="operator-precision" aria-label="FlagOS 通用算子接管 半精度 FP16">
+                <h4>半精度 FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
+                <div class="micro-row fallback"><span class="micro-label">优化后</span><span class="micro-track"></span><span class="micro-value">同一接管范围</span></div>
               </section>
             </div>
             <aside class="operator-decision hold">
-              <span class="decision-label">BASELINE RETAINED</span>
+              <span class="decision-label">保留为真实后端基线</span>
               <strong>1.064x / 1.087x</strong>
-              <p>相对 Torch P1 的 F0 稳态速度比。它证明 FlagOS 真实参与了推理，但不构成“完整模型后端”宣称。</p>
+              <p>相对纯 PyTorch 的未优化 FlagOS 稳态速度比。它证明 FlagOS 真实参与了推理，但不构成“完整模型后端”宣称。</p>
             </aside>
           </article>
 
           <article class="operator-row">
             <div class="operator-title">
-              <h3>SToFM final composition</h3>
-              <p>最终组合：Gaussian C1 + pair C2 + 同一 scoped ATen 路由。用于端到端产品价值判断。</p>
-              <a class="boundary" href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-fp32-20260815">SToFM raw benchmark evidence</a>
+              <h3>SToFM 最终优化组合</h3>
+              <p>最终组合：Gaussian 编译优化 + Pair-score 原生优化 + 同一局部算子接管。用于端到端产品价值判断。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-fp32-20260815">SToFM 原始基准证据</a>
             </div>
             <div class="precision-columns">
-              <section class="operator-precision" aria-label="SToFM final composition FP32">
-                <h4>FP32</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
-                <div class="micro-row optimized"><span class="micro-label">Final</span><span class="micro-track"><span class="micro-fill" style="width:41.06%"></span></span><span class="micro-value">9.4850 ms</span></div>
+              <section class="operator-precision" aria-label="SToFM 最终优化组合 单精度 FP32">
+                <h4>单精度 FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">23.0998 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:93.94%"></span></span><span class="micro-value">21.7006 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">优化组合</span><span class="micro-track"><span class="micro-fill" style="width:41.06%"></span></span><span class="micro-value">9.4850 ms</span></div>
               </section>
-              <section class="operator-precision" aria-label="SToFM final composition FP16">
-                <h4>FP16</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
-                <div class="micro-row optimized"><span class="micro-label">Final</span><span class="micro-track"><span class="micro-fill" style="width:41.94%"></span></span><span class="micro-value">8.8179 ms</span></div>
+              <section class="operator-precision" aria-label="SToFM 最终优化组合 半精度 FP16">
+                <h4>半精度 FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">21.0268 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:92.02%"></span></span><span class="micro-value">19.3490 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">优化组合</span><span class="micro-track"><span class="micro-fill" style="width:41.94%"></span></span><span class="micro-value">8.8179 ms</span></div>
               </section>
             </div>
             <aside class="operator-decision">
-              <span class="decision-label">PROMOTE</span>
+              <span class="decision-label">纳入 V100 优化路径</span>
               <strong>2.277x / 2.151x</strong>
-              <p>相对冻结 F0 的端到端结果；这才是可以对外描述的最终优化组合。</p>
+              <p>相对未优化 FlagOS 的端到端结果；这才是可以对外描述的最终优化组合。</p>
             </aside>
           </article>
 
           <article class="operator-row">
             <div class="operator-title">
               <h3>KRONOS marker-token assembly</h3>
-              <p>独立 Vision 边界。包含 lookup、broadcast、position/token add 与 padding；冻结 F0 是独立 worker 的真实 scoped 路由。</p>
-              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py#L21">NVIDIA Triton marker kernel</a>
+              <p>独立 Vision 边界。包含查表、广播、位置/标记相加与 padding；未优化 FlagOS 使用独立计时进程的真实局部算子路由。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py#L21">NVIDIA Triton marker 内核</a>
             </div>
             <div class="precision-columns">
-              <section class="operator-precision" aria-label="Marker token FP32">
-                <h4>FP32</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.2828 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:98.48%"></span></span><span class="micro-value">0.2785 ms</span></div>
-                <div class="micro-row optimized"><span class="micro-label">Triton</span><span class="micro-track"><span class="micro-fill" style="width:88.81%"></span></span><span class="micro-value">0.2512 ms</span></div>
+              <section class="operator-precision" aria-label="Marker token 单精度 FP32">
+                <h4>单精度 FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.2828 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:98.48%"></span></span><span class="micro-value">0.2785 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">Triton 内核</span><span class="micro-track"><span class="micro-fill" style="width:88.81%"></span></span><span class="micro-value">0.2512 ms</span></div>
               </section>
-              <section class="operator-precision" aria-label="Marker token FP16">
-                <h4>FP16</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.2974 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:91.25%"></span></span><span class="micro-value">0.2714 ms</span></div>
-                <div class="micro-row optimized"><span class="micro-label">Triton</span><span class="micro-track"><span class="micro-fill" style="width:82.68%"></span></span><span class="micro-value">0.2459 ms</span></div>
+              <section class="operator-precision" aria-label="Marker token 半精度 FP16">
+                <h4>半精度 FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.2974 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:91.25%"></span></span><span class="micro-value">0.2714 ms</span></div>
+                <div class="micro-row optimized"><span class="micro-label">Triton 内核</span><span class="micro-track"><span class="micro-fill" style="width:82.68%"></span></span><span class="micro-value">0.2459 ms</span></div>
               </section>
             </div>
             <aside class="operator-decision">
-              <span class="decision-label">PROMOTE</span>
+              <span class="decision-label">纳入 V100 优化路径</span>
               <strong>1.077x / 1.076x</strong>
-              <p>相对 F0 的 95% CI：FP32 [1.052x, 1.108x]；FP16 [1.049x, 1.095x]。连续 inference 输入可启用。</p>
+              <p>相对未优化 FlagOS 的 95% 置信区间：单精度 FP32 [1.052x, 1.108x]；半精度 FP16 [1.049x, 1.095x]。连续推理输入可启用。</p>
             </aside>
           </article>
 
           <article class="operator-row">
             <div class="operator-title">
               <h3>Uni2 packed SwiGLU</h3>
-              <p>独立 Vision 边界。候选复用既有 FlagGems SwiGLU；本形状的 launch 开销不划算。</p>
-              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py#L144">existing SwiGLU candidate route</a>
+              <p>独立 Vision 边界。候选复用既有 FlagGems SwiGLU；本形状的启动开销不划算。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py#L144">既有 SwiGLU 候选路径</a>
             </div>
             <div class="precision-columns">
-              <section class="operator-precision" aria-label="Packed SwiGLU FP32">
-                <h4>FP32</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:47.70%"></span></span><span class="micro-value">0.0585 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:44.28%"></span></span><span class="micro-value">0.0543 ms</span></div>
-                <div class="micro-row rejected"><span class="micro-label">Cand.</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.1226 ms</span></div>
+              <section class="operator-precision" aria-label="Packed SwiGLU 单精度 FP32">
+                <h4>单精度 FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:47.70%"></span></span><span class="micro-value">0.0585 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:44.28%"></span></span><span class="micro-value">0.0543 ms</span></div>
+                <div class="micro-row rejected"><span class="micro-label">候选实现</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.1226 ms</span></div>
               </section>
-              <section class="operator-precision" aria-label="Packed SwiGLU FP16">
-                <h4>FP16</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:45.12%"></span></span><span class="micro-value">0.0587 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:42.52%"></span></span><span class="micro-value">0.0553 ms</span></div>
-                <div class="micro-row rejected"><span class="micro-label">Cand.</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.1300 ms</span></div>
+              <section class="operator-precision" aria-label="Packed SwiGLU 半精度 FP16">
+                <h4>半精度 FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:45.12%"></span></span><span class="micro-value">0.0587 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:42.52%"></span></span><span class="micro-value">0.0553 ms</span></div>
+                <div class="micro-row rejected"><span class="micro-label">候选实现</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.1300 ms</span></div>
               </section>
             </div>
             <aside class="operator-decision reject">
-              <span class="decision-label">REJECT</span>
+              <span class="decision-label">不纳入 V100 优化路径</span>
               <strong>0.439x / 0.421x</strong>
-              <p>相对 F0 两种精度都明显更慢，95% CI 不跨 1。候选不进入 V100 优化路径。</p>
+              <p>相对未优化 FlagOS，两种精度都明显更慢，95% 置信区间不跨 1。候选不进入 V100 优化路径。</p>
             </aside>
           </article>
 
           <article class="operator-row">
             <div class="operator-title">
               <h3>Uni2 residual LayerNorm</h3>
-              <p>独立 Vision 边界。没有验证通过的复合实现；保留现有 reference fallback，而非为了覆盖率引入未证实内核。</p>
-              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision.py#L107">versioned Vision public API</a>
+              <p>独立 Vision 边界。没有验证通过的复合实现；保留现有参考实现回退，而非为了覆盖率引入未证实内核。</p>
+              <a class="boundary" href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision.py#L107">版本化 Vision 公共 API</a>
             </div>
             <div class="precision-columns">
-              <section class="operator-precision" aria-label="Residual LayerNorm FP32">
-                <h4>FP32</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.0573 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:91.79%"></span></span><span class="micro-value">0.0526 ms</span></div>
-                <div class="micro-row fallback"><span class="micro-label">R2</span><span class="micro-track"></span><span class="micro-value">no candidate</span></div>
+              <section class="operator-precision" aria-label="Residual LayerNorm 单精度 FP32">
+                <h4>单精度 FP32</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.0573 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:91.79%"></span></span><span class="micro-value">0.0526 ms</span></div>
+                <div class="micro-row fallback"><span class="micro-label">优化后</span><span class="micro-track"></span><span class="micro-value">无新实现</span></div>
               </section>
-              <section class="operator-precision" aria-label="Residual LayerNorm FP16">
-                <h4>FP16</h4>
-                <div class="micro-row torch"><span class="micro-label">Torch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.0637 ms</span></div>
-                <div class="micro-row stock"><span class="micro-label">F0</span><span class="micro-track"><span class="micro-fill" style="width:93.25%"></span></span><span class="micro-value">0.0594 ms</span></div>
-                <div class="micro-row fallback"><span class="micro-label">R2</span><span class="micro-track"></span><span class="micro-value">no candidate</span></div>
+              <section class="operator-precision" aria-label="Residual LayerNorm 半精度 FP16">
+                <h4>半精度 FP16</h4>
+                <div class="micro-row torch"><span class="micro-label">纯 PyTorch</span><span class="micro-track"><span class="micro-fill" style="width:100%"></span></span><span class="micro-value">0.0637 ms</span></div>
+                <div class="micro-row stock"><span class="micro-label">未优化</span><span class="micro-track"><span class="micro-fill" style="width:93.25%"></span></span><span class="micro-value">0.0594 ms</span></div>
+                <div class="micro-row fallback"><span class="micro-label">优化后</span><span class="micro-track"></span><span class="micro-value">无新实现</span></div>
               </section>
             </div>
             <aside class="operator-decision hold">
-              <span class="decision-label">REFERENCE FALLBACK</span>
+              <span class="decision-label">保留参考实现回退</span>
               <strong>不引入新内核</strong>
-              <p>profile 显示 <code>aten::native_layer_norm</code>。在证明存在更好实现前，不把“缺失”伪装成“已优化”。</p>
+              <p>性能跟踪显示 <code>aten::native_layer_norm</code>。在证明存在更好实现前，不把“缺失”伪装成“已优化”。</p>
             </aside>
           </article>
         </div>
         <p class="operator-footnote">
-          Vision 每个单元格来自 3 个独立进程、90 个原始样本的 aggregate p50；相对 F0 的速度比使用独立 frozen 样本，而不是从表中 p50 相除。完整数值、CSV、日志和 checksum 在下方证据目录中。
+          Vision 每个单元格来自 3 个独立进程、90 个原始样本的汇总中位延迟（p50）；相对未优化 FlagOS 的速度比使用独立固定版本样本，而不是从表中 p50 相除。完整数值、CSV、日志和校验和在下方证据目录中。
         </p>
       </div>
     </section>
@@ -1852,7 +1852,7 @@
           <p class="section-label">代码与设备覆盖</p>
           <div>
             <h2 id="implementation-heading">实现不是一块“FlagOS 黑盒”</h2>
-            <p>SToFM fork 负责三模式接入、双环境 worker 和证据链；FlagGems fork 负责版本化 public API、NVIDIA 路径以及 CANN/MUSA 的延迟构建项目。下面按真正的代码所有权与设备成熟度展开。</p>
+            <p>SToFM 仓库负责三种推理模式、双环境计时进程和证据链；FlagGems 仓库负责版本化公共 API、NVIDIA 路径以及 CANN/MUSA 的延迟构建项目。下面按真正的代码所有权与设备成熟度展开。</p>
           </div>
         </div>
 
@@ -1860,38 +1860,38 @@
           <div class="code-map">
             <article class="code-row">
               <h3>Gaussian pair bias</h3>
-              <p><a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm.py#L113">公共 API</a>；V100 的正式胜出路线是 compiler 复合。另有手写 NVIDIA Triton 候选，但不将它写成 R2 赢家。</p>
+              <p><a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm.py#L113">公共 API</a>；V100 的正式胜出路线是编译器复合。另有手写 NVIDIA Triton 候选，但不将它写成本轮优化赢家。</p>
               <span class="platform">V100 已测<br>Ascend / MTT 源码已备</span>
             </article>
             <article class="code-row">
               <h3>Pair attention</h3>
-              <p><a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm.py#L176">公共 composite API</a>；<a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm_backends/nvidia.py#L159">NVIDIA pair-score epilogue</a> 是实际 native kernel。</p>
+              <p><a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm.py#L176">公共复合 API</a>；<a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/stofm_backends/nvidia.py#L159">NVIDIA Pair-score 后处理内核</a> 是实际运行的原生内核。</p>
               <span class="platform">V100 已测<br>Ascend / MTT 源码已备</span>
             </article>
             <article class="code-row">
               <h3>Marker-token</h3>
-              <p><a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision.py#L107">Vision public API</a>；<a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py#L21">NVIDIA Triton kernel</a> 通过独立 F0 比较。</p>
-              <span class="platform">V100 已测<br>target fallback 已备</span>
+              <p><a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision.py#L107">Vision 公共 API</a>；<a href="https://github.com/priestess-bot/FlagGems/blob/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vision_backends/nvidia.py#L21">NVIDIA Triton 内核</a> 通过独立未优化 FlagOS 基线比较。</p>
+              <span class="platform">V100 已测<br>目标设备回退路径已备</span>
             </article>
             <article class="code-row">
-              <h3>ATen runtime scope</h3>
-              <p><a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py">SToFM runtime bridge</a> 限定注册范围并在 scope 退出后清理；它是后端接入，不是新算子。</p>
-              <span class="platform">V100 已测<br>target F0 待建立</span>
+              <h3>通用算子运行时接管</h3>
+              <p><a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/model/flagos_runtime.py">SToFM 运行时桥接代码</a> 限定接管范围并在推理区间结束后清理；它是后端接入，不是新算子。</p>
+              <span class="platform">V100 已测<br>目标设备未优化基线待建立</span>
             </article>
           </div>
 
           <div class="maturity" aria-label="各设备实现成熟度">
             <article class="maturity-row">
-              <h3>NVIDIA V100 <span>MEASURED</span></h3>
-              <p>真实 F0、Gaussian compiler、pair epilogue、marker Triton、FP32/FP16 原始测量及 trace 均已归档。只有这一行可以讨论性能结论。</p>
+              <h3>NVIDIA V100 <span>已实测</span></h3>
+              <p>固定版本未优化 FlagOS、Gaussian 编译优化、Pair-score 后处理、marker Triton、单精度/半精度原始测量及性能跟踪均已归档。只有这一行可以讨论性能结论。</p>
             </article>
             <article class="maturity-row pending">
-              <h3>Huawei Ascend 310 / CANN <span>SOURCE-COMPLETE</span></h3>
-              <p><a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vendor/ascendc_stofm">AscendC 项目</a>、lazy dispatch、FP32/FP16/BF16 guard、离线 AST/CMake/C++ syntax gate 已完成；无租赁设备，不宣称二进制或性能。</p>
+              <h3>Huawei Ascend 310 / CANN <span>源码与静态检查完成</span></h3>
+              <p><a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vendor/ascendc_stofm">AscendC 项目</a>、按需加载的后端选择、单精度 FP32、半精度 FP16 与 BF16 的精度保护、离线源代码与构建配置检查已完成；无租赁设备，不宣称二进制或性能。</p>
             </article>
             <article class="maturity-row pending">
-              <h3>MTT S4000 / MUSA <span>SOURCE-COMPLETE</span></h3>
-              <p><a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vendor/musa_stofm">MUSA extension 项目</a>、lazy dispatch、FP32/FP16/BF16 guard、离线 AST/CMake/C++ syntax gate 已完成；同样尚无实机性能结论。</p>
+              <h3>MTT S4000 / MUSA <span>源码与静态检查完成</span></h3>
+              <p><a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference/src/flag_gems/experimental_ops/vendor/musa_stofm">MUSA 扩展项目</a>、按需加载的后端选择、单精度 FP32、半精度 FP16 与 BF16 的精度保护、离线源代码与构建配置检查已完成；同样尚无实机性能结论。</p>
             </article>
           </div>
         </div>
@@ -1904,7 +1904,7 @@
           <p class="section-label">严格验证</p>
           <div>
             <h2 id="evidence-heading">为什么这些数字可以被复查</h2>
-            <p>测试不是单次截图：环境、reference hash、测量控制、独立 worker、原始样本和 checksum 都被保留。任何跨环境 workload、timer 或 runtime identity 漂移都会被聚合器拒绝。</p>
+            <p>测试不是单次截图：环境、基准输出哈希、测量控制、独立计时进程、原始样本和校验和都被保留。任何跨环境工作负载、计时器或运行时身份漂移都会被聚合器拒绝。</p>
           </div>
         </div>
 
@@ -1917,17 +1917,17 @@
           <article class="method-step">
             <span class="method-number">02</span>
             <h3>先验正确性</h3>
-            <p>每个候选先与 Torch <code>assert_close</code>；FP32 为 rtol 3e-4 / atol 3e-5，FP16 为 rtol 3e-2 / atol 3e-3；marker mask 必须精确相同。</p>
+            <p>每个候选先与纯 PyTorch <code>assert_close</code>；单精度 FP32 为 rtol 3e-4 / atol 3e-5，半精度 FP16 为 rtol 3e-2 / atol 3e-3；marker mask 必须精确相同。</p>
           </article>
           <article class="method-step">
             <span class="method-number">03</span>
             <h3>独立进程计时</h3>
-            <p>每精度 3 个独立进程；10 次 warm-up、30 个 CUDA-event sample、每 sample 5 次调用。编译只在 warm-up 中发生。</p>
+            <p>每种精度使用 3 个独立进程；10 次预热、30 个 CUDA-event 样本、每个样本 5 次调用。编译只在预热中发生。</p>
           </article>
           <article class="method-step">
             <span class="method-number">04</span>
             <h3>统计与可追溯</h3>
-            <p>每阶段 90 个原始样本，10,000 次 bootstrap 得到 95% CI；运行记录 pip freeze、GPU、driver、Torch backend 与环境变量。</p>
+            <p>每阶段 90 个原始样本，10,000 次自助法重采样得到 95% 置信区间；运行记录软件包版本、GPU、驱动、PyTorch 后端设置与环境变量。</p>
           </article>
         </div>
 
@@ -1935,35 +1935,35 @@
           <div class="test-counts" aria-label="回归测试结果">
             <article class="test-count">
               <strong>26</strong>
-              <p>FlagGems R2 回归通过：precision、shape、mask、padding、non-contiguous fallback、gradients 与 target static gate。</p>
+              <p>FlagGems 优化版回归通过：精度、形状、掩码、padding、非连续输入回退、梯度与目标设备静态检查。</p>
             </article>
             <article class="test-count">
               <strong>28</strong>
-              <p>SToFM 优化环境测试通过：三模式、双环境聚合、profile 分类、dispatch cleanup 与 checksum 验证。</p>
+              <p>SToFM 优化环境测试通过：三种模式、双环境聚合、性能跟踪分类、路由清理与校验和验证。</p>
             </article>
             <article class="test-count">
               <strong>3</strong>
-              <p>冻结环境测试通过：P1 语义等价与不导入 R2 Vision API 的 F0 worker。</p>
+              <p>固定版本环境测试通过：纯 PyTorch 语义等价，以及不导入新版 Vision API 的未优化 FlagOS 计时进程。</p>
             </article>
           </div>
           <div class="evidence-list" aria-label="证据目录">
             <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-fp32-20260815">
-              <span><strong>SToFM FP32 原始证据</strong><span>三进程结果、CSV、日志、suite 与 checksum</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+              <span><strong>SToFM 单精度 FP32 原始证据</strong><span>三进程结果、CSV、日志、汇总与校验和</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
             </a>
             <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-fp16-20260815">
-              <span><strong>SToFM FP16 原始证据</strong><span>独立 FP16 聚合、日志、suite 与 checksum</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+              <span><strong>SToFM 半精度 FP16 原始证据</strong><span>独立 FP16 聚合、日志、汇总与校验和</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
             </a>
             <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-vision-v100-fp32-20260815-stock-complete">
-              <span><strong>Vision FP32 三基线证据</strong><span>每次运行都有 Torch、冻结 F0、优化环境的 JSON、CSV、日志与 checksum</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+              <span><strong>Vision 单精度 FP32 三基线证据</strong><span>每次运行都有纯 PyTorch、未优化 FlagOS、优化环境的 JSON、CSV、日志与校验和</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
             </a>
             <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-vision-v100-fp16-20260815-stock-complete">
-              <span><strong>Vision FP16 三基线证据</strong><span>独立 FP16 双环境测量，包含被拒绝候选</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+              <span><strong>Vision 半精度 FP16 三基线证据</strong><span>独立 FP16 双环境测量，包含被拒绝候选</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
             </a>
             <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference/benchmark-results/r2-v100-profiles-20260815">
-              <span><strong>SToFM 与 Vision trace</strong><span>清洗的 profile、分类 JSON 与 checksum</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+              <span><strong>SToFM 与 Vision 性能跟踪</strong><span>清洗的性能跟踪、分类 JSON 与校验和</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
             </a>
             <a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/docs/flagos_inference_r2_checklist.md">
-              <span><strong>R2 implementation checklist</strong><span>逐项完成状态、命令、证据位置与 target-device 待办</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
+              <span><strong>实施清单</strong><span>逐项完成状态、命令、证据位置与目标设备待办</span></span><span class="arrow" aria-hidden="true">&rarr;</span>
             </a>
           </div>
         </div>
@@ -1971,9 +1971,9 @@
         <aside class="limits">
           <h3>结论的边界条件</h3>
           <ul>
-            <li>V100 数字只适用于本报告声明的 synthetic SToFM 输入与 Vision 算子边界，不等价于完整 Uni2/KRONOS 模型吞吐。</li>
-            <li>峰值 allocation 仅是 timed window 内的增长，不是总进程或模型显存。FP32 的 P1/F0 为 1618.09 MiB，Ffinal 为 145.15 MiB；FP16 分别为 1617.07 MiB 与 71.40 MiB。</li>
-            <li>Ascend 310 与 MTT S4000 在完成实际 SDK 构建、正确性矩阵与 P1/F0 建立前，页面不包含任何目标性能数字。</li>
+            <li>V100 数字只适用于本报告声明的合成 SToFM 输入与 Vision 算子边界，不等价于完整 Uni2/KRONOS 模型吞吐。</li>
+            <li>峰值内存分配仅是计时窗口内的增长，不是总进程或模型显存。单精度中，纯 PyTorch/未优化 FlagOS 为 1618.09 MiB，优化组合为 145.15 MiB；半精度分别为 1617.07 MiB 与 71.40 MiB。</li>
+            <li>Ascend 310 与 MTT S4000 在完成实际 SDK 构建、正确性矩阵与纯 PyTorch/未优化 FlagOS 基线建立前，页面不包含任何目标性能数字。</li>
           </ul>
         </aside>
       </div>
@@ -1985,7 +1985,7 @@
           <p class="section-label">目标设备计划</p>
           <div>
             <h2 id="next-heading">租赁 Ascend / MTT 后，如何把“源码已备”变成可比较结果</h2>
-            <p>现在的 target 代码刻意不依赖真实芯片就能通过静态门禁；上机时应先建立目标自己的 P1/F0，再逐个启用已准备的边界。所有阈值均是计划门槛，不是预先声称的性能。</p>
+            <p>现在的目标设备代码刻意不依赖真实芯片就能通过静态门禁；上机时应先建立该设备自己的纯 PyTorch 与未优化 FlagOS 基线，再逐个启用已准备的边界。所有阈值均是计划门槛，不是预先声称的性能。</p>
           </div>
         </div>
 
@@ -1993,23 +1993,23 @@
           <div class="target-table">
             <article class="target-row">
               <h4>Ascend 310 / CANN</h4>
-              <p><strong>已有：</strong>Gaussian 与 pair-score 的 AscendC host/kernel/tiling/dtype dispatch，lazy adapter 与 reference fallback。<br><strong class="waiting">待实机：</strong>实际 <code>ASCEND_NPU_ARCH</code> 构建、FP32/FP16/BF16 语义矩阵、P1/F0 与性能证据。</p>
+              <p><strong>已有：</strong>Gaussian 与 Pair-score 的 AscendC 主机代码、内核、分块与数据类型分发，按需加载适配器与参考实现回退。<br><strong class="waiting">待实机：</strong>实际 <code>ASCEND_NPU_ARCH</code> 构建、单/半/BF16 语义矩阵、纯 PyTorch/未优化 FlagOS 基线与性能证据。</p>
             </article>
             <article class="target-row">
               <h4>MTT S4000 / MUSA</h4>
-              <p><strong>已有：</strong>MUSA extension、<code>.mu</code> Gaussian/pair kernels、PrivateUse1 schema、lazy Triton/extension selection。<br><strong class="waiting">待实机：</strong>mcc SDK 构建、dtype/mask/padding/non-contiguous 语义矩阵、P1/F0 与性能证据。</p>
+              <p><strong>已有：</strong>MUSA 扩展、<code>.mu</code> Gaussian/Pair 内核、PrivateUse1 接口定义、按需 Triton/扩展选择。<br><strong class="waiting">待实机：</strong>mcc SDK 构建、数据类型/掩码/padding/非连续输入语义矩阵、纯 PyTorch/未优化 FlagOS 基线与性能证据。</p>
             </article>
             <article class="target-row">
               <h4>计划阈值</h4>
-              <p>相对各目标自己的 F0：Gaussian 至少 1.15x、pair 至少 1.05x、marker 至少 1.05x，端到端至少 1.10x；否则保留 fallback 或标为 rejected。</p>
+              <p>相对各目标自己的未优化 FlagOS 基线：Gaussian 至少 1.15x、Pair 至少 1.05x、marker 至少 1.05x，端到端至少 1.10x；否则保留参考实现回退或明确标记为不采用。</p>
             </article>
           </div>
 
           <ol class="rental-sequence" aria-label="实机验证步骤">
-            <li>记录租赁机型、driver、SDK、Torch 扩展、编译命令与 Git SHA；先运行 deferred target gate，确认 lazy import 没有掩盖环境错误。</li>
-            <li>对每种支持 dtype 跑 Torch reference 与 target fallback/native 的 shape、mask、padding、pair-state、non-contiguous、gradient 矩阵；任何不一致先停止性能工作。</li>
-            <li>分别测目标 P1、真实 scoped F0、每个 promoted candidate 与最终组合；沿用 3 个独立进程、warm-up、90 原始样本和 bootstrap CI。</li>
-            <li>保存 JSON、CSV、日志、trace 与 checksum，更新 checklist 后再把 target 数字放进本报告；未跨阈值的路线写为 reject 或 retain fallback。</li>
+            <li>记录租赁机型、驱动、SDK、PyTorch 扩展、编译命令与 Git SHA；先运行目标设备预检查，确认按需导入没有掩盖环境错误。</li>
+            <li>对每种支持的数据类型运行纯 PyTorch 参考实现与目标设备参考/原生路径的形状、掩码、padding、pair-state、非连续输入、梯度矩阵；任何不一致先停止性能工作。</li>
+            <li>分别测目标设备的纯 PyTorch、真实未优化 FlagOS、每个待采用候选与最终组合；沿用 3 个独立进程、预热、90 原始样本和自助法置信区间。</li>
+            <li>保存 JSON、CSV、日志、性能跟踪与校验和，更新实施清单后再把目标设备数字放进本报告；未跨阈值的路线写为不采用或保留参考实现回退。</li>
           </ol>
         </div>
       </div>
@@ -2018,7 +2018,7 @@
 
   <footer>
     <div class="footer-inner">
-      <p>本页面仅链接已推送的 <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference">SToFM</a> 与 <a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference">FlagGems</a> fork。数据来源、限制与拒绝候选均在同一页显式保留。</p>
+      <p>本页面仅链接已推送的 <a href="https://github.com/priestess-bot/SToFM/tree/r2/flagos-inference">SToFM</a> 与 <a href="https://github.com/priestess-bot/FlagGems/tree/r2/stofm-flagos-inference">FlagGems</a> 代码仓库。数据来源、限制与拒绝候选均在同一页显式保留。</p>
       <p><a href="https://github.com/priestess-bot/SToFM/blob/r2/flagos-inference/docs/flagos_inference_r2_report.md">查看 Markdown 证据说明</a></p>
     </div>
   </footer>
