@@ -95,9 +95,15 @@ external rental hardware.
   behavior.
   Evidence: FlagGems `tests/test_vision_experimental.py` (5 passed), including
   dynamic token count, non-contiguous fallback, gradients, and static adapters.
-- [ ] VIS-4. Add V100 microbenchmarks for the implemented vision operators.
+- [x] VIS-4. Add V100 microbenchmarks for the implemented vision operators.
   Do not claim a full Uni2/KRONOS model speedup without model weights and an
   end-to-end reproducible workload.
+  Evidence: `benchmark-results/vision-v100-20260815/` at SToFM
+  `5c3662ae55ae59214f3b8ae9899d2cf83c020572` and FlagGems
+  `dde373fe33c71e5819584685781182b0ad2cb144`. Marker-token Triton p50 is
+  `0.2099 ms` versus reference `0.3058 ms` (`1.456x`) with peak allocation
+  `24.0 -> 12.0 MiB`; existing SwiGLU is `0.598x` and is rejected. These are
+  operator microbenchmarks, not full Uni2/KRONOS model speedups.
 
 ## 3. Ascend 310 Correctness-First Implementation
 
@@ -137,8 +143,12 @@ external rental hardware.
 
 ## 5. Evidence, Reports, and Promotion
 
-- [ ] E0. Run the expanded local correctness suite: forward, gradients,
+- [x] E0. Run the expanded local correctness suite: forward, gradients,
   zero-distance/mask behavior, non-contiguous layouts, and dispatch fallback.
+  Evidence: FlagGems `tests/test_stofm_experimental.py` plus
+  `tests/test_vision_experimental.py` (`15 passed`); SToFM
+  `tests/test_flagos_adapter.py` (`6 passed`); all four target adapters pass
+  `tools/check_stofm_target_backends.py`; related sources pass `compileall`.
 - [ ] E1. Publish a V100 optimization report that separates each actual kernel
   from API-only and lifecycle changes, with raw samples for every measured
   stage.
