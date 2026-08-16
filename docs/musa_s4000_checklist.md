@@ -24,8 +24,9 @@ record a performance claim until its raw samples and correctness evidence exist.
   Evidence: all 15 formal result JSON files record SToFM `e2c6de9e`, FlagGems
   `832c46df`, and the expected initial or optimized native-library SHA-256;
   the independent artifact verifier passed.
-- [ ] Publish the final evidence commit.
-  publish the final evidence commit.
+- [x] Publish the final evidence commit.
+  Evidence: commit `f82eb6f0562312d129094127cfa7e81981833e79` publishes
+  the reports, independent verifier, manifest, summary, and all five trials.
 
 ## Target Preconditions
 
@@ -35,8 +36,8 @@ record a performance claim until its raw samples and correctness evidence exist.
   `torch_musa` 1.3.0, Python 3.10, and device architecture `mp_22`.
 - [x] Create an isolated target virtual environment that inherits the vendor
   MUSA packages and installs only SToFM test dependencies.
-  Evidence: `/root/stofm-musa-r2/.venv` was created with
-  `--system-site-packages`; `transformers==4.39.1` and `pytest` installed on
+  Evidence: an isolated virtual environment was created with
+  `--system-site-packages`; `transformers==4.39.1` and `pytest` were installed on
   2026-08-16 without replacing the target `torch` or `torch_musa` packages.
 - [x] Fetch the exact two fork SHAs to the target host and verify source hashes.
   Evidence: fresh, clean target checkouts resolved to FlagGems `832c46df` and
@@ -50,7 +51,8 @@ record a performance claim until its raw samples and correctness evidence exist.
   passed on 2026-08-16.
 - [x] Add lazy extension loading, explicit native-required failure mode, and
   `PrivateUse1` dispatch verification.
-  Evidence: `stofm_backends/mthreads.py`; target execution remains pending.
+  Evidence: `stofm_backends/mthreads.py`; the S4000 target tests exercised
+  successful native loading and the explicit native-required failure path.
 - [x] Build the extension on the S4000, load it through `torch.ops.load_library`,
   and retain the build log, library hash, and dynamic-link evidence.
   Evidence: forced build on 2026-08-16 produced
