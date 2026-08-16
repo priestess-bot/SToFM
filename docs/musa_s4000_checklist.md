@@ -14,10 +14,18 @@ record a performance claim until its raw samples and correctness evidence exist.
   tests before advancing the SToFM dependency.
   Evidence: `priestess-bot/FlagGems:r2/musa-s4000` at immutable commit
   `832c46df4073215d416406181484f9b44594aff2`.
-- [ ] Lock the pushed FlagGems SHA, then commit the SToFM integration, tests,
+- [x] Lock the pushed FlagGems SHA, then commit the SToFM integration, tests,
   formal benchmark runner, and reports.
-- [ ] Push the SToFM `r2/musa-s4000` branch and record both final immutable
-  SHAs in every formal result.
+  Evidence: `deps/flagos-musa-s4000.lock.json` pins FlagGems `832c46df`; the
+  tested SToFM implementation is `e2c6de9ec902bee5d67a4861b4ef6716a58e0cc4`.
+- [x] Push the SToFM `r2/musa-s4000` implementation branch.
+  Evidence: `priestess-bot/SToFM:r2/musa-s4000` contains `e2c6de9e`.
+- [x] Record both immutable implementation SHAs in every formal result.
+  Evidence: all 15 formal result JSON files record SToFM `e2c6de9e`, FlagGems
+  `832c46df`, and the expected initial or optimized native-library SHA-256;
+  the independent artifact verifier passed.
+- [ ] Publish the final evidence commit.
+  publish the final evidence commit.
 
 ## Target Preconditions
 
@@ -30,7 +38,9 @@ record a performance claim until its raw samples and correctness evidence exist.
   Evidence: `/root/stofm-musa-r2/.venv` was created with
   `--system-site-packages`; `transformers==4.39.1` and `pytest` installed on
   2026-08-16 without replacing the target `torch` or `torch_musa` packages.
-- [ ] Fetch the exact two fork SHAs to the target host and verify source hashes.
+- [x] Fetch the exact two fork SHAs to the target host and verify source hashes.
+  Evidence: fresh, clean target checkouts resolved to FlagGems `832c46df` and
+  SToFM `e2c6de9e`; the target suites then passed 25/25 and 2/2 respectively.
 
 ## Native MUSA Extension
 
@@ -115,12 +125,21 @@ record a performance claim until its raw samples and correctness evidence exist.
   Evidence: the N=1050 preflight measured Gaussian speedups of 2.36x in FP16
   and 2.37x in BF16. Pair-attention measured 1.75x in FP16 and 1.88x in BF16;
   its BF16 maximum absolute error against the CPU FP32 oracle was 0.00351.
-- [ ] Run the 1050-node, four-layer primary workload for pure PyTorch, frozen
+- [x] Run the 1050-node, four-layer primary workload for pure PyTorch, frozen
   stock FlagOS, each native operator, combined native operators, and combined
   native plus FlagOS ATen dispatch.
-- [ ] Run the `N=256/512/1050/2048` shape matrix for supported precisions.
-- [ ] Aggregate five independent runs per stage with raw samples, percentiles,
+  Evidence: five independent trials measured pure PyTorch at 33.2088 ms,
+  Gaussian-only at 19.9878 ms, pair-attention-only at 29.5774 ms, and both
+  operators at 16.3370 ms. Generic FlagOS ATen dispatch and frozen upstream
+  FlagOS were retained as unavailable rows because MUSA Triton has no driver.
+- [x] Run the `N=256/512/1050/2048` shape matrix for supported precisions.
+  Evidence: five trials covered both operators at all 12 FP32/FP16/BF16 shape
+  combinations, producing 120 correctness-gated optimized measurement rows.
+- [x] Aggregate five independent runs per stage with raw samples, percentiles,
   variation, and bootstrap confidence intervals.
+  Evidence: `artifacts/musa_s4000/formal-20260816` contains all raw device and
+  host samples. The combined model speedup is 2.032x with a paired hierarchical
+  bootstrap 95% interval of [2.028x, 2.036x] and 0.28% trial-p50 variation.
 - [x] Record stock-baseline ABI availability without substituting a different
   FlagOS version if the frozen baseline cannot run on MUSA 3.1.
   Evidence: frozen FlagGems `03bf364ede763d573d5c30124d554283a209ab85`
@@ -130,7 +149,16 @@ record a performance claim until its raw samples and correctness evidence exist.
 
 ## Reporting
 
-- [ ] Generate Markdown and human-readable HTML reports with full baseline
+- [x] Generate Markdown and human-readable HTML reports with full baseline
   names, per-operator charts, correctness matrix, and raw-artifact links.
-- [ ] Review the HTML at desktop and mobile widths and verify that it exposes no
+  Evidence: `docs/musa_s4000_optimization_report.md` and the integrated
+  `docs/flagos_inference_r2_report.html` include three-way operator results,
+  end-to-end charts, the 24-case precision/shape matrix, optimization history,
+  code links, test conclusions, limitations, and raw evidence links.
+- [x] Review the HTML at desktop and mobile widths and verify that it exposes no
   local path, target address, or credential.
+  Evidence: Playwright 1.62.1 passed at 1440x1000 and 390x844 with zero page
+  overflow, console warnings, console errors, or page exceptions. FP16/BF16 tab
+  interaction updated all eight matrix rows; source scanning found no local
+  code path, target endpoint, or credential. Browser plugin was not available,
+  so the documented Playwright fallback was used.

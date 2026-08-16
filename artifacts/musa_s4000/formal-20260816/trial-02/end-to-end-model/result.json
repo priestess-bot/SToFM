@@ -1,0 +1,528 @@
+{
+  "schema_version": 1,
+  "role": "optimized_musa_native",
+  "run_id": "musa-s4000-20260816T110309Z",
+  "trial": 2,
+  "runtime": {
+    "torch": "2.2.0",
+    "torch_musa": "1.3.0+81caf0a",
+    "device": "MTT S4000",
+    "capability": [
+      2,
+      2
+    ],
+    "total_memory_mib": 49061.67
+  },
+  "sources": {
+    "stofm_revision": "e2c6de9ec902bee5d67a4861b4ef6716a58e0cc4",
+    "flaggems_revision": "832c46df4073215d416406181484f9b44594aff2",
+    "flaggems_package": "flag_gems",
+    "musa_library_sha256": "a7beac88e8d4b7b999b3620b13234ded848aee22d1a479f66ce9f9744a8e2313"
+  },
+  "workload": {
+    "precision": "fp32",
+    "batch_size": 1,
+    "nodes": 1050,
+    "layers": 4,
+    "embedding_dim": 256,
+    "ffn_embedding_dim": 256,
+    "heads": 8,
+    "gaussian_hidden_dim": 128,
+    "input_dim": 256,
+    "seed": 20260816,
+    "input_sha256": {
+      "tokens": "251f2a442ea820ae29b68dc2ae0cbdef01e2286bdde0e9833fdba6a2181fd7fc",
+      "distances": "e80f02248bd96e78ae011d89d3cd18bf9fe8a3f97ab375f4e12458ef18730412",
+      "token_types": "8d2230968bb2dbe1a7b9a4e594a7c4ac1dc07cafa8733d85a55e2d7630ee3b80",
+      "reference_last_hidden_state": "b8f61aa29322d40fe2db4a5d57dbaaef3b2cf33ae6603e30c5b48ea12ddb2e77"
+    }
+  },
+  "measurement": {
+    "timer": "torch.musa.Event with per-sample device synchronization",
+    "host_cross_check": "time.perf_counter",
+    "warmup": 5,
+    "repetitions": 15,
+    "calls_per_sample": 1,
+    "compile_included": false,
+    "inference_mode": true
+  },
+  "native_extension": {
+    "gaussian_pair_bias": {
+      "operator": "flagos_stofm::gaussian_pair_bias",
+      "library": "/root/stofm-musa-r2/artifacts/native-python-orchestrated-v6/flagos_stofm_musa.so",
+      "library_exists": true,
+      "privateuse1_kernel_registered": true,
+      "native_enabled": "1",
+      "native_required": true
+    },
+    "pair_score_epilogue": {
+      "operator": "flagos_stofm::pair_score_epilogue",
+      "library": "/root/stofm-musa-r2/artifacts/native-python-orchestrated-v6/flagos_stofm_musa.so",
+      "library_exists": true,
+      "privateuse1_kernel_registered": true,
+      "native_enabled": "1",
+      "native_required": true
+    }
+  },
+  "results": [
+    {
+      "stage": "pure_pytorch",
+      "description": "Pure PyTorch inference with no FlagOS import or operator replacement.",
+      "baseline_stage": "pure_pytorch",
+      "status": "measured",
+      "expected_custom_operators": [],
+      "validation": {
+        "status": "passed",
+        "tolerance": {
+          "rtol": 0.0004,
+          "atol": 4e-05
+        },
+        "errors": {
+          "max_abs_error": 0.0,
+          "max_relative_error": 0.0
+        },
+        "output_sha256": "b8f61aa29322d40fe2db4a5d57dbaaef3b2cf33ae6603e30c5b48ea12ddb2e77",
+        "dispatch": {
+          "runtime": {
+            "active": false,
+            "reason": "Torch baseline mode"
+          },
+          "gaussian": null,
+          "pair_attention_layers": [
+            null,
+            null,
+            null,
+            null
+          ]
+        }
+      },
+      "sample_count": 15,
+      "calls_per_sample": 1,
+      "samples_ms": [
+        33.21670150756836,
+        33.40751647949219,
+        33.3320426940918,
+        33.253841400146484,
+        33.34857177734375,
+        33.339874267578125,
+        33.364036560058594,
+        33.24115753173828,
+        33.3687744140625,
+        33.52455139160156,
+        33.26012420654297,
+        33.404266357421875,
+        33.302032470703125,
+        33.19458770751953,
+        33.357513427734375
+      ],
+      "host_samples_ms": [
+        33.39067101478577,
+        33.438317477703094,
+        33.364228904247284,
+        33.282458782196045,
+        33.37797522544861,
+        33.36977958679199,
+        33.40083360671997,
+        33.27047824859619,
+        33.398039638996124,
+        33.554330468177795,
+        33.29293429851532,
+        33.43462198972702,
+        33.33182632923126,
+        33.22305530309677,
+        33.3922877907753
+      ],
+      "peak_allocated_mib": 1649.8115234375,
+      "peak_delta_allocated_mib": 1618.09326171875,
+      "p20_ms": 33.251304626464844,
+      "p50_ms": 33.339874267578125,
+      "p80_ms": 33.37587280273438,
+      "p95_ms": 33.442626953125,
+      "mean_ms": 33.32770614624023,
+      "stdev_ms": 0.08606147842746126,
+      "coefficient_of_variation": 0.002582280282052056,
+      "bootstrap_p50_ci_ms": [
+        33.253841400146484,
+        33.3687744140625
+      ],
+      "bootstrap_resamples": 4000,
+      "host_timing": {
+        "p20_ms": 33.290839195251465,
+        "p50_ms": 33.37797522544861,
+        "p80_ms": 33.40759128332138,
+        "p95_ms": 33.473121374845505,
+        "mean_ms": 33.368122577667236,
+        "stdev_ms": 0.08110099383889441,
+        "coefficient_of_variation": 0.0024304931645502295,
+        "bootstrap_p50_ci_ms": [
+          33.29293429851532,
+          33.398039638996124
+        ],
+        "bootstrap_resamples": 4000
+      }
+    },
+    {
+      "stage": "native_gaussian_pair_bias",
+      "description": "Only the PrivateUse1 Gaussian pair-bias operator; pair-score stays in PyTorch.",
+      "baseline_stage": "pure_pytorch",
+      "status": "measured",
+      "expected_custom_operators": [
+        "flagos_stofm::gaussian_pair_bias"
+      ],
+      "validation": {
+        "status": "passed",
+        "tolerance": {
+          "rtol": 0.0004,
+          "atol": 4e-05
+        },
+        "errors": {
+          "max_abs_error": 1.1920928955078125e-06,
+          "max_relative_error": 0.00961656216531992
+        },
+        "output_sha256": "3586f934fecaf007cceb6921e47a660ca0638b6eaf2b94678e640345bea38662",
+        "dispatch": {
+          "runtime": {
+            "active": false,
+            "reason": "FlagOS ATen dispatch is disabled for custom-operator isolation"
+          },
+          "gaussian": {
+            "operator": "gaussian_pair_bias",
+            "requested": "mthreads",
+            "selected": "mthreads",
+            "precision": "fp32",
+            "reason": "explicit device-matched backend"
+          },
+          "pair_attention_layers": [
+            null,
+            null,
+            null,
+            null
+          ]
+        }
+      },
+      "sample_count": 15,
+      "calls_per_sample": 1,
+      "samples_ms": [
+        20.277545928955078,
+        20.12908363342285,
+        20.17090606689453,
+        20.195804595947266,
+        20.134990692138672,
+        20.187986373901367,
+        20.179454803466797,
+        20.160884857177734,
+        20.13979721069336,
+        20.083532333374023,
+        20.0772762298584,
+        20.123767852783203,
+        20.102033615112305,
+        20.112995147705078,
+        20.11945915222168
+      ],
+      "host_samples_ms": [
+        20.332813262939453,
+        20.159266889095306,
+        20.20038664340973,
+        20.227529108524323,
+        20.16497403383255,
+        20.218268036842346,
+        20.20961046218872,
+        20.190857350826263,
+        20.17080783843994,
+        20.1125368475914,
+        20.10856568813324,
+        20.153023302555084,
+        20.131908357143402,
+        20.141541957855225,
+        20.148642361164093
+      ],
+      "peak_allocated_mib": 1178.77294921875,
+      "peak_delta_allocated_mib": 1147.0546875,
+      "p20_ms": 20.110802841186523,
+      "p50_ms": 20.134990692138672,
+      "p80_ms": 20.18116111755371,
+      "p95_ms": 20.22032699584961,
+      "mean_ms": 20.146367899576823,
+      "stdev_ms": 0.051268764282848205,
+      "coefficient_of_variation": 0.0025448142582527302,
+      "bootstrap_p50_ci_ms": [
+        20.112995147705078,
+        20.179454803466797
+      ],
+      "bootstrap_resamples": 4000,
+      "host_timing": {
+        "p20_ms": 20.13961523771286,
+        "p50_ms": 20.16497403383255,
+        "p80_ms": 20.211341977119446,
+        "p95_ms": 20.25911435484886,
+        "mean_ms": 20.178048809369404,
+        "stdev_ms": 0.0562682781655864,
+        "coefficient_of_variation": 0.0027885886637095945,
+        "bootstrap_p50_ci_ms": [
+          20.141541957855225,
+          20.20038664340973
+        ],
+        "bootstrap_resamples": 4000
+      }
+    },
+    {
+      "stage": "native_pair_score_epilogue",
+      "description": "Only the PrivateUse1 pair-score softmax/context operator; Gaussian stays in PyTorch.",
+      "baseline_stage": "pure_pytorch",
+      "status": "measured",
+      "expected_custom_operators": [
+        "flagos_stofm::pair_score_epilogue"
+      ],
+      "validation": {
+        "status": "passed",
+        "tolerance": {
+          "rtol": 0.0004,
+          "atol": 4e-05
+        },
+        "errors": {
+          "max_abs_error": 9.5367431640625e-07,
+          "max_relative_error": 0.006490499712526798
+        },
+        "output_sha256": "d02d95cd4f8165bcf6f27a79f09cb4c3b87a08252f25b49df2491edea26ba76b",
+        "dispatch": {
+          "runtime": {
+            "active": false,
+            "reason": "FlagOS ATen dispatch is disabled for custom-operator isolation"
+          },
+          "gaussian": null,
+          "pair_attention_layers": [
+            {
+              "operator": "pair_attention",
+              "requested": "mthreads",
+              "selected": "mthreads",
+              "precision": "fp32",
+              "reason": "explicit device-matched backend"
+            },
+            {
+              "operator": "pair_attention",
+              "requested": "mthreads",
+              "selected": "mthreads",
+              "precision": "fp32",
+              "reason": "explicit device-matched backend"
+            },
+            {
+              "operator": "pair_attention",
+              "requested": "mthreads",
+              "selected": "mthreads",
+              "precision": "fp32",
+              "reason": "explicit device-matched backend"
+            },
+            {
+              "operator": "pair_attention",
+              "requested": "mthreads",
+              "selected": "mthreads",
+              "precision": "fp32",
+              "reason": "explicit device-matched backend"
+            }
+          ]
+        }
+      },
+      "sample_count": 15,
+      "calls_per_sample": 1,
+      "samples_ms": [
+        29.68708038330078,
+        29.67506217956543,
+        29.587629318237305,
+        29.7236385345459,
+        29.66766929626465,
+        29.60240364074707,
+        29.586036682128906,
+        29.598236083984375,
+        29.715150833129883,
+        29.775636672973633,
+        29.60371971130371,
+        29.706823348999023,
+        29.72797203063965,
+        29.759214401245117,
+        29.74146270751953
+      ],
+      "host_samples_ms": [
+        29.733970761299133,
+        29.704555869102478,
+        29.61629629135132,
+        29.754720628261566,
+        29.695719480514526,
+        29.633134603500366,
+        29.613040387630463,
+        29.62782233953476,
+        29.74463254213333,
+        29.802635312080383,
+        29.631510376930237,
+        29.736965894699097,
+        29.755964875221252,
+        29.786810278892517,
+        29.772937297821045
+      ],
+      "peak_allocated_mib": 1649.8115234375,
+      "peak_delta_allocated_mib": 1618.09326171875,
+      "p20_ms": 29.60157012939453,
+      "p50_ms": 29.68708038330078,
+      "p80_ms": 29.730670166015624,
+      "p95_ms": 29.764141082763672,
+      "mean_ms": 29.677182388305663,
+      "stdev_ms": 0.06619981063188782,
+      "coefficient_of_variation": 0.0022306636043040915,
+      "bootstrap_p50_ci_ms": [
+        29.60240364074707,
+        29.723746871948244
+      ],
+      "bootstrap_resamples": 4000,
+      "host_timing": {
+        "p20_ms": 29.63077276945114,
+        "p50_ms": 29.733970761299133,
+        "p80_ms": 29.75935935974121,
+        "p95_ms": 29.791557788848877,
+        "mean_ms": 29.70738112926483,
+        "stdev_ms": 0.06664962844847924,
+        "coefficient_of_variation": 0.002243537663534484,
+        "bootstrap_p50_ci_ms": [
+          29.633134603500366,
+          29.755964875221252
+        ],
+        "bootstrap_resamples": 4000
+      }
+    },
+    {
+      "stage": "native_stofm_operators_combined",
+      "description": "Both PrivateUse1 SToFM operators with global FlagGems ATen dispatch disabled.",
+      "baseline_stage": "pure_pytorch",
+      "status": "measured",
+      "expected_custom_operators": [
+        "flagos_stofm::gaussian_pair_bias",
+        "flagos_stofm::pair_score_epilogue"
+      ],
+      "validation": {
+        "status": "passed",
+        "tolerance": {
+          "rtol": 0.0004,
+          "atol": 4e-05
+        },
+        "errors": {
+          "max_abs_error": 1.1920928955078125e-06,
+          "max_relative_error": 0.009984043426811695
+        },
+        "output_sha256": "4557beb5415031d152c4074d8d345864bedd5a150d7fa37948a3e01269d3ae13",
+        "dispatch": {
+          "runtime": {
+            "active": false,
+            "reason": "FlagOS ATen dispatch is disabled for custom-operator isolation"
+          },
+          "gaussian": {
+            "operator": "gaussian_pair_bias",
+            "requested": "mthreads",
+            "selected": "mthreads",
+            "precision": "fp32",
+            "reason": "explicit device-matched backend"
+          },
+          "pair_attention_layers": [
+            {
+              "operator": "pair_attention",
+              "requested": "mthreads",
+              "selected": "mthreads",
+              "precision": "fp32",
+              "reason": "explicit device-matched backend"
+            },
+            {
+              "operator": "pair_attention",
+              "requested": "mthreads",
+              "selected": "mthreads",
+              "precision": "fp32",
+              "reason": "explicit device-matched backend"
+            },
+            {
+              "operator": "pair_attention",
+              "requested": "mthreads",
+              "selected": "mthreads",
+              "precision": "fp32",
+              "reason": "explicit device-matched backend"
+            },
+            {
+              "operator": "pair_attention",
+              "requested": "mthreads",
+              "selected": "mthreads",
+              "precision": "fp32",
+              "reason": "explicit device-matched backend"
+            }
+          ]
+        }
+      },
+      "sample_count": 15,
+      "calls_per_sample": 1,
+      "samples_ms": [
+        16.480344772338867,
+        16.383588790893555,
+        16.41121482849121,
+        16.39681625366211,
+        16.367198944091797,
+        16.396169662475586,
+        16.431659698486328,
+        16.39668083190918,
+        16.48871612548828,
+        16.483936309814453,
+        16.442506790161133,
+        16.399293899536133,
+        16.42411231994629,
+        16.419004440307617,
+        16.364660263061523
+      ],
+      "host_samples_ms": [
+        16.526035964488983,
+        16.40918105840683,
+        16.437619924545288,
+        16.424909234046936,
+        16.393743455410004,
+        16.423195600509644,
+        16.45902544260025,
+        16.42254739999771,
+        16.515344381332397,
+        16.512073576450348,
+        16.499757766723633,
+        16.426466405391693,
+        16.451165080070496,
+        16.445770859718323,
+        16.392648220062256
+      ],
+      "peak_allocated_mib": 1178.77294921875,
+      "peak_delta_allocated_mib": 1147.0546875,
+      "p20_ms": 16.39365348815918,
+      "p50_ms": 16.41121482849121,
+      "p80_ms": 16.45007438659668,
+      "p95_ms": 16.485370254516603,
+      "mean_ms": 16.419060262044272,
+      "stdev_ms": 0.04002650879888239,
+      "coefficient_of_variation": 0.002437807533443991,
+      "bootstrap_p50_ci_ms": [
+        16.396169662475586,
+        16.442506790161133
+      ],
+      "bootstrap_resamples": 4000,
+      "host_timing": {
+        "p20_ms": 16.419874131679535,
+        "p50_ms": 16.437619924545288,
+        "p80_ms": 16.502220928668976,
+        "p95_ms": 16.518551856279373,
+        "mean_ms": 16.449298957983654,
+        "stdev_ms": 0.04424172681921589,
+        "coefficient_of_variation": 0.002689581296578187,
+        "bootstrap_p50_ci_ms": [
+          16.423195600509644,
+          16.45902544260025
+        ],
+        "bootstrap_resamples": 4000
+      }
+    },
+    {
+      "stage": "native_stofm_operators_plus_flagos_aten",
+      "description": "Requested combination of native SToFM operators and existing FlagGems ATen dispatch.",
+      "baseline_stage": "pure_pytorch",
+      "status": "unavailable",
+      "reason": "The target MUSA 3.1 environment has no Triton driver, so generic FlagGems ATen substitutions cannot execute. This row intentionally has no substituted timing.",
+      "samples_ms": []
+    }
+  ]
+}

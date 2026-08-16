@@ -1,0 +1,41 @@
+operator,precision,nodes,implementation,sample_index,device_event_ms,host_wall_ms
+gaussian_pair_bias,fp32,1050,PyTorch reference,0,23.092023849487305,23.214802145957947
+gaussian_pair_bias,fp32,1050,PyTorch reference,1,22.950307846069336,22.97089248895645
+gaussian_pair_bias,fp32,1050,PyTorch reference,2,22.954975128173828,22.975370287895203
+gaussian_pair_bias,fp32,1050,PyTorch reference,3,22.89168357849121,22.912226617336273
+gaussian_pair_bias,fp32,1050,PyTorch reference,4,22.898929595947266,22.9182168841362
+gaussian_pair_bias,fp32,1050,PyTorch reference,5,22.90148162841797,22.92044460773468
+gaussian_pair_bias,fp32,1050,PyTorch reference,6,22.99363899230957,23.013591766357422
+gaussian_pair_bias,fp32,1050,PyTorch reference,7,22.92494773864746,22.945545613765717
+gaussian_pair_bias,fp32,1050,PyTorch reference,8,23.004568099975586,23.023106157779694
+gaussian_pair_bias,fp32,1050,PyTorch reference,9,22.8897647857666,22.908374667167664
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,0,2649.68310546875,2649.8172134160995
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,1,2656.27783203125,2656.3618034124374
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,2,2657.654052734375,2657.7464044094086
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,3,2644.479736328125,2644.5798128843307
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,4,2656.647705078125,2656.762585043907
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,5,2651.056884765625,2651.1621102690697
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,6,2651.5869140625,2651.6544818878174
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,7,2660.253173828125,2660.315088927746
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,8,2651.885986328125,2651.9674584269524
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,9,2638.353271484375,2638.437606394291
+pair_score_epilogue,fp32,1050,PyTorch reference,0,0.7477740049362183,0.7833093404769897
+pair_score_epilogue,fp32,1050,PyTorch reference,1,0.8115530014038086,0.9174197912216187
+pair_score_epilogue,fp32,1050,PyTorch reference,2,0.7475550174713135,0.7988214492797852
+pair_score_epilogue,fp32,1050,PyTorch reference,3,0.7535169720649719,0.7728040218353271
+pair_score_epilogue,fp32,1050,PyTorch reference,4,0.7401250004768372,0.7568374276161194
+pair_score_epilogue,fp32,1050,PyTorch reference,5,0.7704560160636902,0.8257627487182617
+pair_score_epilogue,fp32,1050,PyTorch reference,6,0.7418829798698425,0.7958710193634033
+pair_score_epilogue,fp32,1050,PyTorch reference,7,0.7453460097312927,0.7951557636260986
+pair_score_epilogue,fp32,1050,PyTorch reference,8,0.7554799914360046,0.7747113704681396
+pair_score_epilogue,fp32,1050,PyTorch reference,9,0.7446079850196838,0.7629767060279846
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,0,9.706160545349121,9.742535650730133
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,1,9.70002269744873,9.719930589199066
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,2,9.614704132080078,9.635783731937408
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,3,9.608182907104492,9.631410241127014
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,4,9.632906913757324,9.660378098487854
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,5,9.711542129516602,9.731985628604889
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,6,9.593317031860352,9.613655507564545
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,7,9.679285049438477,9.697891771793365
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,8,9.680854797363281,9.704075753688812
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,9,9.616198539733887,9.635306894779205

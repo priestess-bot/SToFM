@@ -1,0 +1,481 @@
+operator,precision,nodes,implementation,sample_index,device_event_ms,host_wall_ms
+gaussian_pair_bias,fp32,256,PyTorch reference,0,2.038400888442993,2.1549686789512634
+gaussian_pair_bias,fp32,256,PyTorch reference,1,1.9938290119171143,2.014562487602234
+gaussian_pair_bias,fp32,256,PyTorch reference,2,2.0019140243530273,2.0241886377334595
+gaussian_pair_bias,fp32,256,PyTorch reference,3,2.005112886428833,2.023860812187195
+gaussian_pair_bias,fp32,256,PyTorch reference,4,1.9687069654464722,1.9874125719070435
+gaussian_pair_bias,fp32,256,PyTorch reference,5,1.9964580535888672,2.015121281147003
+gaussian_pair_bias,fp32,256,PyTorch reference,6,1.9869979619979858,2.0055249333381653
+gaussian_pair_bias,fp32,256,PyTorch reference,7,1.9896429777145386,2.0085275173187256
+gaussian_pair_bias,fp32,256,PyTorch reference,8,1.973371982574463,1.9921883940696716
+gaussian_pair_bias,fp32,256,PyTorch reference,9,1.9765510559082031,1.9951462745666504
+gaussian_pair_bias,fp32,256,Optimized FlagOS MUSA backend,0,0.8961920142173767,0.9295344352722168
+gaussian_pair_bias,fp32,256,Optimized FlagOS MUSA backend,1,0.8840460181236267,0.9037181735038757
+gaussian_pair_bias,fp32,256,Optimized FlagOS MUSA backend,2,0.8894360065460205,0.9091272950172424
+gaussian_pair_bias,fp32,256,Optimized FlagOS MUSA backend,3,0.8773660063743591,0.894494354724884
+gaussian_pair_bias,fp32,256,Optimized FlagOS MUSA backend,4,0.8942999839782715,0.9143128991127014
+gaussian_pair_bias,fp32,256,Optimized FlagOS MUSA backend,5,0.8766430020332336,0.896163284778595
+gaussian_pair_bias,fp32,256,Optimized FlagOS MUSA backend,6,0.8702989816665649,0.8890852332115173
+gaussian_pair_bias,fp32,256,Optimized FlagOS MUSA backend,7,0.8759819865226746,0.896260142326355
+gaussian_pair_bias,fp32,256,Optimized FlagOS MUSA backend,8,0.8868740200996399,0.9075924754142761
+gaussian_pair_bias,fp32,256,Optimized FlagOS MUSA backend,9,0.8744300007820129,0.8936375379562378
+pair_score_epilogue,fp32,256,PyTorch reference,0,0.2077450007200241,0.2530515193939209
+pair_score_epilogue,fp32,256,PyTorch reference,1,0.27495598793029785,0.2914518117904663
+pair_score_epilogue,fp32,256,PyTorch reference,2,0.2218260020017624,0.2766847610473633
+pair_score_epilogue,fp32,256,PyTorch reference,3,0.2099040001630783,0.22780895233154297
+pair_score_epilogue,fp32,256,PyTorch reference,4,0.24258199334144592,0.2604052424430847
+pair_score_epilogue,fp32,256,PyTorch reference,5,0.2797580063343048,0.29778480529785156
+pair_score_epilogue,fp32,256,PyTorch reference,6,0.24150000512599945,0.2599656581878662
+pair_score_epilogue,fp32,256,PyTorch reference,7,0.21504700183868408,0.2665668725967407
+pair_score_epilogue,fp32,256,PyTorch reference,8,0.20729300379753113,0.22505968809127808
+pair_score_epilogue,fp32,256,PyTorch reference,9,0.21360500156879425,0.23142248392105103
+pair_score_epilogue,fp32,256,Optimized FlagOS MUSA backend,0,0.25506600737571716,0.28631091117858887
+pair_score_epilogue,fp32,256,Optimized FlagOS MUSA backend,1,0.22860999405384064,0.24783611297607422
+pair_score_epilogue,fp32,256,Optimized FlagOS MUSA backend,2,0.2287359982728958,0.24831295013427734
+pair_score_epilogue,fp32,256,Optimized FlagOS MUSA backend,3,0.22964900732040405,0.2477392554283142
+pair_score_epilogue,fp32,256,Optimized FlagOS MUSA backend,4,0.2289070039987564,0.24729222059249878
+pair_score_epilogue,fp32,256,Optimized FlagOS MUSA backend,5,0.23124900460243225,0.248052179813385
+pair_score_epilogue,fp32,256,Optimized FlagOS MUSA backend,6,0.2282869964838028,0.24504214525222778
+pair_score_epilogue,fp32,256,Optimized FlagOS MUSA backend,7,0.24542400240898132,0.2639666199684143
+pair_score_epilogue,fp32,256,Optimized FlagOS MUSA backend,8,0.22548100352287292,0.2437680959701538
+pair_score_epilogue,fp32,256,Optimized FlagOS MUSA backend,9,0.23136399686336517,0.24981796741485596
+gaussian_pair_bias,fp32,512,PyTorch reference,0,6.131885051727295,6.165467202663422
+gaussian_pair_bias,fp32,512,PyTorch reference,1,6.086789131164551,6.106741726398468
+gaussian_pair_bias,fp32,512,PyTorch reference,2,6.076632022857666,6.095968186855316
+gaussian_pair_bias,fp32,512,PyTorch reference,3,6.075610160827637,6.0944706201553345
+gaussian_pair_bias,fp32,512,PyTorch reference,4,6.065680980682373,6.084650754928589
+gaussian_pair_bias,fp32,512,PyTorch reference,5,6.078939914703369,6.097577512264252
+gaussian_pair_bias,fp32,512,PyTorch reference,6,6.095366954803467,6.1140283942222595
+gaussian_pair_bias,fp32,512,PyTorch reference,7,6.063645839691162,6.086178123950958
+gaussian_pair_bias,fp32,512,PyTorch reference,8,6.0522308349609375,6.071470677852631
+gaussian_pair_bias,fp32,512,PyTorch reference,9,6.086129188537598,6.104268133640289
+gaussian_pair_bias,fp32,512,Optimized FlagOS MUSA backend,0,2.6765289306640625,2.7095526456832886
+gaussian_pair_bias,fp32,512,Optimized FlagOS MUSA backend,1,2.6991350650787354,2.7194246649742126
+gaussian_pair_bias,fp32,512,Optimized FlagOS MUSA backend,2,2.6969830989837646,2.7161985635757446
+gaussian_pair_bias,fp32,512,Optimized FlagOS MUSA backend,3,2.6627631187438965,2.68004834651947
+gaussian_pair_bias,fp32,512,Optimized FlagOS MUSA backend,4,2.7018609046936035,2.72165983915329
+gaussian_pair_bias,fp32,512,Optimized FlagOS MUSA backend,5,2.6768081188201904,2.699121832847595
+gaussian_pair_bias,fp32,512,Optimized FlagOS MUSA backend,6,2.6690640449523926,2.6881545782089233
+gaussian_pair_bias,fp32,512,Optimized FlagOS MUSA backend,7,2.6914210319519043,2.7101486921310425
+gaussian_pair_bias,fp32,512,Optimized FlagOS MUSA backend,8,2.6648449897766113,2.6840493083000183
+gaussian_pair_bias,fp32,512,Optimized FlagOS MUSA backend,9,2.6455368995666504,2.6708468794822693
+pair_score_epilogue,fp32,512,PyTorch reference,0,0.2990899980068207,0.33190101385116577
+pair_score_epilogue,fp32,512,PyTorch reference,1,0.32327398657798767,0.3395751118659973
+pair_score_epilogue,fp32,512,PyTorch reference,2,0.30180200934410095,0.35706907510757446
+pair_score_epilogue,fp32,512,PyTorch reference,3,0.30083099007606506,0.31872838735580444
+pair_score_epilogue,fp32,512,PyTorch reference,4,0.3347170054912567,0.35306811332702637
+pair_score_epilogue,fp32,512,PyTorch reference,5,0.3677310049533844,0.3853738307952881
+pair_score_epilogue,fp32,512,PyTorch reference,6,0.33025598526000977,0.3486722707748413
+pair_score_epilogue,fp32,512,PyTorch reference,7,0.2976579964160919,0.3487914800643921
+pair_score_epilogue,fp32,512,PyTorch reference,8,0.29808199405670166,0.3160834312438965
+pair_score_epilogue,fp32,512,PyTorch reference,9,0.29771000146865845,0.3157109022140503
+pair_score_epilogue,fp32,512,Optimized FlagOS MUSA backend,0,0.3242639899253845,0.34896284341812134
+pair_score_epilogue,fp32,512,Optimized FlagOS MUSA backend,1,0.3044849932193756,0.3245994448661804
+pair_score_epilogue,fp32,512,Optimized FlagOS MUSA backend,2,0.2965260148048401,0.315055251121521
+pair_score_epilogue,fp32,512,Optimized FlagOS MUSA backend,3,0.3014349937438965,0.3198981285095215
+pair_score_epilogue,fp32,512,Optimized FlagOS MUSA backend,4,0.3008260130882263,0.32003968954086304
+pair_score_epilogue,fp32,512,Optimized FlagOS MUSA backend,5,0.3024030029773712,0.3195330500602722
+pair_score_epilogue,fp32,512,Optimized FlagOS MUSA backend,6,0.297775000333786,0.3143996000289917
+pair_score_epilogue,fp32,512,Optimized FlagOS MUSA backend,7,0.29597100615501404,0.31585246324539185
+pair_score_epilogue,fp32,512,Optimized FlagOS MUSA backend,8,0.2925029993057251,0.3110542893409729
+pair_score_epilogue,fp32,512,Optimized FlagOS MUSA backend,9,0.30019399523735046,0.319063663482666
+gaussian_pair_bias,fp32,1050,PyTorch reference,0,23.03438377380371,23.067660629749298
+gaussian_pair_bias,fp32,1050,PyTorch reference,1,22.914567947387695,22.935330867767334
+gaussian_pair_bias,fp32,1050,PyTorch reference,2,22.994550704956055,23.014239966869354
+gaussian_pair_bias,fp32,1050,PyTorch reference,3,22.927852630615234,22.947393357753754
+gaussian_pair_bias,fp32,1050,PyTorch reference,4,22.8968505859375,22.915489971637726
+gaussian_pair_bias,fp32,1050,PyTorch reference,5,22.966482162475586,22.986143827438354
+gaussian_pair_bias,fp32,1050,PyTorch reference,6,22.886180877685547,22.905535995960236
+gaussian_pair_bias,fp32,1050,PyTorch reference,7,23.013526916503906,23.032091557979584
+gaussian_pair_bias,fp32,1050,PyTorch reference,8,22.945362091064453,22.964492440223694
+gaussian_pair_bias,fp32,1050,PyTorch reference,9,23.081865310668945,23.101069033145905
+gaussian_pair_bias,fp32,1050,Optimized FlagOS MUSA backend,0,9.592246055603027,9.62730497121811
+gaussian_pair_bias,fp32,1050,Optimized FlagOS MUSA backend,1,9.554245948791504,9.573966264724731
+gaussian_pair_bias,fp32,1050,Optimized FlagOS MUSA backend,2,9.550127029418945,9.571664035320282
+gaussian_pair_bias,fp32,1050,Optimized FlagOS MUSA backend,3,9.562240600585938,9.580850601196289
+gaussian_pair_bias,fp32,1050,Optimized FlagOS MUSA backend,4,9.554948806762695,9.575322270393372
+gaussian_pair_bias,fp32,1050,Optimized FlagOS MUSA backend,5,9.548577308654785,9.570308029651642
+gaussian_pair_bias,fp32,1050,Optimized FlagOS MUSA backend,6,9.548924446105957,9.570568799972534
+gaussian_pair_bias,fp32,1050,Optimized FlagOS MUSA backend,7,9.552497863769531,9.573489427566528
+gaussian_pair_bias,fp32,1050,Optimized FlagOS MUSA backend,8,9.54719066619873,9.567946195602417
+gaussian_pair_bias,fp32,1050,Optimized FlagOS MUSA backend,9,9.570523262023926,9.591549634933472
+pair_score_epilogue,fp32,1050,PyTorch reference,0,0.7452920079231262,0.7759407162666321
+pair_score_epilogue,fp32,1050,PyTorch reference,1,0.8174309730529785,0.8364543318748474
+pair_score_epilogue,fp32,1050,PyTorch reference,2,0.7451450228691101,0.7641389966011047
+pair_score_epilogue,fp32,1050,PyTorch reference,3,0.7438259720802307,0.7621869444847107
+pair_score_epilogue,fp32,1050,PyTorch reference,4,0.7347580194473267,0.7513090968132019
+pair_score_epilogue,fp32,1050,PyTorch reference,5,0.772570013999939,0.8201152086257935
+pair_score_epilogue,fp32,1050,PyTorch reference,6,0.7417500019073486,0.7894560694694519
+pair_score_epilogue,fp32,1050,PyTorch reference,7,0.739450991153717,0.7890164852142334
+pair_score_epilogue,fp32,1050,PyTorch reference,8,0.7424740195274353,0.7601529359817505
+pair_score_epilogue,fp32,1050,PyTorch reference,9,0.7417799830436707,0.7610395550727844
+pair_score_epilogue,fp32,1050,Optimized FlagOS MUSA backend,0,0.6763010025024414,0.7019564509391785
+pair_score_epilogue,fp32,1050,Optimized FlagOS MUSA backend,1,0.6724929809570312,0.6923004984855652
+pair_score_epilogue,fp32,1050,Optimized FlagOS MUSA backend,2,0.6687650084495544,0.6891191005706787
+pair_score_epilogue,fp32,1050,Optimized FlagOS MUSA backend,3,0.6737070083618164,0.6932690739631653
+pair_score_epilogue,fp32,1050,Optimized FlagOS MUSA backend,4,0.6633350253105164,0.6817132234573364
+pair_score_epilogue,fp32,1050,Optimized FlagOS MUSA backend,5,0.6613379716873169,0.6775781512260437
+pair_score_epilogue,fp32,1050,Optimized FlagOS MUSA backend,6,0.6592379808425903,0.6752610206604004
+pair_score_epilogue,fp32,1050,Optimized FlagOS MUSA backend,7,0.6525499820709229,0.6715208292007446
+pair_score_epilogue,fp32,1050,Optimized FlagOS MUSA backend,8,0.6592739820480347,0.6788969039916992
+pair_score_epilogue,fp32,1050,Optimized FlagOS MUSA backend,9,0.662729024887085,0.6813779473304749
+gaussian_pair_bias,fp32,2048,PyTorch reference,0,85.27423095703125,85.3128507733345
+gaussian_pair_bias,fp32,2048,PyTorch reference,1,84.99510955810547,85.01891791820526
+gaussian_pair_bias,fp32,2048,PyTorch reference,2,85.41568756103516,85.43858677148819
+gaussian_pair_bias,fp32,2048,PyTorch reference,3,85.12550354003906,85.14588326215744
+gaussian_pair_bias,fp32,2048,PyTorch reference,4,85.88998413085938,85.91312170028687
+gaussian_pair_bias,fp32,2048,PyTorch reference,5,85.42184448242188,85.44448763132095
+gaussian_pair_bias,fp32,2048,PyTorch reference,6,84.84597778320312,84.86631512641907
+gaussian_pair_bias,fp32,2048,PyTorch reference,7,85.472412109375,85.5170264840126
+gaussian_pair_bias,fp32,2048,PyTorch reference,8,85.8690185546875,85.90500056743622
+gaussian_pair_bias,fp32,2048,PyTorch reference,9,85.19834899902344,85.22042632102966
+gaussian_pair_bias,fp32,2048,Optimized FlagOS MUSA backend,0,35.742919921875,35.78011691570282
+gaussian_pair_bias,fp32,2048,Optimized FlagOS MUSA backend,1,35.407962799072266,35.42912006378174
+gaussian_pair_bias,fp32,2048,Optimized FlagOS MUSA backend,2,35.67181396484375,35.69637984037399
+gaussian_pair_bias,fp32,2048,Optimized FlagOS MUSA backend,3,35.81649398803711,35.84061563014984
+gaussian_pair_bias,fp32,2048,Optimized FlagOS MUSA backend,4,35.855857849121094,35.880401730537415
+gaussian_pair_bias,fp32,2048,Optimized FlagOS MUSA backend,5,35.601043701171875,35.62524914741516
+gaussian_pair_bias,fp32,2048,Optimized FlagOS MUSA backend,6,35.404518127441406,35.427600145339966
+gaussian_pair_bias,fp32,2048,Optimized FlagOS MUSA backend,7,35.33024215698242,35.35258769989014
+gaussian_pair_bias,fp32,2048,Optimized FlagOS MUSA backend,8,36.11576843261719,36.136046051979065
+gaussian_pair_bias,fp32,2048,Optimized FlagOS MUSA backend,9,35.99094009399414,36.01008653640747
+pair_score_epilogue,fp32,2048,PyTorch reference,0,1.756410002708435,1.7870739102363586
+pair_score_epilogue,fp32,2048,PyTorch reference,1,1.7499279975891113,1.7709657549858093
+pair_score_epilogue,fp32,2048,PyTorch reference,2,1.7476849555969238,1.7671957612037659
+pair_score_epilogue,fp32,2048,PyTorch reference,3,1.7474149465560913,1.7662197351455688
+pair_score_epilogue,fp32,2048,PyTorch reference,4,1.7390810251235962,1.756519079208374
+pair_score_epilogue,fp32,2048,PyTorch reference,5,1.7734780311584473,1.8230974674224854
+pair_score_epilogue,fp32,2048,PyTorch reference,6,1.7475329637527466,1.797795295715332
+pair_score_epilogue,fp32,2048,PyTorch reference,7,1.7465829849243164,1.7930492758750916
+pair_score_epilogue,fp32,2048,PyTorch reference,8,1.7461119890213013,1.7652139067649841
+pair_score_epilogue,fp32,2048,PyTorch reference,9,1.7422549724578857,1.7602890729904175
+pair_score_epilogue,fp32,2048,Optimized FlagOS MUSA backend,0,1.410573959350586,1.435890793800354
+pair_score_epilogue,fp32,2048,Optimized FlagOS MUSA backend,1,1.4008640050888062,1.420147716999054
+pair_score_epilogue,fp32,2048,Optimized FlagOS MUSA backend,2,1.3872569799423218,1.407325267791748
+pair_score_epilogue,fp32,2048,Optimized FlagOS MUSA backend,3,1.385090947151184,1.4044493436813354
+pair_score_epilogue,fp32,2048,Optimized FlagOS MUSA backend,4,1.38332200050354,1.4037340879440308
+pair_score_epilogue,fp32,2048,Optimized FlagOS MUSA backend,5,1.391819953918457,1.4089196920394897
+pair_score_epilogue,fp32,2048,Optimized FlagOS MUSA backend,6,1.3945510387420654,1.4114230871200562
+pair_score_epilogue,fp32,2048,Optimized FlagOS MUSA backend,7,1.377478003501892,1.397162675857544
+pair_score_epilogue,fp32,2048,Optimized FlagOS MUSA backend,8,1.3833179473876953,1.4024823904037476
+pair_score_epilogue,fp32,2048,Optimized FlagOS MUSA backend,9,1.3875939846038818,1.4100968837738037
+gaussian_pair_bias,fp16,256,PyTorch reference,0,2.1758670806884766,2.2072046995162964
+gaussian_pair_bias,fp16,256,PyTorch reference,1,2.134521961212158,2.1538659930229187
+gaussian_pair_bias,fp16,256,PyTorch reference,2,2.138385057449341,2.1573156118392944
+gaussian_pair_bias,fp16,256,PyTorch reference,3,2.1329379081726074,2.151787281036377
+gaussian_pair_bias,fp16,256,PyTorch reference,4,2.145179033279419,2.163417637348175
+gaussian_pair_bias,fp16,256,PyTorch reference,5,2.162466049194336,2.180628478527069
+gaussian_pair_bias,fp16,256,PyTorch reference,6,2.1271610260009766,2.1454989910125732
+gaussian_pair_bias,fp16,256,PyTorch reference,7,2.126497983932495,2.144932746887207
+gaussian_pair_bias,fp16,256,PyTorch reference,8,2.134114980697632,2.1526962518692017
+gaussian_pair_bias,fp16,256,PyTorch reference,9,2.127537965774536,2.1457523107528687
+gaussian_pair_bias,fp16,256,Optimized FlagOS MUSA backend,0,1.0600860118865967,1.0892301797866821
+gaussian_pair_bias,fp16,256,Optimized FlagOS MUSA backend,1,1.0566450357437134,1.0757148265838623
+gaussian_pair_bias,fp16,256,Optimized FlagOS MUSA backend,2,1.0345540046691895,1.0538101196289062
+gaussian_pair_bias,fp16,256,Optimized FlagOS MUSA backend,3,1.037672996520996,1.0561570525169373
+gaussian_pair_bias,fp16,256,Optimized FlagOS MUSA backend,4,1.0459229946136475,1.0647177696228027
+gaussian_pair_bias,fp16,256,Optimized FlagOS MUSA backend,5,1.0462440252304077,1.0649338364601135
+gaussian_pair_bias,fp16,256,Optimized FlagOS MUSA backend,6,1.0489649772644043,1.0673627257347107
+gaussian_pair_bias,fp16,256,Optimized FlagOS MUSA backend,7,1.0453130006790161,1.0632127523422241
+gaussian_pair_bias,fp16,256,Optimized FlagOS MUSA backend,8,1.0316920280456543,1.0502710938453674
+gaussian_pair_bias,fp16,256,Optimized FlagOS MUSA backend,9,1.0460360050201416,1.0642260313034058
+pair_score_epilogue,fp16,256,PyTorch reference,0,0.17718000710010529,0.21567195653915405
+pair_score_epilogue,fp16,256,PyTorch reference,1,0.17410099506378174,0.1928955316543579
+pair_score_epilogue,fp16,256,PyTorch reference,2,0.25584301352500916,0.27533620595932007
+pair_score_epilogue,fp16,256,PyTorch reference,3,0.20980599522590637,0.2282559871673584
+pair_score_epilogue,fp16,256,PyTorch reference,4,0.26684901118278503,0.28339773416519165
+pair_score_epilogue,fp16,256,PyTorch reference,5,0.26350799202919006,0.28014928102493286
+pair_score_epilogue,fp16,256,PyTorch reference,6,0.17276300489902496,0.22194534540176392
+pair_score_epilogue,fp16,256,PyTorch reference,7,0.19565899670124054,0.2476125955581665
+pair_score_epilogue,fp16,256,PyTorch reference,8,0.1700039952993393,0.18927454948425293
+pair_score_epilogue,fp16,256,PyTorch reference,9,0.19715699553489685,0.21485239267349243
+pair_score_epilogue,fp16,256,Optimized FlagOS MUSA backend,0,0.29428601264953613,0.3231316804885864
+pair_score_epilogue,fp16,256,Optimized FlagOS MUSA backend,1,0.19219200313091278,0.21104514598846436
+pair_score_epilogue,fp16,256,Optimized FlagOS MUSA backend,2,0.2238360047340393,0.24185329675674438
+pair_score_epilogue,fp16,256,Optimized FlagOS MUSA backend,3,0.1817850023508072,0.20100921392440796
+pair_score_epilogue,fp16,256,Optimized FlagOS MUSA backend,4,0.21375000476837158,0.2341344952583313
+pair_score_epilogue,fp16,256,Optimized FlagOS MUSA backend,5,0.17593100666999817,0.1944899559020996
+pair_score_epilogue,fp16,256,Optimized FlagOS MUSA backend,6,0.21137000620365143,0.22958219051361084
+pair_score_epilogue,fp16,256,Optimized FlagOS MUSA backend,7,0.17551900446414948,0.19366294145584106
+pair_score_epilogue,fp16,256,Optimized FlagOS MUSA backend,8,0.2098889946937561,0.22890418767929077
+pair_score_epilogue,fp16,256,Optimized FlagOS MUSA backend,9,0.1748650074005127,0.19343197345733643
+gaussian_pair_bias,fp16,512,PyTorch reference,0,6.264481067657471,6.298631429672241
+gaussian_pair_bias,fp16,512,PyTorch reference,1,6.258234977722168,6.277695298194885
+gaussian_pair_bias,fp16,512,PyTorch reference,2,6.226554870605469,6.246030330657959
+gaussian_pair_bias,fp16,512,PyTorch reference,3,6.23441219329834,6.253249943256378
+gaussian_pair_bias,fp16,512,PyTorch reference,4,6.232086181640625,6.250903010368347
+gaussian_pair_bias,fp16,512,PyTorch reference,5,6.21923303604126,6.238095462322235
+gaussian_pair_bias,fp16,512,PyTorch reference,6,6.230893135070801,6.254442036151886
+gaussian_pair_bias,fp16,512,PyTorch reference,7,6.232901096343994,6.2592774629592896
+gaussian_pair_bias,fp16,512,PyTorch reference,8,6.236936092376709,6.257809698581696
+gaussian_pair_bias,fp16,512,PyTorch reference,9,6.231141090393066,6.2498897314071655
+gaussian_pair_bias,fp16,512,Optimized FlagOS MUSA backend,0,2.8650729656219482,2.8951987624168396
+gaussian_pair_bias,fp16,512,Optimized FlagOS MUSA backend,1,2.8739399909973145,2.894572913646698
+gaussian_pair_bias,fp16,512,Optimized FlagOS MUSA backend,2,2.854499101638794,2.8742626309394836
+gaussian_pair_bias,fp16,512,Optimized FlagOS MUSA backend,3,2.840848922729492,2.86082923412323
+gaussian_pair_bias,fp16,512,Optimized FlagOS MUSA backend,4,2.86263108253479,2.883210778236389
+gaussian_pair_bias,fp16,512,Optimized FlagOS MUSA backend,5,2.839867115020752,2.86257266998291
+gaussian_pair_bias,fp16,512,Optimized FlagOS MUSA backend,6,2.857516050338745,2.8784796595573425
+gaussian_pair_bias,fp16,512,Optimized FlagOS MUSA backend,7,2.842647075653076,2.861812710762024
+gaussian_pair_bias,fp16,512,Optimized FlagOS MUSA backend,8,2.854429006576538,2.8742775321006775
+gaussian_pair_bias,fp16,512,Optimized FlagOS MUSA backend,9,2.849008083343506,2.868257462978363
+pair_score_epilogue,fp16,512,PyTorch reference,0,0.24312900006771088,0.27421116828918457
+pair_score_epilogue,fp16,512,PyTorch reference,1,0.22716699540615082,0.24509429931640625
+pair_score_epilogue,fp16,512,PyTorch reference,2,0.3038350045681,0.32185763120651245
+pair_score_epilogue,fp16,512,PyTorch reference,3,0.2575719952583313,0.27538836002349854
+pair_score_epilogue,fp16,512,PyTorch reference,4,0.27440398931503296,0.28965622186660767
+pair_score_epilogue,fp16,512,PyTorch reference,5,0.2911509871482849,0.30738115310668945
+pair_score_epilogue,fp16,512,PyTorch reference,6,0.21684899926185608,0.26845186948776245
+pair_score_epilogue,fp16,512,PyTorch reference,7,0.2257860004901886,0.27918070554733276
+pair_score_epilogue,fp16,512,PyTorch reference,8,0.21820899844169617,0.23600459098815918
+pair_score_epilogue,fp16,512,PyTorch reference,9,0.22482499480247498,0.24250894784927368
+pair_score_epilogue,fp16,512,Optimized FlagOS MUSA backend,0,0.3103649914264679,0.3390312194824219
+pair_score_epilogue,fp16,512,Optimized FlagOS MUSA backend,1,0.2126850038766861,0.23159384727478027
+pair_score_epilogue,fp16,512,Optimized FlagOS MUSA backend,2,0.24693100154399872,0.26535242795944214
+pair_score_epilogue,fp16,512,Optimized FlagOS MUSA backend,3,0.2006399929523468,0.2198442816734314
+pair_score_epilogue,fp16,512,Optimized FlagOS MUSA backend,4,0.23675000667572021,0.25522708892822266
+pair_score_epilogue,fp16,512,Optimized FlagOS MUSA backend,5,0.19907300174236298,0.2169087529182434
+pair_score_epilogue,fp16,512,Optimized FlagOS MUSA backend,6,0.23575900495052338,0.2551451325416565
+pair_score_epilogue,fp16,512,Optimized FlagOS MUSA backend,7,0.1961349993944168,0.2148151397705078
+pair_score_epilogue,fp16,512,Optimized FlagOS MUSA backend,8,0.23408600687980652,0.2528876066207886
+pair_score_epilogue,fp16,512,Optimized FlagOS MUSA backend,9,0.19831599295139313,0.215776264667511
+gaussian_pair_bias,fp16,1050,PyTorch reference,0,23.261234283447266,23.294202983379364
+gaussian_pair_bias,fp16,1050,PyTorch reference,1,23.158863067626953,23.179255425930023
+gaussian_pair_bias,fp16,1050,PyTorch reference,2,23.170440673828125,23.190073668956757
+gaussian_pair_bias,fp16,1050,PyTorch reference,3,23.24226951599121,23.26250821352005
+gaussian_pair_bias,fp16,1050,PyTorch reference,4,23.181884765625,23.2023224234581
+gaussian_pair_bias,fp16,1050,PyTorch reference,5,23.14212989807129,23.165583610534668
+gaussian_pair_bias,fp16,1050,PyTorch reference,6,23.19760513305664,23.21673184633255
+gaussian_pair_bias,fp16,1050,PyTorch reference,7,23.207172393798828,23.22651445865631
+gaussian_pair_bias,fp16,1050,PyTorch reference,8,23.164552688598633,23.183472454547882
+gaussian_pair_bias,fp16,1050,PyTorch reference,9,23.16301918029785,23.182421922683716
+gaussian_pair_bias,fp16,1050,Optimized FlagOS MUSA backend,0,10.010481834411621,10.043323040008545
+gaussian_pair_bias,fp16,1050,Optimized FlagOS MUSA backend,1,9.895502090454102,9.916812181472778
+gaussian_pair_bias,fp16,1050,Optimized FlagOS MUSA backend,2,9.804068565368652,9.824030101299286
+gaussian_pair_bias,fp16,1050,Optimized FlagOS MUSA backend,3,9.785628318786621,9.807020425796509
+gaussian_pair_bias,fp16,1050,Optimized FlagOS MUSA backend,4,9.789199829101562,9.810850024223328
+gaussian_pair_bias,fp16,1050,Optimized FlagOS MUSA backend,5,9.797361373901367,9.816773235797882
+gaussian_pair_bias,fp16,1050,Optimized FlagOS MUSA backend,6,9.830182075500488,9.851358830928802
+gaussian_pair_bias,fp16,1050,Optimized FlagOS MUSA backend,7,9.803505897521973,9.823866188526154
+gaussian_pair_bias,fp16,1050,Optimized FlagOS MUSA backend,8,9.795903205871582,9.817399084568024
+gaussian_pair_bias,fp16,1050,Optimized FlagOS MUSA backend,9,9.82603931427002,9.845167398452759
+pair_score_epilogue,fp16,1050,PyTorch reference,0,0.5500950217247009,0.5831792950630188
+pair_score_epilogue,fp16,1050,PyTorch reference,1,0.5492740273475647,0.5684345960617065
+pair_score_epilogue,fp16,1050,PyTorch reference,2,0.5416330099105835,0.5598291754722595
+pair_score_epilogue,fp16,1050,PyTorch reference,3,0.5773280262947083,0.5951374769210815
+pair_score_epilogue,fp16,1050,PyTorch reference,4,0.6039040088653564,0.6561130285263062
+pair_score_epilogue,fp16,1050,PyTorch reference,5,0.572405993938446,0.6239116191864014
+pair_score_epilogue,fp16,1050,PyTorch reference,6,0.5436769723892212,0.5595386028289795
+pair_score_epilogue,fp16,1050,PyTorch reference,7,0.543379008769989,0.5897805094718933
+pair_score_epilogue,fp16,1050,PyTorch reference,8,0.5399810075759888,0.5575269460678101
+pair_score_epilogue,fp16,1050,PyTorch reference,9,0.5441799759864807,0.5619674921035767
+pair_score_epilogue,fp16,1050,Optimized FlagOS MUSA backend,0,0.36508798599243164,0.39364397525787354
+pair_score_epilogue,fp16,1050,Optimized FlagOS MUSA backend,1,0.27339500188827515,0.29290467500686646
+pair_score_epilogue,fp16,1050,Optimized FlagOS MUSA backend,2,0.30637499690055847,0.3250911831855774
+pair_score_epilogue,fp16,1050,Optimized FlagOS MUSA backend,3,0.2549220025539398,0.27336180210113525
+pair_score_epilogue,fp16,1050,Optimized FlagOS MUSA backend,4,0.29237100481987,0.311046838760376
+pair_score_epilogue,fp16,1050,Optimized FlagOS MUSA backend,5,0.26068800687789917,0.2792254090309143
+pair_score_epilogue,fp16,1050,Optimized FlagOS MUSA backend,6,0.29173898696899414,0.3103017807006836
+pair_score_epilogue,fp16,1050,Optimized FlagOS MUSA backend,7,0.2554369866847992,0.27329474687576294
+pair_score_epilogue,fp16,1050,Optimized FlagOS MUSA backend,8,0.2911520004272461,0.30922889709472656
+pair_score_epilogue,fp16,1050,Optimized FlagOS MUSA backend,9,0.2541410028934479,0.27246028184890747
+gaussian_pair_bias,fp16,2048,PyTorch reference,0,85.46968078613281,85.50674468278885
+gaussian_pair_bias,fp16,2048,PyTorch reference,1,85.23418426513672,85.25538444519043
+gaussian_pair_bias,fp16,2048,PyTorch reference,2,85.65299224853516,85.67484468221664
+gaussian_pair_bias,fp16,2048,PyTorch reference,3,85.83001708984375,85.85423976182938
+gaussian_pair_bias,fp16,2048,PyTorch reference,4,86.03948211669922,86.06239408254623
+gaussian_pair_bias,fp16,2048,PyTorch reference,5,85.64271545410156,85.67102998495102
+gaussian_pair_bias,fp16,2048,PyTorch reference,6,85.53837585449219,85.56841313838959
+gaussian_pair_bias,fp16,2048,PyTorch reference,7,85.4447021484375,85.4693129658699
+gaussian_pair_bias,fp16,2048,PyTorch reference,8,85.24412536621094,85.26710420846939
+gaussian_pair_bias,fp16,2048,PyTorch reference,9,85.6277084350586,85.65197885036469
+gaussian_pair_bias,fp16,2048,Optimized FlagOS MUSA backend,0,36.556461334228516,36.58859431743622
+gaussian_pair_bias,fp16,2048,Optimized FlagOS MUSA backend,1,36.49858856201172,36.52198612689972
+gaussian_pair_bias,fp16,2048,Optimized FlagOS MUSA backend,2,36.38182067871094,36.40584647655487
+gaussian_pair_bias,fp16,2048,Optimized FlagOS MUSA backend,3,35.979278564453125,36.00174933671951
+gaussian_pair_bias,fp16,2048,Optimized FlagOS MUSA backend,4,35.75608825683594,35.77791899442673
+gaussian_pair_bias,fp16,2048,Optimized FlagOS MUSA backend,5,35.740840911865234,35.76331585645676
+gaussian_pair_bias,fp16,2048,Optimized FlagOS MUSA backend,6,36.16792297363281,36.19662672281265
+gaussian_pair_bias,fp16,2048,Optimized FlagOS MUSA backend,7,36.14768981933594,36.170072853565216
+gaussian_pair_bias,fp16,2048,Optimized FlagOS MUSA backend,8,36.342281341552734,36.364950239658356
+gaussian_pair_bias,fp16,2048,Optimized FlagOS MUSA backend,9,36.0920524597168,36.1141562461853
+pair_score_epilogue,fp16,2048,PyTorch reference,0,1.029083013534546,1.0614842176437378
+pair_score_epilogue,fp16,2048,PyTorch reference,1,1.0196139812469482,1.0385513305664062
+pair_score_epilogue,fp16,2048,PyTorch reference,2,1.0167959928512573,1.0354742407798767
+pair_score_epilogue,fp16,2048,PyTorch reference,3,1.0506800413131714,1.0689347982406616
+pair_score_epilogue,fp16,2048,PyTorch reference,4,1.0842519998550415,1.1399537324905396
+pair_score_epilogue,fp16,2048,PyTorch reference,5,1.0483160018920898,1.0985806584358215
+pair_score_epilogue,fp16,2048,PyTorch reference,6,1.023710012435913,1.0401681065559387
+pair_score_epilogue,fp16,2048,PyTorch reference,7,1.020941972732544,1.0674968361854553
+pair_score_epilogue,fp16,2048,PyTorch reference,8,1.021193027496338,1.0400637984275818
+pair_score_epilogue,fp16,2048,PyTorch reference,9,1.018504023551941,1.0362789034843445
+pair_score_epilogue,fp16,2048,Optimized FlagOS MUSA backend,0,0.6590039730072021,0.6865710020065308
+pair_score_epilogue,fp16,2048,Optimized FlagOS MUSA backend,1,0.56215900182724,0.5808472633361816
+pair_score_epilogue,fp16,2048,Optimized FlagOS MUSA backend,2,0.581824004650116,0.6004050374031067
+pair_score_epilogue,fp16,2048,Optimized FlagOS MUSA backend,3,0.5448480248451233,0.563986599445343
+pair_score_epilogue,fp16,2048,Optimized FlagOS MUSA backend,4,0.5837810039520264,0.6026029586791992
+pair_score_epilogue,fp16,2048,Optimized FlagOS MUSA backend,5,0.5543609857559204,0.5737617611885071
+pair_score_epilogue,fp16,2048,Optimized FlagOS MUSA backend,6,0.582493007183075,0.6011277437210083
+pair_score_epilogue,fp16,2048,Optimized FlagOS MUSA backend,7,0.5416489839553833,0.5603209137916565
+pair_score_epilogue,fp16,2048,Optimized FlagOS MUSA backend,8,0.5862439870834351,0.6048679351806641
+pair_score_epilogue,fp16,2048,Optimized FlagOS MUSA backend,9,0.5473799705505371,0.5665123462677002
+gaussian_pair_bias,bf16,256,PyTorch reference,0,2.196540117263794,2.228252589702606
+gaussian_pair_bias,bf16,256,PyTorch reference,1,2.141453981399536,2.1613016724586487
+gaussian_pair_bias,bf16,256,PyTorch reference,2,2.134510040283203,2.154052257537842
+gaussian_pair_bias,bf16,256,PyTorch reference,3,2.1360199451446533,2.1545886993408203
+gaussian_pair_bias,bf16,256,PyTorch reference,4,2.13628888130188,2.1555349230766296
+gaussian_pair_bias,bf16,256,PyTorch reference,5,2.1305999755859375,2.149030566215515
+gaussian_pair_bias,bf16,256,PyTorch reference,6,2.1281819343566895,2.146676182746887
+gaussian_pair_bias,bf16,256,PyTorch reference,7,2.126887083053589,2.1462514996528625
+gaussian_pair_bias,bf16,256,PyTorch reference,8,2.1262500286102295,2.14482843875885
+gaussian_pair_bias,bf16,256,PyTorch reference,9,2.127258062362671,2.145729959011078
+gaussian_pair_bias,bf16,256,Optimized FlagOS MUSA backend,0,1.06044602394104,1.0899901390075684
+gaussian_pair_bias,bf16,256,Optimized FlagOS MUSA backend,1,1.0583930015563965,1.0787174105644226
+gaussian_pair_bias,bf16,256,Optimized FlagOS MUSA backend,2,1.0409979820251465,1.060381531715393
+gaussian_pair_bias,bf16,256,Optimized FlagOS MUSA backend,3,1.0532269477844238,1.072317361831665
+gaussian_pair_bias,bf16,256,Optimized FlagOS MUSA backend,4,1.0404620170593262,1.05951726436615
+gaussian_pair_bias,bf16,256,Optimized FlagOS MUSA backend,5,1.0502769947052002,1.0697022080421448
+gaussian_pair_bias,bf16,256,Optimized FlagOS MUSA backend,6,1.0325340032577515,1.0527744889259338
+gaussian_pair_bias,bf16,256,Optimized FlagOS MUSA backend,7,1.0544090270996094,1.073405146598816
+gaussian_pair_bias,bf16,256,Optimized FlagOS MUSA backend,8,1.0437060594558716,1.062445342540741
+gaussian_pair_bias,bf16,256,Optimized FlagOS MUSA backend,9,1.0464190244674683,1.0710731148719788
+pair_score_epilogue,bf16,256,PyTorch reference,0,0.21365299820899963,0.24665147066116333
+pair_score_epilogue,bf16,256,PyTorch reference,1,0.1814649999141693,0.20103901624679565
+pair_score_epilogue,bf16,256,PyTorch reference,2,0.17342700064182281,0.18964707851409912
+pair_score_epilogue,bf16,256,PyTorch reference,3,0.19913099706172943,0.21723657846450806
+pair_score_epilogue,bf16,256,PyTorch reference,4,0.17075000703334808,0.18993020057678223
+pair_score_epilogue,bf16,256,PyTorch reference,5,0.25361600518226624,0.27211010456085205
+pair_score_epilogue,bf16,256,PyTorch reference,6,0.20516599714756012,0.22124499082565308
+pair_score_epilogue,bf16,256,PyTorch reference,7,0.20126600563526154,0.2552643418312073
+pair_score_epilogue,bf16,256,PyTorch reference,8,0.17294800281524658,0.19046664237976074
+pair_score_epilogue,bf16,256,PyTorch reference,9,0.20214299857616425,0.21961331367492676
+pair_score_epilogue,bf16,256,Optimized FlagOS MUSA backend,0,0.2826260030269623,0.31116604804992676
+pair_score_epilogue,bf16,256,Optimized FlagOS MUSA backend,1,0.20796599984169006,0.22796541452407837
+pair_score_epilogue,bf16,256,Optimized FlagOS MUSA backend,2,0.23002099990844727,0.2486705780029297
+pair_score_epilogue,bf16,256,Optimized FlagOS MUSA backend,3,0.18247400224208832,0.20126253366470337
+pair_score_epilogue,bf16,256,Optimized FlagOS MUSA backend,4,0.21653799712657928,0.23448467254638672
+pair_score_epilogue,bf16,256,Optimized FlagOS MUSA backend,5,0.1779100000858307,0.1961439847946167
+pair_score_epilogue,bf16,256,Optimized FlagOS MUSA backend,6,0.21587799489498138,0.23425370454788208
+pair_score_epilogue,bf16,256,Optimized FlagOS MUSA backend,7,0.18116800487041473,0.1997128129005432
+pair_score_epilogue,bf16,256,Optimized FlagOS MUSA backend,8,0.21735399961471558,0.2357885241508484
+pair_score_epilogue,bf16,256,Optimized FlagOS MUSA backend,9,0.17507700622081757,0.1933947205543518
+gaussian_pair_bias,bf16,512,PyTorch reference,0,6.258519172668457,6.2921494245529175
+gaussian_pair_bias,bf16,512,PyTorch reference,1,6.262278079986572,6.283603608608246
+gaussian_pair_bias,bf16,512,PyTorch reference,2,6.2347612380981445,6.254531443119049
+gaussian_pair_bias,bf16,512,PyTorch reference,3,6.240484237670898,6.2592849135398865
+gaussian_pair_bias,bf16,512,PyTorch reference,4,6.23143196105957,6.25021755695343
+gaussian_pair_bias,bf16,512,PyTorch reference,5,6.232933044433594,6.25176727771759
+gaussian_pair_bias,bf16,512,PyTorch reference,6,6.216708183288574,6.235785782337189
+gaussian_pair_bias,bf16,512,PyTorch reference,7,6.212295055389404,6.231218576431274
+gaussian_pair_bias,bf16,512,PyTorch reference,8,6.229574203491211,6.251178681850433
+gaussian_pair_bias,bf16,512,PyTorch reference,9,6.205172061920166,6.223760545253754
+gaussian_pair_bias,bf16,512,Optimized FlagOS MUSA backend,0,2.859999895095825,2.892613410949707
+gaussian_pair_bias,bf16,512,Optimized FlagOS MUSA backend,1,2.8603029251098633,2.882033586502075
+gaussian_pair_bias,bf16,512,Optimized FlagOS MUSA backend,2,2.8581531047821045,2.878628671169281
+gaussian_pair_bias,bf16,512,Optimized FlagOS MUSA backend,3,2.829936981201172,2.8501227498054504
+gaussian_pair_bias,bf16,512,Optimized FlagOS MUSA backend,4,2.8515689373016357,2.873644232749939
+gaussian_pair_bias,bf16,512,Optimized FlagOS MUSA backend,5,2.84230899810791,2.8622597455978394
+gaussian_pair_bias,bf16,512,Optimized FlagOS MUSA backend,6,2.8516690731048584,2.8711259365081787
+gaussian_pair_bias,bf16,512,Optimized FlagOS MUSA backend,7,2.8674769401550293,2.886749804019928
+gaussian_pair_bias,bf16,512,Optimized FlagOS MUSA backend,8,2.8648109436035156,2.88410484790802
+gaussian_pair_bias,bf16,512,Optimized FlagOS MUSA backend,9,2.839271068572998,2.858683466911316
+pair_score_epilogue,bf16,512,PyTorch reference,0,0.23796699941158295,0.27073174715042114
+pair_score_epilogue,bf16,512,PyTorch reference,1,0.2266799956560135,0.24600327014923096
+pair_score_epilogue,bf16,512,PyTorch reference,2,0.22231900691986084,0.2387017011642456
+pair_score_epilogue,bf16,512,PyTorch reference,3,0.23359400033950806,0.25219470262527466
+pair_score_epilogue,bf16,512,PyTorch reference,4,0.22130200266838074,0.23928284645080566
+pair_score_epilogue,bf16,512,PyTorch reference,5,0.2944810092449188,0.31260401010513306
+pair_score_epilogue,bf16,512,PyTorch reference,6,0.24381199479103088,0.2600178122520447
+pair_score_epilogue,bf16,512,PyTorch reference,7,0.2338709980249405,0.2884715795516968
+pair_score_epilogue,bf16,512,PyTorch reference,8,0.22354400157928467,0.2418607473373413
+pair_score_epilogue,bf16,512,PyTorch reference,9,0.2336689978837967,0.2523362636566162
+pair_score_epilogue,bf16,512,Optimized FlagOS MUSA backend,0,0.3242799937725067,0.3535225987434387
+pair_score_epilogue,bf16,512,Optimized FlagOS MUSA backend,1,0.2174530029296875,0.238664448261261
+pair_score_epilogue,bf16,512,Optimized FlagOS MUSA backend,2,0.24891600012779236,0.2683401107788086
+pair_score_epilogue,bf16,512,Optimized FlagOS MUSA backend,3,0.1999650001525879,0.21926313638687134
+pair_score_epilogue,bf16,512,Optimized FlagOS MUSA backend,4,0.24058300256729126,0.2596750855445862
+pair_score_epilogue,bf16,512,Optimized FlagOS MUSA backend,5,0.19948600232601166,0.218316912651062
+pair_score_epilogue,bf16,512,Optimized FlagOS MUSA backend,6,0.24004299938678741,0.25897473096847534
+pair_score_epilogue,bf16,512,Optimized FlagOS MUSA backend,7,0.19945499300956726,0.21861493587493896
+pair_score_epilogue,bf16,512,Optimized FlagOS MUSA backend,8,0.24605900049209595,0.264488160610199
+pair_score_epilogue,bf16,512,Optimized FlagOS MUSA backend,9,0.20867499709129333,0.22645294666290283
+gaussian_pair_bias,bf16,1050,PyTorch reference,0,23.21837043762207,23.2546329498291
+gaussian_pair_bias,bf16,1050,PyTorch reference,1,23.16411781311035,23.18522334098816
+gaussian_pair_bias,bf16,1050,PyTorch reference,2,23.235027313232422,23.25493097305298
+gaussian_pair_bias,bf16,1050,PyTorch reference,3,23.174514770507812,23.194216191768646
+gaussian_pair_bias,bf16,1050,PyTorch reference,4,23.259422302246094,23.278862237930298
+gaussian_pair_bias,bf16,1050,PyTorch reference,5,23.157001495361328,23.176170885562897
+gaussian_pair_bias,bf16,1050,PyTorch reference,6,23.16194725036621,23.181818425655365
+gaussian_pair_bias,bf16,1050,PyTorch reference,7,23.211204528808594,23.231282830238342
+gaussian_pair_bias,bf16,1050,PyTorch reference,8,23.28156852722168,23.302771151065826
+gaussian_pair_bias,bf16,1050,PyTorch reference,9,23.197927474975586,23.21729063987732
+gaussian_pair_bias,bf16,1050,Optimized FlagOS MUSA backend,0,10.134202003479004,10.170355439186096
+gaussian_pair_bias,bf16,1050,Optimized FlagOS MUSA backend,1,9.891162872314453,9.911492466926575
+gaussian_pair_bias,bf16,1050,Optimized FlagOS MUSA backend,2,9.86473274230957,9.885363280773163
+gaussian_pair_bias,bf16,1050,Optimized FlagOS MUSA backend,3,9.808067321777344,9.828642010688782
+gaussian_pair_bias,bf16,1050,Optimized FlagOS MUSA backend,4,9.807648658752441,9.829789400100708
+gaussian_pair_bias,bf16,1050,Optimized FlagOS MUSA backend,5,9.81258487701416,9.836465120315552
+gaussian_pair_bias,bf16,1050,Optimized FlagOS MUSA backend,6,9.816157341003418,9.838514029979706
+gaussian_pair_bias,bf16,1050,Optimized FlagOS MUSA backend,7,9.804788589477539,9.83034074306488
+gaussian_pair_bias,bf16,1050,Optimized FlagOS MUSA backend,8,9.804874420166016,9.826794266700745
+gaussian_pair_bias,bf16,1050,Optimized FlagOS MUSA backend,9,9.80601978302002,9.826645255088806
+pair_score_epilogue,bf16,1050,PyTorch reference,0,0.5576329827308655,0.5967170000076294
+pair_score_epilogue,bf16,1050,PyTorch reference,1,0.54762202501297,0.567115843296051
+pair_score_epilogue,bf16,1050,PyTorch reference,2,0.5467740297317505,0.5629658699035645
+pair_score_epilogue,bf16,1050,PyTorch reference,3,0.545183002948761,0.5642399191856384
+pair_score_epilogue,bf16,1050,PyTorch reference,4,0.5407609939575195,0.5597621202468872
+pair_score_epilogue,bf16,1050,PyTorch reference,5,0.6183069944381714,0.6374791264533997
+pair_score_epilogue,bf16,1050,PyTorch reference,6,0.5441719889640808,0.5603507161140442
+pair_score_epilogue,bf16,1050,PyTorch reference,7,0.5454919934272766,0.5973577499389648
+pair_score_epilogue,bf16,1050,PyTorch reference,8,0.5479310154914856,0.5667954683303833
+pair_score_epilogue,bf16,1050,PyTorch reference,9,0.5424349904060364,0.5604997277259827
+pair_score_epilogue,bf16,1050,Optimized FlagOS MUSA backend,0,0.37317800521850586,0.4039555788040161
+pair_score_epilogue,bf16,1050,Optimized FlagOS MUSA backend,1,0.27716198563575745,0.2969801425933838
+pair_score_epilogue,bf16,1050,Optimized FlagOS MUSA backend,2,0.30952900648117065,0.32874196767807007
+pair_score_epilogue,bf16,1050,Optimized FlagOS MUSA backend,3,0.25793299078941345,0.27611106634140015
+pair_score_epilogue,bf16,1050,Optimized FlagOS MUSA backend,4,0.3001739978790283,0.31938403844833374
+pair_score_epilogue,bf16,1050,Optimized FlagOS MUSA backend,5,0.26076099276542664,0.2798512578010559
+pair_score_epilogue,bf16,1050,Optimized FlagOS MUSA backend,6,0.2965199947357178,0.31479448080062866
+pair_score_epilogue,bf16,1050,Optimized FlagOS MUSA backend,7,0.2603890001773834,0.2792179584503174
+pair_score_epilogue,bf16,1050,Optimized FlagOS MUSA backend,8,0.29724499583244324,0.3150179982185364
+pair_score_epilogue,bf16,1050,Optimized FlagOS MUSA backend,9,0.25774601101875305,0.27720630168914795
+gaussian_pair_bias,bf16,2048,PyTorch reference,0,85.63027954101562,85.67280322313309
+gaussian_pair_bias,bf16,2048,PyTorch reference,1,85.81183624267578,85.83516627550125
+gaussian_pair_bias,bf16,2048,PyTorch reference,2,85.903564453125,85.92595160007477
+gaussian_pair_bias,bf16,2048,PyTorch reference,3,85.503173828125,85.52780002355576
+gaussian_pair_bias,bf16,2048,PyTorch reference,4,85.37129974365234,85.3954553604126
+gaussian_pair_bias,bf16,2048,PyTorch reference,5,85.58416748046875,85.60753613710403
+gaussian_pair_bias,bf16,2048,PyTorch reference,6,85.4603042602539,85.4855477809906
+gaussian_pair_bias,bf16,2048,PyTorch reference,7,85.8835220336914,85.9067365527153
+gaussian_pair_bias,bf16,2048,PyTorch reference,8,85.77269744873047,85.7984870672226
+gaussian_pair_bias,bf16,2048,PyTorch reference,9,86.09610748291016,86.11954748630524
+gaussian_pair_bias,bf16,2048,Optimized FlagOS MUSA backend,0,35.91038513183594,35.951025784015656
+gaussian_pair_bias,bf16,2048,Optimized FlagOS MUSA backend,1,35.80138397216797,35.826824605464935
+gaussian_pair_bias,bf16,2048,Optimized FlagOS MUSA backend,2,35.716800689697266,35.739295184612274
+gaussian_pair_bias,bf16,2048,Optimized FlagOS MUSA backend,3,35.90907669067383,35.93103587627411
+gaussian_pair_bias,bf16,2048,Optimized FlagOS MUSA backend,4,35.74848175048828,35.77297180891037
+gaussian_pair_bias,bf16,2048,Optimized FlagOS MUSA backend,5,36.204742431640625,36.22885048389435
+gaussian_pair_bias,bf16,2048,Optimized FlagOS MUSA backend,6,35.91808319091797,35.94278544187546
+gaussian_pair_bias,bf16,2048,Optimized FlagOS MUSA backend,7,35.820499420166016,35.844020545482635
+gaussian_pair_bias,bf16,2048,Optimized FlagOS MUSA backend,8,35.51649475097656,35.538218915462494
+gaussian_pair_bias,bf16,2048,Optimized FlagOS MUSA backend,9,36.31752014160156,36.339983344078064
+pair_score_epilogue,bf16,2048,PyTorch reference,0,1.0173389911651611,1.06821209192276
+pair_score_epilogue,bf16,2048,PyTorch reference,1,1.022467017173767,1.0434538125991821
+pair_score_epilogue,bf16,2048,PyTorch reference,2,1.0247809886932373,1.0444670915603638
+pair_score_epilogue,bf16,2048,PyTorch reference,3,1.021412968635559,1.0422319173812866
+pair_score_epilogue,bf16,2048,PyTorch reference,4,1.0252130031585693,1.0455995798110962
+pair_score_epilogue,bf16,2048,PyTorch reference,5,1.0178279876708984,1.038976013660431
+pair_score_epilogue,bf16,2048,PyTorch reference,6,1.015876054763794,1.0352209210395813
+pair_score_epilogue,bf16,2048,PyTorch reference,7,1.0198780298233032,1.0761171579360962
+pair_score_epilogue,bf16,2048,PyTorch reference,8,1.01521897315979,1.03691965341568
+pair_score_epilogue,bf16,2048,PyTorch reference,9,1.0169830322265625,1.0375529527664185
+pair_score_epilogue,bf16,2048,Optimized FlagOS MUSA backend,0,0.6622229814529419,0.6981566548347473
+pair_score_epilogue,bf16,2048,Optimized FlagOS MUSA backend,1,0.584954023361206,0.6052479147911072
+pair_score_epilogue,bf16,2048,Optimized FlagOS MUSA backend,2,0.6184800267219543,0.6384402513504028
+pair_score_epilogue,bf16,2048,Optimized FlagOS MUSA backend,3,0.5518860220909119,0.5719810724258423
+pair_score_epilogue,bf16,2048,Optimized FlagOS MUSA backend,4,0.5923939943313599,0.6126165390014648
+pair_score_epilogue,bf16,2048,Optimized FlagOS MUSA backend,5,0.5645959973335266,0.5843639373779297
+pair_score_epilogue,bf16,2048,Optimized FlagOS MUSA backend,6,0.5924810171127319,0.6116703152656555
+pair_score_epilogue,bf16,2048,Optimized FlagOS MUSA backend,7,0.559781014919281,0.5797222256660461
+pair_score_epilogue,bf16,2048,Optimized FlagOS MUSA backend,8,0.6014829874038696,0.6204470992088318
+pair_score_epilogue,bf16,2048,Optimized FlagOS MUSA backend,9,0.5594540238380432,0.5790218710899353

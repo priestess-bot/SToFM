@@ -1,0 +1,18 @@
+/root/stofm-musa-r2/.venv/lib/python3.10/site-packages/transformers/utils/generic.py:485: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+{
+  "schema_version": 1,
+  "run_id": "musa-stock-probe-20260816T110130Z",
+  "stage": "frozen_unoptimized_flagos",
+  "status": "unavailable",
+  "stock_revision": "03bf364ede763d573d5c30124d554283a209ab85",
+  "runtime": {
+    "torch": "2.2.0",
+    "torch_musa": "1.3.0+81caf0a",
+    "musa_available": true,
+    "device": "MTT S4000"
+  },
+  "exception_type": "RuntimeError",
+  "reason": "0 active drivers ([]). There should only be one.",
+  "log": "stock_probe.log"
+}

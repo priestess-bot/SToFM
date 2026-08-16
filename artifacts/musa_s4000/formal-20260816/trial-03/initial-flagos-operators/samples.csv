@@ -1,0 +1,41 @@
+operator,precision,nodes,implementation,sample_index,device_event_ms,host_wall_ms
+gaussian_pair_bias,fp32,1050,PyTorch reference,0,23.150178909301758,23.266710340976715
+gaussian_pair_bias,fp32,1050,PyTorch reference,1,22.970788955688477,22.99170196056366
+gaussian_pair_bias,fp32,1050,PyTorch reference,2,23.03609275817871,23.056142032146454
+gaussian_pair_bias,fp32,1050,PyTorch reference,3,22.896024703979492,22.915229201316833
+gaussian_pair_bias,fp32,1050,PyTorch reference,4,22.916669845581055,22.935979068279266
+gaussian_pair_bias,fp32,1050,PyTorch reference,5,22.959604263305664,22.978588938713074
+gaussian_pair_bias,fp32,1050,PyTorch reference,6,22.966110229492188,22.98453450202942
+gaussian_pair_bias,fp32,1050,PyTorch reference,7,22.944074630737305,22.963374853134155
+gaussian_pair_bias,fp32,1050,PyTorch reference,8,22.92933464050293,22.94791489839554
+gaussian_pair_bias,fp32,1050,PyTorch reference,9,23.066669464111328,23.0850949883461
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,0,2652.737548828125,2652.8977006673813
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,1,2651.8125,2651.9309878349304
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,2,2654.144775390625,2654.25743162632
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,3,2651.599609375,2651.7019122838974
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,4,2653.14111328125,2653.229832649231
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,5,2656.039306640625,2656.1158299446106
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,6,2656.16650390625,2656.243748962879
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,7,2642.38916015625,2642.473541200161
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,8,2653.0126953125,2653.094857931137
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,9,2647.89306640625,2647.9733660817146
+pair_score_epilogue,fp32,1050,PyTorch reference,0,0.7585279941558838,0.7976889610290527
+pair_score_epilogue,fp32,1050,PyTorch reference,1,0.8142780065536499,0.9171068668365479
+pair_score_epilogue,fp32,1050,PyTorch reference,2,0.7551490068435669,0.8115097880363464
+pair_score_epilogue,fp32,1050,PyTorch reference,3,0.7560330033302307,0.776633620262146
+pair_score_epilogue,fp32,1050,PyTorch reference,4,0.7406600117683411,0.757262110710144
+pair_score_epilogue,fp32,1050,PyTorch reference,5,0.7690969705581665,0.825345516204834
+pair_score_epilogue,fp32,1050,PyTorch reference,6,0.7528809905052185,0.8078143000602722
+pair_score_epilogue,fp32,1050,PyTorch reference,7,0.744284987449646,0.7938295602798462
+pair_score_epilogue,fp32,1050,PyTorch reference,8,0.7453240156173706,0.7645562291145325
+pair_score_epilogue,fp32,1050,PyTorch reference,9,0.7418320178985596,0.7592737674713135
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,0,9.639355659484863,9.670905768871307
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,1,9.65078067779541,9.67298448085785
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,2,9.585162162780762,9.607061743736267
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,3,9.673775672912598,9.695172309875488
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,4,9.517993927001953,9.538419544696808
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,5,9.589536666870117,9.60947573184967
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,6,9.707783699035645,9.7263902425766
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,7,9.62796401977539,9.649112820625305
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,8,9.58638858795166,9.606614708900452
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,9,9.631942749023438,9.651027619838715

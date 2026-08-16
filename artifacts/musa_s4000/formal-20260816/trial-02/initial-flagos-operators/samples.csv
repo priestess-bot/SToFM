@@ -1,0 +1,41 @@
+operator,precision,nodes,implementation,sample_index,device_event_ms,host_wall_ms
+gaussian_pair_bias,fp32,1050,PyTorch reference,0,23.14670181274414,23.277483880519867
+gaussian_pair_bias,fp32,1050,PyTorch reference,1,23.01308822631836,23.035354912281036
+gaussian_pair_bias,fp32,1050,PyTorch reference,2,22.925865173339844,22.94643223285675
+gaussian_pair_bias,fp32,1050,PyTorch reference,3,22.925796508789062,22.946417331695557
+gaussian_pair_bias,fp32,1050,PyTorch reference,4,22.961448669433594,22.980868816375732
+gaussian_pair_bias,fp32,1050,PyTorch reference,5,22.931718826293945,22.95219898223877
+gaussian_pair_bias,fp32,1050,PyTorch reference,6,22.92767906188965,22.947341203689575
+gaussian_pair_bias,fp32,1050,PyTorch reference,7,22.926021575927734,22.946082055568695
+gaussian_pair_bias,fp32,1050,PyTorch reference,8,22.972837448120117,22.991955280303955
+gaussian_pair_bias,fp32,1050,PyTorch reference,9,22.93145751953125,22.950507700443268
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,0,2656.045166015625,2656.1856493353844
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,1,2642.99560546875,2643.082618713379
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,2,2653.05126953125,2653.124153614044
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,3,2651.039306640625,2651.125840842724
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,4,2643.91943359375,2644.0420523285866
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,5,2655.41796875,2655.519485473633
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,6,2647.8544921875,2647.909067571163
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,7,2648.62841796875,2648.6979722976685
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,8,2650.405517578125,2650.4891216754913
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,9,2651.95947265625,2652.0378664135933
+pair_score_epilogue,fp32,1050,PyTorch reference,0,0.7605559825897217,0.8031204342842102
+pair_score_epilogue,fp32,1050,PyTorch reference,1,0.8167700171470642,0.9222328662872314
+pair_score_epilogue,fp32,1050,PyTorch reference,2,0.7503150105476379,0.8016303181648254
+pair_score_epilogue,fp32,1050,PyTorch reference,3,0.7436630129814148,0.76274573802948
+pair_score_epilogue,fp32,1050,PyTorch reference,4,0.7359349727630615,0.752769410610199
+pair_score_epilogue,fp32,1050,PyTorch reference,5,0.7832000255584717,0.8384659886360168
+pair_score_epilogue,fp32,1050,PyTorch reference,6,0.7442039847373962,0.7986649870872498
+pair_score_epilogue,fp32,1050,PyTorch reference,7,0.7415720224380493,0.7901489734649658
+pair_score_epilogue,fp32,1050,PyTorch reference,8,0.7445799708366394,0.7632002234458923
+pair_score_epilogue,fp32,1050,PyTorch reference,9,0.7427870035171509,0.7615089416503906
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,0,9.684638023376465,9.721487760543823
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,1,9.68032169342041,9.702436625957489
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,2,9.631692886352539,9.650617837905884
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,3,9.706486701965332,9.727604687213898
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,4,9.604888916015625,9.625732898712158
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,5,9.632407188415527,9.65426117181778
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,6,9.638561248779297,9.657368063926697
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,7,9.62767219543457,9.647160768508911
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,8,9.611078262329102,9.63156670331955
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,9,9.663108825683594,9.685881435871124

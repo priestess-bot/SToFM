@@ -1,0 +1,41 @@
+operator,precision,nodes,implementation,sample_index,device_event_ms,host_wall_ms
+gaussian_pair_bias,fp32,1050,PyTorch reference,0,23.08466911315918,23.217730224132538
+gaussian_pair_bias,fp32,1050,PyTorch reference,1,22.97884750366211,23.006409406661987
+gaussian_pair_bias,fp32,1050,PyTorch reference,2,23.01521873474121,23.042522370815277
+gaussian_pair_bias,fp32,1050,PyTorch reference,3,23.053295135498047,23.07349443435669
+gaussian_pair_bias,fp32,1050,PyTorch reference,4,22.913822174072266,22.935442626476288
+gaussian_pair_bias,fp32,1050,PyTorch reference,5,23.004606246948242,23.02783727645874
+gaussian_pair_bias,fp32,1050,PyTorch reference,6,22.941818237304688,22.961214184761047
+gaussian_pair_bias,fp32,1050,PyTorch reference,7,23.034082412719727,23.05380254983902
+gaussian_pair_bias,fp32,1050,PyTorch reference,8,22.928220748901367,22.949136793613434
+gaussian_pair_bias,fp32,1050,PyTorch reference,9,23.00873374938965,23.031294345855713
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,0,2661.645263671875,2661.786623299122
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,1,2655.609375,2655.70717304945
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,2,2660.3740234375,2660.4514122009277
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,3,2660.636962890625,2660.7133895158768
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,4,2650.66064453125,2650.759570300579
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,5,2655.791259765625,2655.8707877993584
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,6,2650.798828125,2650.9073674678802
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,7,2650.714111328125,2650.8357226848602
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,8,2651.46044921875,2651.533968746662
+gaussian_pair_bias,fp32,1050,Initial FlagOS MUSA registered implementation,9,2649.67529296875,2649.746112525463
+pair_score_epilogue,fp32,1050,PyTorch reference,0,0.7494320273399353,0.7905364036560059
+pair_score_epilogue,fp32,1050,PyTorch reference,1,0.8162879943847656,0.918753445148468
+pair_score_epilogue,fp32,1050,PyTorch reference,2,0.7491400241851807,0.8029267191886902
+pair_score_epilogue,fp32,1050,PyTorch reference,3,0.745061993598938,0.7646456360816956
+pair_score_epilogue,fp32,1050,PyTorch reference,4,0.7379950284957886,0.75569748878479
+pair_score_epilogue,fp32,1050,PyTorch reference,5,0.7677649855613708,0.8219555020332336
+pair_score_epilogue,fp32,1050,PyTorch reference,6,0.7535979747772217,0.8095800876617432
+pair_score_epilogue,fp32,1050,PyTorch reference,7,0.7433779835700989,0.7955357432365417
+pair_score_epilogue,fp32,1050,PyTorch reference,8,0.7449390292167664,0.7637515664100647
+pair_score_epilogue,fp32,1050,PyTorch reference,9,0.7385650277137756,0.7570385932922363
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,0,9.728041648864746,9.762011468410492
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,1,9.616061210632324,9.637542068958282
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,2,9.676033973693848,9.695671498775482
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,3,9.655928611755371,9.677261114120483
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,4,9.751893043518066,9.771950542926788
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,5,9.63593864440918,9.656272828578949
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,6,9.576379776000977,9.595319628715515
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,7,9.604310989379883,9.624652564525604
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,8,9.653996467590332,9.673558175563812
+pair_score_epilogue,fp32,1050,Initial FlagOS MUSA registered implementation,9,9.682475090026855,9.704098105430603

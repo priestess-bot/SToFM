@@ -1,0 +1,302 @@
+/root/stofm-musa-r2/.venv/lib/python3.10/site-packages/transformers/utils/generic.py:485: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+{
+  "schema_version": 1,
+  "role": "musa_operator_matrix",
+  "run_id": "musa-operator-matrix-20260816T110734Z",
+  "trial": 5,
+  "candidate": {
+    "kind": "direct-privateuse1",
+    "label": "Initial FlagOS MUSA registered implementation"
+  },
+  "runtime": {
+    "torch": "2.2.0",
+    "torch_musa": "1.3.0+81caf0a",
+    "device": "MTT S4000",
+    "capability": [
+      2,
+      2
+    ],
+    "total_memory_mib": 49061.67
+  },
+  "sources": {
+    "stofm_revision": "e2c6de9ec902bee5d67a4861b4ef6716a58e0cc4",
+    "flaggems_revision": "832c46df4073215d416406181484f9b44594aff2",
+    "musa_library_sha256": "006d5e256060342f1fb188f91e623fed0baaa0746928d710a43de63efb1cf590"
+  },
+  "workload": {
+    "shapes": [
+      1050
+    ],
+    "precisions": [
+      "fp32"
+    ],
+    "heads": 8,
+    "head_dim": 32,
+    "gaussian_hidden_dim": 128,
+    "seed": 20260816
+  },
+  "measurement": {
+    "timer": "torch.musa.Event with per-sample device synchronization",
+    "host_cross_check": "time.perf_counter",
+    "warmup": 5,
+    "repetitions": 10,
+    "calls_per_sample": 1,
+    "compile_included": false,
+    "inference_mode": true
+  },
+  "results": [
+    {
+      "operator": "gaussian_pair_bias",
+      "precision": "fp32",
+      "nodes": 1050,
+      "candidate_label": "Initial FlagOS MUSA registered implementation",
+      "validation": {
+        "oracle": "MUSA portable PyTorch expression",
+        "errors": {
+          "max_abs_error": 1.341104507446289e-07,
+          "max_relative_error": 4.410471439361572
+        }
+      },
+      "torch_reference": {
+        "sample_count": 10,
+        "calls_per_sample": 1,
+        "samples_ms": [
+          23.08466911315918,
+          22.97884750366211,
+          23.01521873474121,
+          23.053295135498047,
+          22.913822174072266,
+          23.004606246948242,
+          22.941818237304688,
+          23.034082412719727,
+          22.928220748901367,
+          23.00873374938965
+        ],
+        "host_samples_ms": [
+          23.217730224132538,
+          23.006409406661987,
+          23.042522370815277,
+          23.07349443435669,
+          22.935442626476288,
+          23.02783727645874,
+          22.961214184761047,
+          23.05380254983902,
+          22.949136793613434,
+          23.031294345855713
+        ],
+        "peak_allocated_mib": 1624.52392578125,
+        "peak_delta_allocated_mib": 1619.19677734375,
+        "p20_ms": 22.939098739624022,
+        "p50_ms": 23.006669998168945,
+        "p80_ms": 23.03792495727539,
+        "p95_ms": 23.07055082321167,
+        "mean_ms": 22.996331405639648,
+        "stdev_ms": 0.05555456292885922,
+        "coefficient_of_variation": 0.0024158011097037396,
+        "bootstrap_p50_ci_ms": [
+          22.941818237304688,
+          23.03425693511963
+        ],
+        "bootstrap_resamples": 4000,
+        "host_timing": {
+          "p20_ms": 22.958798706531525,
+          "p50_ms": 23.029565811157227,
+          "p80_ms": 23.057740926742554,
+          "p95_ms": 23.152824118733406,
+          "mean_ms": 23.029888421297073,
+          "stdev_ms": 0.08071345869853586,
+          "coefficient_of_variation": 0.0035047264329728773,
+          "bootstrap_p50_ci_ms": [
+            22.961214184761047,
+            23.058008402585983
+          ],
+          "bootstrap_resamples": 4000
+        }
+      },
+      "flagos_candidate": {
+        "sample_count": 10,
+        "calls_per_sample": 1,
+        "samples_ms": [
+          2661.645263671875,
+          2655.609375,
+          2660.3740234375,
+          2660.636962890625,
+          2650.66064453125,
+          2655.791259765625,
+          2650.798828125,
+          2650.714111328125,
+          2651.46044921875,
+          2649.67529296875
+        ],
+        "host_samples_ms": [
+          2661.786623299122,
+          2655.70717304945,
+          2660.4514122009277,
+          2660.7133895158768,
+          2650.759570300579,
+          2655.8707877993584,
+          2650.9073674678802,
+          2650.8357226848602,
+          2651.533968746662,
+          2649.746112525463
+        ],
+        "peak_allocated_mib": 38.97314453125,
+        "peak_delta_allocated_mib": 33.64599609375,
+        "p20_ms": 2650.70341796875,
+        "p50_ms": 2653.534912109375,
+        "p80_ms": 2660.426611328125,
+        "p95_ms": 2661.1915283203125,
+        "mean_ms": 2654.73662109375,
+        "stdev_ms": 4.7240327716361445,
+        "coefficient_of_variation": 0.0017794732381737537,
+        "bootstrap_p50_ci_ms": [
+          2650.714111328125,
+          2660.3740234375
+        ],
+        "bootstrap_resamples": 4000,
+        "host_timing": {
+          "p20_ms": 2650.820492208004,
+          "p50_ms": 2653.620570898056,
+          "p80_ms": 2660.5038076639175,
+          "p95_ms": 2661.3036680966616,
+          "mean_ms": 2654.831212759018,
+          "stdev_ms": 4.72677058201743,
+          "coefficient_of_variation": 0.0017804410914338924,
+          "bootstrap_p50_ci_ms": [
+            2650.8334688842297,
+            2660.4514122009277
+          ],
+          "bootstrap_resamples": 4000
+        }
+      },
+      "p50_speedup": 0.008670196835616626
+    },
+    {
+      "operator": "pair_score_epilogue",
+      "precision": "fp32",
+      "nodes": 1050,
+      "candidate_label": "Initial FlagOS MUSA registered implementation",
+      "validation": {
+        "oracle": "MUSA portable PyTorch expression",
+        "errors": {
+          "max_abs_error": 9.5367431640625e-07,
+          "max_relative_error": 1.2183468341827393
+        }
+      },
+      "torch_reference": {
+        "sample_count": 10,
+        "calls_per_sample": 1,
+        "samples_ms": [
+          0.7494320273399353,
+          0.8162879943847656,
+          0.7491400241851807,
+          0.745061993598938,
+          0.7379950284957886,
+          0.7677649855613708,
+          0.7535979747772217,
+          0.7433779835700989,
+          0.7449390292167664,
+          0.7385650277137756
+        ],
+        "host_samples_ms": [
+          0.7905364036560059,
+          0.918753445148468,
+          0.8029267191886902,
+          0.7646456360816956,
+          0.75569748878479,
+          0.8219555020332336,
+          0.8095800876617432,
+          0.7955357432365417,
+          0.7637515664100647,
+          0.7570385932922363
+        ],
+        "peak_allocated_mib": 106.1015625,
+        "peak_delta_allocated_mib": 69.025390625,
+        "p20_ms": 0.7424153923988343,
+        "p50_ms": 0.7471010088920593,
+        "p80_ms": 0.7564313769340515,
+        "p95_ms": 0.7944526404142379,
+        "mean_ms": 0.7546162068843841,
+        "stdev_ms": 0.02328407465172866,
+        "coefficient_of_variation": 0.030855518923801815,
+        "bootstrap_p50_ci_ms": [
+          0.741752028465271,
+          0.7585985064506531
+        ],
+        "bootstrap_resamples": 4000,
+        "host_timing": {
+          "p20_ms": 0.762408971786499,
+          "p50_ms": 0.7930360734462738,
+          "p80_ms": 0.8120551705360413,
+          "p95_ms": 0.8751943707466124,
+          "mean_ms": 0.7980421185493469,
+          "stdev_ms": 0.048451808551862735,
+          "coefficient_of_variation": 0.06071334761119719,
+          "bootstrap_p50_ci_ms": [
+            0.7608421146869659,
+            0.8095800876617432
+          ],
+          "bootstrap_resamples": 4000
+        }
+      },
+      "flagos_candidate": {
+        "sample_count": 10,
+        "calls_per_sample": 1,
+        "samples_ms": [
+          9.728041648864746,
+          9.616061210632324,
+          9.676033973693848,
+          9.655928611755371,
+          9.751893043518066,
+          9.63593864440918,
+          9.576379776000977,
+          9.604310989379883,
+          9.653996467590332,
+          9.682475090026855
+        ],
+        "host_samples_ms": [
+          9.762011468410492,
+          9.637542068958282,
+          9.695671498775482,
+          9.677261114120483,
+          9.771950542926788,
+          9.656272828578949,
+          9.595319628715515,
+          9.624652564525604,
+          9.673558175563812,
+          9.704098105430603
+        ],
+        "peak_allocated_mib": 38.1015625,
+        "peak_delta_allocated_mib": 1.025390625,
+        "p20_ms": 9.613711166381837,
+        "p50_ms": 9.654962539672852,
+        "p80_ms": 9.691588401794434,
+        "p95_ms": 9.741159915924072,
+        "mean_ms": 9.658105945587158,
+        "stdev_ms": 0.05421780499192385,
+        "coefficient_of_variation": 0.005613709903099196,
+        "bootstrap_p50_ci_ms": [
+          9.616061210632324,
+          9.702037811279297
+        ],
+        "bootstrap_resamples": 4000,
+        "host_timing": {
+          "p20_ms": 9.634964168071747,
+          "p50_ms": 9.675409644842148,
+          "p80_ms": 9.71568077802658,
+          "p95_ms": 9.767477959394455,
+          "mean_ms": 9.679833799600601,
+          "stdev_ms": 0.05642652911653104,
+          "coefficient_of_variation": 0.005829286977929234,
+          "bootstrap_p50_ci_ms": [
+            9.637542068958282,
+            9.728841483592987
+          ],
+          "bootstrap_resamples": 4000
+        }
+      },
+      "p50_speedup": 0.07738000078427794
+    }
+  ]
+}

@@ -1,0 +1,1323 @@
+{
+  "schema_version": 1,
+  "trial_count": 5,
+  "source_revisions": {
+    "stofm": "e2c6de9ec902bee5d67a4861b4ef6716a58e0cc4",
+    "flaggems": "832c46df4073215d416406181484f9b44594aff2",
+    "frozen_upstream_flaggems": "03bf364ede763d573d5c30124d554283a209ab85"
+  },
+  "library_sha256": {
+    "initial_registered_implementation": "006d5e256060342f1fb188f91e623fed0baaa0746928d710a43de63efb1cf590",
+    "optimized_flagos_backend": "a7beac88e8d4b7b999b3620b13234ded848aee22d1a479f66ce9f9744a8e2313"
+  },
+  "protocol": {
+    "independent_processes": true,
+    "trial_order": "three-position cyclic rotation",
+    "timer": "MUSA device events with per-sample synchronization",
+    "inference_mode": true,
+    "compile_included": false,
+    "aggregate_bootstrap_resamples": 10000
+  },
+  "frozen_upstream_flagos": {
+    "schema_version": 1,
+    "run_id": "musa-stock-probe-20260816T110130Z",
+    "stage": "frozen_unoptimized_flagos",
+    "status": "unavailable",
+    "stock_revision": "03bf364ede763d573d5c30124d554283a209ab85",
+    "runtime": {
+      "torch": "2.2.0",
+      "torch_musa": "1.3.0+81caf0a",
+      "musa_available": true,
+      "device": "MTT S4000"
+    },
+    "exception_type": "RuntimeError",
+    "reason": "0 active drivers ([]). There should only be one.",
+    "log": "stock_probe.log"
+  },
+  "operator_results": [
+    {
+      "candidate_kind": "initial_registered_implementation",
+      "candidate_label": "Initial FlagOS MUSA registered implementation",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "fp32",
+      "nodes": 1050,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 22.931588172912598,
+        "median": 22.962857246398926,
+        "max": 23.006669998168945,
+        "mean": 22.96350231170654,
+        "stdev": 0.03076085237571381,
+        "coefficient_of_variation": 0.0013395540435498928
+      },
+      "flagos_p50_ms": {
+        "min": 2650.722412109375,
+        "median": 2652.8751220703125,
+        "max": 2654.212646484375,
+        "mean": 2652.61630859375,
+        "stdev": 1.398222638784954,
+        "coefficient_of_variation": 0.0005271107752203346
+      },
+      "speedup_over_torch": {
+        "point_estimate": 0.008656185607237283,
+        "bootstrap_95_ci": [
+          0.008645832662879166,
+          0.008670229842720771
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": -11452.432507499812,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 1.341104507446289e-07,
+        "max_relative_error_across_trials": 4.410471439361572
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "initial_registered_implementation",
+      "candidate_label": "Initial FlagOS MUSA registered implementation",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "fp32",
+      "nodes": 1050,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 0.7443919777870178,
+        "median": 0.7476645112037659,
+        "max": 0.7540149986743927,
+        "mean": 0.7483926951885224,
+        "stdev": 0.003534592335741159,
+        "coefficient_of_variation": 0.004722911325117604
+      },
+      "flagos_p50_ms": {
+        "min": 9.629953384399414,
+        "median": 9.645879745483398,
+        "max": 9.6560959815979,
+        "mean": 9.644475173950195,
+        "stdev": 0.011605176445131189,
+        "coefficient_of_variation": 0.0012032978711456342
+      },
+      "speedup_over_torch": {
+        "point_estimate": 0.07759963572361481,
+        "bootstrap_95_ci": [
+          0.07716379757519276,
+          0.07820035299269039
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": -1188.6658431769984,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 9.5367431640625e-07,
+        "max_relative_error_across_trials": 1.2183468341827393
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "bf16",
+      "nodes": 256,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 2.1325550079345703,
+        "median": 2.1357299089431763,
+        "max": 2.1458070278167725,
+        "mean": 2.13769850730896,
+        "stdev": 0.005787532965839114,
+        "coefficient_of_variation": 0.0027073663316183653
+      },
+      "flagos_p50_ms": {
+        "min": 1.0395354628562927,
+        "median": 1.0464049577713013,
+        "max": 1.0483480095863342,
+        "mean": 1.0446149826049804,
+        "stdev": 0.0038779231395327436,
+        "coefficient_of_variation": 0.003712298984897074
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.0431362801426163,
+        "bootstrap_95_ci": [
+          2.0349604176626883,
+          2.055661487727911
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 51.0556388372587,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 0.0,
+        "max_relative_error_across_trials": 0.0
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "bf16",
+      "nodes": 512,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 6.229184627532959,
+        "median": 6.232182502746582,
+        "max": 6.345557928085327,
+        "mean": 6.254747915267944,
+        "stdev": 0.05086747048049639,
+        "coefficient_of_variation": 0.008132617200499487
+      },
+      "flagos_p50_ms": {
+        "min": 2.8474775552749634,
+        "median": 2.8549110889434814,
+        "max": 2.913812518119812,
+        "mean": 2.8654134035110475,
+        "stdev": 0.027271586361968338,
+        "coefficient_of_variation": 0.009517504988478077
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.1820659518170658,
+        "bootstrap_95_ci": [
+          2.17700042289187,
+          2.1886005498603236
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 54.17187096626146,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 7.62939453125e-06,
+        "max_relative_error_across_trials": 0.005319148767739534
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "bf16",
+      "nodes": 1050,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 23.16440200805664,
+        "median": 23.192063331604004,
+        "max": 23.20456600189209,
+        "mean": 23.18473892211914,
+        "stdev": 0.01733632779672044,
+        "coefficient_of_variation": 0.0007477473805055839
+      },
+      "flagos_p50_ms": {
+        "min": 9.810326099395752,
+        "median": 9.820756435394287,
+        "max": 10.014137268066406,
+        "mean": 9.861564350128173,
+        "stdev": 0.08641056289680642,
+        "coefficient_of_variation": 0.008762358569985229
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.358443750137666,
+        "bootstrap_95_ci": [
+          2.3487049419935198,
+          2.3641125039981183
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 57.59915834576812,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 6.103515625e-05,
+        "max_relative_error_across_trials": 0.00671140942722559
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "bf16",
+      "nodes": 2048,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 85.57787704467773,
+        "median": 85.63791275024414,
+        "max": 85.70148849487305,
+        "mean": 85.63007202148438,
+        "stdev": 0.05064083074421351,
+        "coefficient_of_variation": 0.0005913907293165401
+      },
+      "flagos_p50_ms": {
+        "min": 35.86478805541992,
+        "median": 36.02547645568848,
+        "max": 36.25411415100098,
+        "mean": 36.01135597229004,
+        "stdev": 0.160076406345394,
+        "coefficient_of_variation": 0.004445164643857602
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.380148582574075,
+        "bootstrap_95_ci": [
+          2.3653402947816335,
+          2.3886097369880814
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 57.985816208224975,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 1.52587890625e-05,
+        "max_relative_error_across_trials": 0.007352941203862429
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "fp16",
+      "nodes": 256,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 2.130797028541565,
+        "median": 2.1358155012130737,
+        "max": 2.144172430038452,
+        "mean": 2.136497688293457,
+        "stdev": 0.004934594486073474,
+        "coefficient_of_variation": 0.0023096652587604794
+      },
+      "flagos_p50_ms": {
+        "min": 1.0445514917373657,
+        "median": 1.0459794998168945,
+        "max": 1.0472384691238403,
+        "mean": 1.0458004832267762,
+        "stdev": 0.001172233009073068,
+        "coefficient_of_variation": 0.001120895455561647
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.0430803524857684,
+        "bootstrap_95_ci": [
+          2.0364264654382063,
+          2.051827977724547
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 51.05429902532599,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 7.62939453125e-06,
+        "max_relative_error_across_trials": 0.002298850566148758
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "fp16",
+      "nodes": 512,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 6.230323076248169,
+        "median": 6.236644983291626,
+        "max": 6.285187005996704,
+        "mean": 6.245412063598633,
+        "stdev": 0.022707232737937254,
+        "coefficient_of_variation": 0.0036358261883609405
+      },
+      "flagos_p50_ms": {
+        "min": 2.848673939704895,
+        "median": 2.853195548057556,
+        "max": 2.861572504043579,
+        "mean": 2.853584098815918,
+        "stdev": 0.005039642332234601,
+        "coefficient_of_variation": 0.0017660745776953899
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.1869116150397034,
+        "bootstrap_95_ci": [
+          2.183535801929506,
+          2.199016523014167
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 54.27341493259914,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 6.103515625e-05,
+        "max_relative_error_across_trials": 0.0008726003579795361
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "fp16",
+      "nodes": 1050,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 23.17435359954834,
+        "median": 23.187063217163086,
+        "max": 23.33163356781006,
+        "mean": 23.2142126083374,
+        "stdev": 0.06654724149298412,
+        "coefficient_of_variation": 0.002866659430399273
+      },
+      "flagos_p50_ms": {
+        "min": 9.803787231445312,
+        "median": 9.813385963439941,
+        "max": 9.963152885437012,
+        "mean": 9.846591758728028,
+        "stdev": 0.06732849809192869,
+        "coefficient_of_variation": 0.006837746475296759
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.3618932069358087,
+        "bootstrap_95_ci": [
+          2.352126700409046,
+          2.3681564239119495
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 57.661083191083584,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 1.52587890625e-05,
+        "max_relative_error_across_trials": 0.0117647061124444
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "fp16",
+      "nodes": 2048,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 85.5084457397461,
+        "median": 85.57035064697266,
+        "max": 85.65283203125,
+        "mean": 85.57462539672852,
+        "stdev": 0.052073447154095474,
+        "coefficient_of_variation": 0.0006085150465185234
+      },
+      "flagos_p50_ms": {
+        "min": 35.91812324523926,
+        "median": 36.06831359863281,
+        "max": 36.157806396484375,
+        "mean": 36.061699295043944,
+        "stdev": 0.0949648379809182,
+        "coefficient_of_variation": 0.002633398864649994
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.369611685703463,
+        "bootstrap_95_ci": [
+          2.3623357301890677,
+          2.38424427279582
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 57.798992719639145,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 1.52587890625e-05,
+        "max_relative_error_across_trials": 0.0043668122962117195
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "fp32",
+      "nodes": 256,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 1.9822499752044678,
+        "median": 1.9917359948158264,
+        "max": 1.9995869994163513,
+        "mean": 1.9902592897415161,
+        "stdev": 0.006627790184148199,
+        "coefficient_of_variation": 0.0033301139295317545
+      },
+      "flagos_p50_ms": {
+        "min": 0.8734849989414215,
+        "median": 0.8818114995956421,
+        "max": 0.885641485452652,
+        "mean": 0.8807650983333588,
+        "stdev": 0.004468882018769282,
+        "coefficient_of_variation": 0.005073863652437627
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.262129195841187,
+        "bootstrap_95_ci": [
+          2.238371337952713,
+          2.274233538083272
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 55.79385996880944,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 8.940696716308594e-08,
+        "max_relative_error_across_trials": 0.0193919874727726
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "fp32",
+      "nodes": 512,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 6.06485652923584,
+        "median": 6.076155662536621,
+        "max": 6.092725992202759,
+        "mean": 6.075503826141357,
+        "stdev": 0.01124743520606708,
+        "coefficient_of_variation": 0.0018512761291783258
+      },
+      "flagos_p50_ms": {
+        "min": 2.676052451133728,
+        "median": 2.676900029182434,
+        "max": 2.6817820072174072,
+        "mean": 2.677962589263916,
+        "stdev": 0.0023043619206478405,
+        "coefficient_of_variation": 0.0008604907065864703
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.269559124418916,
+        "bootstrap_95_ci": [
+          2.2600780610588647,
+          2.2754240748204055
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 55.938579028822,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 2.2351741790771484e-08,
+        "max_relative_error_across_trials": 0.0550810731947422
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "fp32",
+      "nodes": 1050,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 22.949899673461914,
+        "median": 22.95592212677002,
+        "max": 23.06724262237549,
+        "mean": 22.97781620025635,
+        "stdev": 0.0501986338536909,
+        "coefficient_of_variation": 0.0021846564275821334
+      },
+      "flagos_p50_ms": {
+        "min": 9.553371906280518,
+        "median": 9.567075252532959,
+        "max": 9.846803188323975,
+        "mean": 9.621072578430176,
+        "stdev": 0.12650506564969302,
+        "coefficient_of_variation": 0.01314874870950555
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.399203660348644,
+        "bootstrap_95_ci": [
+          2.3759661949357143,
+          2.407247791709023
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 58.31950340327994,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 2.0489096641540527e-08,
+        "max_relative_error_across_trials": 1.798462986946106
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "precision": "fp32",
+      "nodes": 2048,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 85.1473388671875,
+        "median": 85.2319564819336,
+        "max": 85.3449592590332,
+        "mean": 85.23765335083007,
+        "stdev": 0.0723968042790709,
+        "coefficient_of_variation": 0.0008493523863343884
+      },
+      "flagos_p50_ms": {
+        "min": 35.525251388549805,
+        "median": 35.635454177856445,
+        "max": 35.707366943359375,
+        "mean": 35.624707794189455,
+        "stdev": 0.06818653846475013,
+        "coefficient_of_variation": 0.001914023796592983
+      },
+      "speedup_over_torch": {
+        "point_estimate": 2.3911989676210865,
+        "bootstrap_95_ci": [
+          2.3835309409166707,
+          2.400066516021193
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 58.17997525338252,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 3.3527612686157227e-08,
+        "max_relative_error_across_trials": 1.377706527709961
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "bf16",
+      "nodes": 256,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 0.1975325047969818,
+        "median": 0.20019850134849548,
+        "max": 0.23085800558328629,
+        "mean": 0.20547600239515304,
+        "stdev": 0.014274439211601809,
+        "coefficient_of_variation": 0.0694701037844336
+      },
+      "flagos_p50_ms": {
+        "min": 0.19954799860715866,
+        "median": 0.207737497985363,
+        "max": 0.21481049805879593,
+        "mean": 0.2074305981397629,
+        "stdev": 0.006231318630072068,
+        "coefficient_of_variation": 0.030040498778649432
+      },
+      "speedup_over_torch": {
+        "point_estimate": 0.9566598595253014,
+        "bootstrap_95_ci": [
+          0.9001296735927046,
+          1.086355746177795
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": -4.530360508300646,
+      "correctness": {
+        "oracle": "CPU FP32 expression on the same BF16 input values",
+        "max_abs_error_across_trials": 0.003744959831237793,
+        "max_relative_error_across_trials": 165.20948791503906
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "bf16",
+      "nodes": 512,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 0.2303595021367073,
+        "median": 0.23358099907636642,
+        "max": 0.2576114982366562,
+        "mean": 0.23757379949092866,
+        "stdev": 0.011279795294062128,
+        "coefficient_of_variation": 0.047479121511851845
+      },
+      "flagos_p50_ms": {
+        "min": 0.22318249940872192,
+        "median": 0.22874800115823746,
+        "max": 0.2432904988527298,
+        "mean": 0.2319246992468834,
+        "stdev": 0.008322444925381884,
+        "coefficient_of_variation": 0.035884254468829375
+      },
+      "speedup_over_torch": {
+        "point_estimate": 0.9900058345068213,
+        "bootstrap_95_ci": [
+          0.9703803036001215,
+          1.1207457012207294
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": -1.0095057165150356,
+      "correctness": {
+        "oracle": "CPU FP32 expression on the same BF16 input values",
+        "max_abs_error_across_trials": 0.0022426247596740723,
+        "max_relative_error_across_trials": 131.10256958007812
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "bf16",
+      "nodes": 1050,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 0.5440199971199036,
+        "median": 0.5461330115795135,
+        "max": 0.5495350062847137,
+        "mean": 0.5462103962898255,
+        "stdev": 0.00231824427005641,
+        "coefficient_of_variation": 0.004244233148624149
+      },
+      "flagos_p50_ms": {
+        "min": 0.27969449758529663,
+        "median": 0.28319549560546875,
+        "max": 0.2868409901857376,
+        "mean": 0.28321569263935087,
+        "stdev": 0.0026669637703655735,
+        "coefficient_of_variation": 0.009416723153690874
+      },
+      "speedup_over_torch": {
+        "point_estimate": 1.9277796738889905,
+        "bootstrap_95_ci": [
+          1.8401393367735293,
+          2.0925862329706573
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 48.12685217379338,
+      "correctness": {
+        "oracle": "CPU FP32 expression on the same BF16 input values",
+        "max_abs_error_across_trials": 0.0034161806106567383,
+        "max_relative_error_across_trials": 107.76383972167969
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "bf16",
+      "nodes": 2048,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 1.018063485622406,
+        "median": 1.018861472606659,
+        "max": 1.0207819938659668,
+        "mean": 1.01910719871521,
+        "stdev": 0.0010045489276347425,
+        "coefficient_of_variation": 0.000985714681341844
+      },
+      "flagos_p50_ms": {
+        "min": 0.5593650043010712,
+        "median": 0.5705739855766296,
+        "max": 0.588674008846283,
+        "mean": 0.571184492111206,
+        "stdev": 0.011074834446614808,
+        "coefficient_of_variation": 0.019389242179317794
+      },
+      "speedup_over_torch": {
+        "point_estimate": 1.7692449567651798,
+        "bootstrap_95_ci": [
+          1.7422600597112259,
+          1.8665880009761557
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 43.478714116084745,
+      "correctness": {
+        "oracle": "CPU FP32 expression on the same BF16 input values",
+        "max_abs_error_across_trials": 0.002077817916870117,
+        "max_relative_error_across_trials": 3602.6923828125
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "fp16",
+      "nodes": 256,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 0.1964079961180687,
+        "median": 0.19830700010061264,
+        "max": 0.20303349941968918,
+        "mean": 0.19910120069980622,
+        "stdev": 0.0025432043980065768,
+        "coefficient_of_variation": 0.012773425720526315
+      },
+      "flagos_p50_ms": {
+        "min": 0.20104049891233444,
+        "median": 0.2014624997973442,
+        "max": 0.20884349942207336,
+        "mean": 0.20389399975538253,
+        "stdev": 0.0036936618089174634,
+        "coefficient_of_variation": 0.018115598366547594
+      },
+      "speedup_over_torch": {
+        "point_estimate": 0.9656788435204336,
+        "bootstrap_95_ci": [
+          0.8777463275557563,
+          1.0945200521608862
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": -3.554096344748192,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 0.001953125,
+        "max_relative_error_across_trials": 51.342857360839844
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "fp16",
+      "nodes": 512,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 0.23258649557828903,
+        "median": 0.23514799773693085,
+        "max": 0.2393380030989647,
+        "mean": 0.23539539873600007,
+        "stdev": 0.0026301456884856313,
+        "coefficient_of_variation": 0.01117330968493307
+      },
+      "flagos_p50_ms": {
+        "min": 0.21998899430036545,
+        "median": 0.2233855053782463,
+        "max": 0.23006849735975266,
+        "mean": 0.22425310015678407,
+        "stdev": 0.003886773758198066,
+        "coefficient_of_variation": 0.017332084842888108
+      },
+      "speedup_over_torch": {
+        "point_estimate": 1.0325690140565222,
+        "bootstrap_95_ci": [
+          0.972563359273442,
+          1.2021780372235136
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 3.154173097696633,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 0.0029296875,
+        "max_relative_error_across_trials": 79.35714721679688
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "fp16",
+      "nodes": 1050,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 0.5426329970359802,
+        "median": 0.5437375009059906,
+        "max": 0.5467270016670227,
+        "mean": 0.5442088007926941,
+        "stdev": 0.0015780438637728943,
+        "coefficient_of_variation": 0.0028997029476081917
+      },
+      "flagos_p50_ms": {
+        "min": 0.2771404981613159,
+        "median": 0.28189699351787567,
+        "max": 0.2846525013446808,
+        "mean": 0.28153409659862516,
+        "stdev": 0.0027265573706549157,
+        "coefficient_of_variation": 0.00968464354263309
+      },
+      "speedup_over_torch": {
+        "point_estimate": 1.91582944537663,
+        "bootstrap_95_ci": [
+          1.8589177960859224,
+          2.106429102019909
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 47.80328685242586,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 0.001953125,
+        "max_relative_error_across_trials": 463.0
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "fp16",
+      "nodes": 2048,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 1.0208524465560913,
+        "median": 1.0224515199661255,
+        "max": 1.0265684723854065,
+        "mean": 1.0229824781417847,
+        "stdev": 0.002134579024146197,
+        "coefficient_of_variation": 0.002086623250892422
+      },
+      "flagos_p50_ms": {
+        "min": 0.5648044943809509,
+        "median": 0.571991503238678,
+        "max": 0.575701504945755,
+        "mean": 0.570048600435257,
+        "stdev": 0.004844152463123732,
+        "coefficient_of_variation": 0.008497788538424637
+      },
+      "speedup_over_torch": {
+        "point_estimate": 1.7955475346422736,
+        "bootstrap_95_ci": [
+          1.7580232945391416,
+          1.870025796247099
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 44.30668190584942,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 0.00244140625,
+        "max_relative_error_across_trials": 58710576.0
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "fp32",
+      "nodes": 256,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 0.21806700527668,
+        "median": 0.21843650192022324,
+        "max": 0.22202599793672562,
+        "mean": 0.21947030127048492,
+        "stdev": 0.001763844225178658,
+        "coefficient_of_variation": 0.008036824185176736
+      },
+      "flagos_p50_ms": {
+        "min": 0.2276570051908493,
+        "median": 0.22927800565958023,
+        "max": 0.23040999472141266,
+        "mean": 0.22890450060367584,
+        "stdev": 0.0011445425844407108,
+        "coefficient_of_variation": 0.005000087728385762
+      },
+      "speedup_over_torch": {
+        "point_estimate": 0.9533136986068619,
+        "bootstrap_95_ci": [
+          0.9394801284976146,
+          1.0528262018994377
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": -4.897265345223056,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 0.0,
+        "max_relative_error_across_trials": 0.0
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "fp32",
+      "nodes": 512,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 0.3000610023736954,
+        "median": 0.3024889975786209,
+        "max": 0.3034590035676956,
+        "mean": 0.3019885003566742,
+        "stdev": 0.0013204848057947213,
+        "coefficient_of_variation": 0.004372632746727495
+      },
+      "flagos_p50_ms": {
+        "min": 0.29837149381637573,
+        "median": 0.2999565005302429,
+        "max": 0.3009990006685257,
+        "mean": 0.299932599067688,
+        "stdev": 0.000989898237639038,
+        "coefficient_of_variation": 0.003300402292768584
+      },
+      "speedup_over_torch": {
+        "point_estimate": 1.0059005858361798,
+        "bootstrap_95_ci": [
+          0.9946434664546907,
+          1.0693187448358996
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 0.5865973158048043,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 0.0,
+        "max_relative_error_across_trials": 0.0
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "fp32",
+      "nodes": 1050,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 0.741967499256134,
+        "median": 0.743149995803833,
+        "max": 0.743860512971878,
+        "mean": 0.7429760038852692,
+        "stdev": 0.0008984434086643512,
+        "coefficient_of_variation": 0.001209249563870288
+      },
+      "flagos_p50_ms": {
+        "min": 0.6580004990100861,
+        "median": 0.6624284982681274,
+        "max": 0.6644545197486877,
+        "mean": 0.6615825116634368,
+        "stdev": 0.00256952444611427,
+        "coefficient_of_variation": 0.0038839062411937667
+      },
+      "speedup_over_torch": {
+        "point_estimate": 1.1232089240549759,
+        "bootstrap_95_ci": [
+          1.1179090033503805,
+          1.128275169173381
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 10.969368335337881,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 0.0,
+        "max_relative_error_across_trials": 0.0
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    },
+    {
+      "candidate_kind": "optimized_flagos_backend",
+      "candidate_label": "Optimized FlagOS MUSA backend",
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "precision": "fp32",
+      "nodes": 2048,
+      "run_count": 5,
+      "torch_p50_ms": {
+        "min": 1.7448229789733887,
+        "median": 1.747473955154419,
+        "max": 1.7489120364189148,
+        "mean": 1.7473110914230348,
+        "stdev": 0.0017131515149453865,
+        "coefficient_of_variation": 0.0009804502033751595
+      },
+      "flagos_p50_ms": {
+        "min": 1.3829549551010132,
+        "median": 1.3872215151786804,
+        "max": 1.3912580013275146,
+        "mean": 1.3865072965621947,
+        "stdev": 0.0033374670125573243,
+        "coefficient_of_variation": 0.0024071038218352538
+      },
+      "speedup_over_torch": {
+        "point_estimate": 1.2617154643608783,
+        "bootstrap_95_ci": [
+          1.257333850389718,
+          1.2640304469702563
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 20.742827662293116,
+      "correctness": {
+        "oracle": "MUSA portable PyTorch expression",
+        "max_abs_error_across_trials": 0.0,
+        "max_relative_error_across_trials": 0.0
+      },
+      "raw_device_samples": {
+        "torch": 50,
+        "flagos": 50
+      }
+    }
+  ],
+  "primary_operator_comparison": [
+    {
+      "operator": "gaussian_pair_bias",
+      "operator_name": "Gaussian pair-bias",
+      "torch_p50_ms": 22.95592212677002,
+      "initial_flagos_p50_ms": 2652.8751220703125,
+      "optimized_flagos_p50_ms": 9.567075252532959,
+      "optimized_speedup_over_torch": {
+        "point_estimate": 2.399203660348644,
+        "bootstrap_95_ci": [
+          2.3759661949357143,
+          2.407247791709023
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "optimized_speedup_over_initial_flagos": 277.29217676718315,
+      "optimized_latency_reduction_vs_initial_percent": 99.6393695589762
+    },
+    {
+      "operator": "pair_score_epilogue",
+      "operator_name": "Pair-attention score/softmax/context",
+      "torch_p50_ms": 0.743149995803833,
+      "initial_flagos_p50_ms": 9.645879745483398,
+      "optimized_flagos_p50_ms": 0.6624284982681274,
+      "optimized_speedup_over_torch": {
+        "point_estimate": 1.1232089240549759,
+        "bootstrap_95_ci": [
+          1.1179090033503805,
+          1.128275169173381
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "optimized_speedup_over_initial_flagos": 14.56139005296703,
+      "optimized_latency_reduction_vs_initial_percent": 93.13252377443018
+    }
+  ],
+  "model_results": [
+    {
+      "stage": "pure_pytorch",
+      "stage_name": "Pure PyTorch inference",
+      "status": "measured",
+      "run_count": 5,
+      "p50_ms": {
+        "min": 33.19686508178711,
+        "median": 33.208770751953125,
+        "max": 33.339874267578125,
+        "mean": 33.2370002746582,
+        "stdev": 0.06023156964776697,
+        "coefficient_of_variation": 0.0018121842870907632
+      },
+      "max_abs_error_across_trials": 0.0,
+      "raw_device_samples": 75
+    },
+    {
+      "stage": "native_gaussian_pair_bias",
+      "stage_name": "FlagOS Gaussian optimization only",
+      "status": "measured",
+      "run_count": 5,
+      "p50_ms": {
+        "min": 19.97629165649414,
+        "median": 19.987775802612305,
+        "max": 20.134990692138672,
+        "mean": 20.016175079345704,
+        "stdev": 0.06688002367650865,
+        "coefficient_of_variation": 0.0033412988950881446
+      },
+      "max_abs_error_across_trials": 1.1920928955078125e-06,
+      "raw_device_samples": 75,
+      "speedup_over_pure_pytorch": {
+        "point_estimate": 1.6608841520873439,
+        "bootstrap_95_ci": [
+          1.6540345843462145,
+          1.6628242330662266
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 39.79110471111225
+    },
+    {
+      "stage": "native_pair_score_epilogue",
+      "stage_name": "FlagOS pair-attention optimization only",
+      "status": "measured",
+      "run_count": 5,
+      "p50_ms": {
+        "min": 29.544260025024414,
+        "median": 29.577381134033203,
+        "max": 29.68708038330078,
+        "mean": 29.591729354858398,
+        "stdev": 0.05543967149608692,
+        "coefficient_of_variation": 0.001873485352318038
+      },
+      "max_abs_error_across_trials": 9.5367431640625e-07,
+      "raw_device_samples": 75,
+      "speedup_over_pure_pytorch": {
+        "point_estimate": 1.122905090975286,
+        "bootstrap_95_ci": [
+          1.1216289050339405,
+          1.1240780170794398
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 10.945278631566113
+    },
+    {
+      "stage": "native_stofm_operators_combined",
+      "stage_name": "Both optimized FlagOS operators",
+      "status": "measured",
+      "run_count": 5,
+      "p50_ms": {
+        "min": 16.29368782043457,
+        "median": 16.337026596069336,
+        "max": 16.41121482849121,
+        "mean": 16.341659164428712,
+        "stdev": 0.045831541554677835,
+        "coefficient_of_variation": 0.002804583126690126
+      },
+      "max_abs_error_across_trials": 1.1920928955078125e-06,
+      "raw_device_samples": 75,
+      "speedup_over_pure_pytorch": {
+        "point_estimate": 2.032075342455363,
+        "bootstrap_95_ci": [
+          2.028365689018532,
+          2.0357603502174832
+        ],
+        "resamples": 10000,
+        "method": "paired hierarchical bootstrap over trial blocks and raw device-event samples"
+      },
+      "latency_reduction_percent": 50.78922621088956
+    },
+    {
+      "stage": "native_stofm_operators_plus_flagos_aten",
+      "stage_name": "Both operators plus generic FlagOS ATen dispatch",
+      "status": "unavailable",
+      "reason": "The target MUSA 3.1 environment has no Triton driver, so generic FlagGems ATen substitutions cannot execute. This row intentionally has no substituted timing."
+    }
+  ]
+}

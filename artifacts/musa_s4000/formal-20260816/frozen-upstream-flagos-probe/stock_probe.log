@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "/root/stofm-musa-r2/formal-sources/SToFM-exact/benchmarks/probe_musa_stock_flagos.py", line 60, in main
+    import flag_gems
+  File "/root/stofm-musa-r2/FlagGems-stock-r2/src/flag_gems/__init__.py", line 25, in <module>
+    from flag_gems.fused import *  # noqa: F403
+  File "/root/stofm-musa-r2/FlagGems-stock-r2/src/flag_gems/fused/__init__.py", line 16, in <module>
+    from flag_gems.fused.add_rms_norm import add_rms_norm
+  File "/root/stofm-musa-r2/FlagGems-stock-r2/src/flag_gems/fused/add_rms_norm.py", line 25, in <module>
+    from flag_gems.utils import libentry
+  File "/root/stofm-musa-r2/FlagGems-stock-r2/src/flag_gems/utils/__init__.py", line 16, in <module>
+    from flag_gems.utils.pointwise_dynamic import (
+  File "/root/stofm-musa-r2/FlagGems-stock-r2/src/flag_gems/utils/pointwise_dynamic.py", line 29, in <module>
+    from flag_gems.utils.shape_utils import (
+  File "/root/stofm-musa-r2/FlagGems-stock-r2/src/flag_gems/utils/shape_utils.py", line 279, in <module>
+    def add_on_kernel(
+  File "/root/stofm-musa-r2/.venv/lib/python3.10/site-packages/triton/runtime/autotuner.py", line 368, in decorator
+    return Autotuner(fn, fn.arg_names, configs, key, reset_to_zero, restore_value, pre_hook=pre_hook,
+  File "/root/stofm-musa-r2/.venv/lib/python3.10/site-packages/triton/runtime/autotuner.py", line 130, in __init__
+    self.do_bench = driver.active.get_benchmarker()
+  File "/root/stofm-musa-r2/.venv/lib/python3.10/site-packages/triton/runtime/driver.py", line 23, in __getattr__
+    self._initialize_obj()
+  File "/root/stofm-musa-r2/.venv/lib/python3.10/site-packages/triton/runtime/driver.py", line 20, in _initialize_obj
+    self._obj = self._init_fn()
+  File "/root/stofm-musa-r2/.venv/lib/python3.10/site-packages/triton/runtime/driver.py", line 8, in _create_driver
+    raise RuntimeError(f"{len(actives)} active drivers ({actives}). There should only be one.")
+RuntimeError: 0 active drivers ([]). There should only be one.

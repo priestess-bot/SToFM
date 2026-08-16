@@ -1,0 +1,22 @@
+{
+  "summary_sha256": "c59dc16734bef8ca9b6a0ffb6ace8f93c3de56653c4299c06efc304b120be649",
+  "operator_summary_sha256": "5fbe4a5f7c99eb64a0d9f9ad83bae1ddd230ca98efce7f83cb148227f55c7e4f",
+  "report_sha256": "44db3dbb0f83b14a8db3255bc31361a933c575f1946e85f5b2d217a5a4c55b50",
+  "trial_result_files": [
+    "trial-01/end-to-end-model/result.json",
+    "trial-01/initial-flagos-operators/result.json",
+    "trial-01/optimized-operator-matrix/result.json",
+    "trial-02/end-to-end-model/result.json",
+    "trial-02/initial-flagos-operators/result.json",
+    "trial-02/optimized-operator-matrix/result.json",
+    "trial-03/end-to-end-model/result.json",
+    "trial-03/initial-flagos-operators/result.json",
+    "trial-03/optimized-operator-matrix/result.json",
+    "trial-04/end-to-end-model/result.json",
+    "trial-04/initial-flagos-operators/result.json",
+    "trial-04/optimized-operator-matrix/result.json",
+    "trial-05/end-to-end-model/result.json",
+    "trial-05/initial-flagos-operators/result.json",
+    "trial-05/optimized-operator-matrix/result.json"
+  ]
+}
