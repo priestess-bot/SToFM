@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "role": "optimized-flagos-musa-s4000",
+  "package": "flag-gems",
+  "repository": "https://github.com/priestess-bot/FlagGems.git",
+  "commit": "832c46df4073215d416406181484f9b44594aff2",
+  "branch": "r2/musa-s4000",
+  "production_install": "git+https://github.com/priestess-bot/FlagGems.git@832c46df4073215d416406181484f9b44594aff2",
+  "local_development_path": "../FlagGems-stofm",
+  "environment_manifest": "requirements/flagos-musa-s4000.txt",
+  "required_target_runtime": {
+    "python": "3.10",
+    "torch": "2.2.0",
+    "torch_musa": "1.3.0+81caf0a",
+    "musa_toolkit": "3.1.0",
+    "device_architecture": "mp_22"
+  },
+  "native_library_build": "python tools/build_musa_stofm_extension.py --force",
+  "update_policy": "Advance only after target correctness tests and formal benchmarks pass, then push FlagGems before updating this SToFM lock."
+}

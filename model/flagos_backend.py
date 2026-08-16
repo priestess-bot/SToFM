@@ -1,6 +1,7 @@
 """Optional, versioned bridge from SToFM to FlagGems experimental operators."""
 
 from dataclasses import dataclass
+import os
 from typing import Optional, Tuple
 
 import torch
@@ -36,13 +37,26 @@ def _load_experimental_ops(required: bool):
     return experimental_ops
 
 
-def _get_ops(backend: str):
+def _enable_musa_stofm_minimal_import(tensor: Optional[torch.Tensor]) -> None:
+    """Select FlagGems' native-only MUSA surface before its first import.
+
+    The MUSA 3.1 target provides a PrivateUse1 native extension but no Triton
+    driver.  The switch keeps the SToFM public API available without claiming
+    that FlagGems' unrelated global ATen substitutions are active.
+    """
+
+    if tensor is not None and tensor.device.type == "musa":
+        os.environ.setdefault("FLAGGEMS_STOFM_MUSA_MINIMAL_IMPORT", "1")
+
+
+def _get_ops(backend: str, tensor: Optional[torch.Tensor] = None):
     if backend not in {"torch", "auto", "flaggems", "inductor", "nvidia", "ascend", "mthreads"}:
         raise ValueError(
             "flagos_backend must be one of: torch, auto, flaggems, inductor, nvidia, ascend, mthreads"
         )
     if backend == "torch":
         return None
+    _enable_musa_stofm_minimal_import(tensor)
     return _load_experimental_ops(required=backend in {"flaggems", "inductor", "nvidia", "ascend", "mthreads"})
 
 
@@ -62,7 +76,7 @@ def _dispatch_from_public(dispatch) -> FlagOSDispatch:
 
 def gaussian_pair_bias(module, distances: torch.Tensor, backend: str) -> Optional[Tuple[torch.Tensor, FlagOSDispatch]]:
     """Return ``None`` only for the optional auto fallback path."""
-    ops = _get_ops(backend)
+    ops = _get_ops(backend, distances)
     if ops is None:
         return None
     operator_backend = _operator_backend(backend)
@@ -102,7 +116,7 @@ def pair_attention(
     backend: str,
 ):
     """Run pair-state attention through the public FlagGems direct API."""
-    ops = _get_ops(backend)
+    ops = _get_ops(backend, query)
     if ops is None:
         return None
     operator_backend = _operator_backend(backend)

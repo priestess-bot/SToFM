@@ -61,6 +61,19 @@ def _registered_aten_ops(flag_gems) -> Tuple[str, ...]:
     return tuple(sorted(str(item) for item in registered))
 
 
+def _enable_musa_stofm_minimal_import() -> bool:
+    """Request the explicit MUSA native-only FlagGems surface when available."""
+
+    try:
+        import torch_musa  # noqa: F401
+    except ImportError:
+        return False
+    if not hasattr(torch, "musa") or not torch.musa.is_available():
+        return False
+    os.environ.setdefault("FLAGGEMS_STOFM_MUSA_MINIMAL_IMPORT", "1")
+    return True
+
+
 @contextmanager
 def _temporary_vendor_hint() -> Iterator[Optional[str]]:
     """Work around frozen FlagGems V100 detection without mutating its source.
@@ -127,12 +140,26 @@ def flagos_inference_scope(
     # temporary registration while retaining re-entrant use within one scope.
     with _FLAGGEMS_SCOPE_LOCK:
         with _temporary_vendor_hint() as vendor_hint:
+            if normalized == "optimized":
+                _enable_musa_stofm_minimal_import()
             try:
                 import flag_gems
             except ImportError as exc:
                 raise RuntimeError(
                     f"flagos_mode='{normalized}' requires the pinned FlagGems package"
                 ) from exc
+            if getattr(flag_gems, "MUSA_STOFM_MINIMAL_RUNTIME", False):
+                yield FlagOSRuntimeDispatch(
+                    mode=normalized,
+                    active=False,
+                    registered_aten_ops=(),
+                    reason=(
+                        "MUSA native SToFM operators are active; FlagGems global "
+                        "ATen dispatch is unavailable because this runtime has no Triton driver"
+                    ),
+                    vendor_hint=vendor_hint,
+                )
+                return
             with flag_gems.use_gems(include=STOFM_ATEN_ALLOWLIST):
                 record = FlagOSRuntimeDispatch(
                     mode=normalized,

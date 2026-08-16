@@ -1,0 +1,3 @@
+# Install into the vendor-provided MUSA environment. Do not replace its torch
+# or torch_musa packages with PyPI wheels.
+git+https://github.com/priestess-bot/FlagGems.git@832c46df4073215d416406181484f9b44594aff2#egg=flag-gems

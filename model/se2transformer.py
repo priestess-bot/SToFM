@@ -10,7 +10,6 @@ from transformers.modeling_outputs import (
     BaseModelOutput,
 )
 from transformers.modeling_utils import PreTrainedModel
-from transformers.utils import logging
 from .utils import SToFMConfig
 
 
@@ -364,6 +363,10 @@ class TransformerEncoder(nn.Module):
         self.embedding_dim = config.embedding_dim
         self.apply_init = config.apply_init
         self.traceable = config.traceable
+        self.flagos_mode = getattr(config, "flagos_mode", "torch")
+        self.flagos_attention_backend = getattr(
+            config, "flagos_attention_backend", getattr(config, "flagos_backend", "torch")
+        )
 
         if config.pre_layernorm:
             self.final_layer_norm = nn.LayerNorm(self.embedding_dim)
@@ -394,8 +397,17 @@ class TransformerEncoder(nn.Module):
     ) -> Tuple[Union[torch.Tensor, List[torch.LongTensor]], torch.Tensor]:
         # compute padding mask. This is needed for multi-head attention
         input_nodes = token_embeddings # [bs, n_node, dim]
-        bs = token_embeddings.shape[0]
         padding_mask = token_types.eq(padding_token_type) # [bs, n_node]
+        if (
+            self.flagos_mode == "optimized"
+            and self.flagos_attention_backend == "mthreads"
+            and padding_mask.device.type == "musa"
+            and not torch.is_grad_enabled()
+            and not bool(padding_mask.any().item())
+        ):
+            # The same mask is reused by every layer. Collapse an empty mask
+            # once so the MUSA backend can use its finite-score fast path.
+            padding_mask = None
         input_nodes = self.dropout_module(input_nodes)
         input_nodes = input_nodes.transpose(0, 1) # [n_node, bs, dim]
         inner_states = []
