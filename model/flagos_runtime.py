@@ -143,7 +143,6 @@ STOFM_TRAINING_METADATA_OPS = (
     "matmul",
     "rsub",
     "square",
-    "select",
     "fill_",
     "set_",
     "detach_",
@@ -366,6 +365,8 @@ def flagos_training_scope(
 
     with _FLAGGEMS_SCOPE_LOCK:
         with _temporary_vendor_hint() as vendor_hint:
+            if normalized == "optimized":
+                _enable_musa_stofm_minimal_import()
             try:
                 import flag_gems
             except ImportError as exc:
