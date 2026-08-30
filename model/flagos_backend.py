@@ -7,7 +7,7 @@ from typing import Optional, Tuple
 import torch
 
 
-STOFM_FLAGGEMS_API_VERSION = 3
+STOFM_FLAGGEMS_API_VERSION = 4
 
 
 @dataclass(frozen=True)
@@ -94,6 +94,7 @@ def gaussian_pair_bias(module, distances: torch.Tensor, backend: str) -> Optiona
         module.proj[2].weight,
         module.proj[2].bias,
         backend=operator_backend,
+        training_implementation=module.flagos_training_implementation,
         return_dispatch=True,
     )
     dispatch = _dispatch_from_public(dispatch)
@@ -114,6 +115,7 @@ def pair_attention(
     return_pair: bool,
     return_weights: bool,
     backend: str,
+    training_implementation: str,
 ):
     """Run pair-state attention through the public FlagGems direct API."""
     ops = _get_ops(backend, query)
@@ -143,6 +145,7 @@ def pair_attention(
         return_weights=return_weights,
         assume_finite_pair_bias=key_padding_mask is None,
         backend=operator_backend,
+        training_implementation=training_implementation,
         return_dispatch=True,
     )
     dispatch = _dispatch_from_public(dispatch)

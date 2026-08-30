@@ -27,6 +27,7 @@ STOFM_ATEN_ALLOWLIST = ("addmm", "baddbmm", "bmm", "softmax")
 # available functions makes the first V100 training step compile unrelated
 # kernels and obscures the actual SToFM training contract.
 STOFM_TRAINING_ALLOWLIST = (
+    "_fused_adamw_",
     "mm",
     "addmm",
     "baddbmm",

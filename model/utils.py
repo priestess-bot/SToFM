@@ -112,6 +112,7 @@ class SToFMConfig(PretrainedConfig):
         flagos_mode: str = "torch",
         flagos_backend: str = "torch",
         flagos_attention_backend: Optional[str] = None,
+        flagos_training_implementation: str = "reference",
         flagos_aten_dispatch: bool = True,
         norm_type_id=0,
         cls_type_id=1,
@@ -147,6 +148,11 @@ class SToFMConfig(PretrainedConfig):
         self.bias = bias
         self.flagos_mode = flagos_mode
         self.flagos_backend = flagos_backend
+        if flagos_training_implementation not in {"reference", "native"}:
+            raise ValueError(
+                "flagos_training_implementation must be 'reference' or 'native'"
+            )
+        self.flagos_training_implementation = flagos_training_implementation
         self.flagos_aten_dispatch = flagos_aten_dispatch
         self.flagos_attention_backend = (
             flagos_backend if flagos_attention_backend is None else flagos_attention_backend

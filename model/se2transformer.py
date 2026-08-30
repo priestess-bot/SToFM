@@ -41,6 +41,9 @@ class GaussianModule(nn.Module):
         )
         self.flagos_mode = getattr(config, "flagos_mode", "torch")
         self.flagos_backend = getattr(config, "flagos_backend", "torch")
+        self.flagos_training_implementation = getattr(
+            config, "flagos_training_implementation", "reference"
+        )
         self.last_flagos_dispatch = None
 
     def _forward_torch(self, x: torch.Tensor) -> torch.Tensor:
@@ -124,6 +127,9 @@ class MultiheadAttention(nn.Module):
         self.onnx_trace = False
         self.flagos_mode = getattr(config, "flagos_mode", "torch")
         self.flagos_backend = getattr(config, "flagos_attention_backend", "torch")
+        self.flagos_training_implementation = getattr(
+            config, "flagos_training_implementation", "reference"
+        )
         self.last_flagos_dispatch = None
 
     def reset_parameters(self):
@@ -218,6 +224,7 @@ class MultiheadAttention(nn.Module):
                 return_pair=return_pair_rep,
                 return_weights=need_weights,
                 backend=self.flagos_backend,
+                training_implementation=self.flagos_training_implementation,
             )
 
         if direct_result is not None:

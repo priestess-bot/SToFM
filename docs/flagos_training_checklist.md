@@ -79,3 +79,51 @@ Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
   但设备没有架构专门化调优配置；本轮结果不能外推到其他 GPU 或国产芯片。
 - [!] Gaussian/pair-score 原生融合 backward、foreach AdamW、AMP、动态 shape、
   DDP/FSDP 仍是后续优化项，不得把本轮 FP32 参考图称为最终训练性能。
+
+## 7. PHASE 2：V100 训练性能
+
+分支：SToFM `r4/v100-training-performance`；FlagGems
+`r4/v100-training-performance`。本阶段只优化 NVIDIA V100 FP32 单卡训练，所有
+结论必须同时给出纯 PyTorch、初始 FlagOS 和优化后 FlagOS 三条可复现基线。
+
+### 7.1 接口与算子实现
+
+- [x] 固化 PHASE 2 分支、验收指标和三路对照定义。
+- [x] 为 Gaussian pair bias 增加显式训练 ABI，原生前向配套解析反向，不改变
+  原有推理 ABI 和参考训练路径。
+- [x] 为 Pair-score attention 增加显式训练 ABI，原生 score/mask/softmax/context
+  前向配套解析反向，保持 padding、pair-state 和权重返回语义。
+- [x] 在 SToFM 配置中显式区分 `reference` 与 `native` 训练实现，并把实际选择写入
+  dispatch provenance。
+- [x] 增加 FlagOS AdamW 优化路径；实测实现为每个参数一次融合 Triton kernel，
+  不是跨参数 foreach，后续报告必须按这一启动模型标注。
+
+### 7.2 严格正确性
+
+- [x] Gaussian 前向、输入梯度与全部参数梯度逐项对照 PyTorch FP32 参考实现。
+- [x] Pair-score 前向、输入梯度逐项对照 PyTorch FP32 参考实现，覆盖 padding、
+  `return_pair`、`return_weights` 和非默认 scale。
+- [x] AdamW 参数、一阶矩、二阶矩和 step 状态逐项对照 PyTorch。
+- [ ] 完整 SToFM 第一步 loss、梯度和参数更新三路对照；记录最大绝对/相对误差。
+- [ ] 运行静态语法、CPU 单测、V100 集成测试和断点恢复回归。
+
+### 7.3 V100 性能实验
+
+- [ ] 固定硬件、软件、seed、模型配置、合成 batch 与初始权重哈希。
+- [ ] 独立进程预热，至少 30 个 CUDA event 原始样本；分别记录 forward、backward、
+  optimizer 和完整 train step。
+- [ ] 保存纯 PyTorch、初始 FlagOS、优化后 FlagOS结果，并增加算子优化/优化器优化
+  消融，避免把收益错误归因。
+- [ ] 报告 median、mean、p90、p95、标准差、bootstrap 95% CI、吞吐和相对加速比。
+- [ ] 报告峰值 allocated/reserved 显存、kernel 启动数和关键 CUDA kernel 时间。
+- [ ] 保存 Chrome trace、机器可读 JSON、运行命令、环境快照、git revision 与原始样本。
+- [ ] 对候选 workload 做稳定性与显存探索，最终 workload 必须在 V100 16GB 上留有
+  可重复运行余量；不得把微型 smoke shape 冒充性能结论。
+
+### 7.4 交付与审计
+
+- [ ] 形成 PHASE 2 Markdown 技术报告，逐项解释计算公式、实现、收益与限制。
+- [ ] 将 PHASE 2 数据和可视化补入统一的 `stofm-flagos-training-report.html`，保持
+  KaTeX、代码引用 GitHub 化和单文件离线打开。
+- [ ] Playwright 验收桌面/移动端、公式渲染、图表、无横向溢出和零外部资源请求。
+- [ ] 锁定两个 fork 的提交 SHA、实验目录和最终结论，更新本 checklist 全部状态。
