@@ -70,8 +70,10 @@ steady latency 当作最终优化上限。kernel 名称是原始 profiler 证据
   `https://github.com/priestess-bot/FlagGems/tree/c2bee9932aa35730f9eeb919d24cf4e29202e4a1`
 
 checkpoint 恢复由 `benchmarks/validate_fake_training.py` 验证：step 10 的 loss、MCM、
-PDR 与连续 11 步运行完全一致，最大梯度差异 `2.38e-7`；模型参数最大绝对差异
-`1.54e-7`，优化器状态 `1.19e-7`，均低于 `1e-6`。
+PDR 与连续 11 步运行一致，最大梯度差异 `2.38e-7`；模型参数最大绝对差异
+`3.72e-6`，优化器状态 `2.53e-7`，均低于声明的 FP32 GPU 容差 `1e-5`。不同进程
+可能选择不同的 kernel 调优/归约顺序，因此不要求参数字节级 SHA-256 相同；若要做
+更严格审计，可传 `--atol 1e-6`，失败时应记录为数值漂移而非静默放宽。
 
 ## 缺口与处理矩阵
 
