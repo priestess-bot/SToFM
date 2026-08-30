@@ -119,4 +119,7 @@ PDR 与连续 11 步运行一致；本次最终对照的最大梯度差异为 `0
 - V100 运行的是通用 FlagGems Triton 路径，架构专门化状态为
   `has_specialization=false`；需单独补充 V100 配置和 Nsight 证据后，才能讨论 kernel
   级最终优化量。
+- FlagGems 全量通用 dtype 矩阵不作为本轮通过条件：在 V100（sm70）上，BF16 kernel
+  会被 `ptxas` 拒绝（BF16 需要 sm80+），超大 mean 用例还会触发显存不足；本轮只对
+  FP32 SToFM 训练图做严格覆盖，BF16/AMP 留待支持的硬件与独立测试矩阵。
 - 首轮只验证 FP32。AMP、foreach optimizer 和 Torch-FL PrivateUse1 是独立后续任务。

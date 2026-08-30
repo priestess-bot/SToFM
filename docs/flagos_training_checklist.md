@@ -66,6 +66,9 @@ Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
 - [!] DDP/FSDP/FlagCX 多卡训练。
 - [!] 真实 SToFM 数据预处理和 Geneformer encoder 训练。
 
+说明：FlagGems 全量通用测试在当前 V100 的 BF16（sm70 不支持）和超大 mean
+用例上不纳入本轮验收；这不影响本轮 FP32 SToFM strict 训练结果。
+
 ## 6. 本轮验收边界
 
 - [x] FlagOS 路由覆盖 forward、backward 和单张量 AdamW 更新；strict 模式不允许
