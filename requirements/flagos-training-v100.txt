@@ -1,0 +1,4 @@
+# V100 fake-training smoke environment. Install this base first, then the
+# pinned editable FlagGems checkout for local development.
+-r flagos-r2-v100.txt
+-e ../FlagGems-stofm

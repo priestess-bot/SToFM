@@ -78,10 +78,13 @@ class GaussianModule(nn.Module):
         self,
         x: torch.Tensor, # [bs, n_node, n_node]
     ) -> torch.Tensor:
+        from .flagos_runtime import current_flagos_training_dispatch
+
+        training_dispatch = current_flagos_training_dispatch()
         if (
             self.flagos_mode == "optimized"
             and self.flagos_backend != "torch"
-            and not torch.is_grad_enabled()
+            and (not torch.is_grad_enabled() or training_dispatch is not None)
         ):
             from .flagos_backend import gaussian_pair_bias
 
@@ -192,12 +195,15 @@ class MultiheadAttention(nn.Module):
                     "The shape of the generated padding mask for the key does not match expected dimensions."
                 )
         direct_result = None
+        from .flagos_runtime import current_flagos_training_dispatch
+
+        training_dispatch = current_flagos_training_dispatch()
         if (
             self.flagos_mode == "optimized"
             and self.flagos_backend != "torch"
             and attn_bias is not None
             and not before_softmax
-            and not torch.is_grad_enabled()
+            and (not torch.is_grad_enabled() or training_dispatch is not None)
         ):
             from .flagos_backend import pair_attention
 
@@ -548,6 +554,33 @@ class SToFMModel(SToFMPreTrainedModel):
         return_pair_rep: bool = True,
         **unused,
     ) -> Union[Tuple[torch.LongTensor], BaseModelOutputWithNoAttention]:
+        from .flagos_runtime import FlagOSRuntimeDispatch, current_flagos_training_dispatch
+
+        # A training scope is owned by the outer loop so it remains active
+        # during backward and optimizer.step.  Do not open an inference scope
+        # around only the forward call in this phase.
+        if self.training or torch.is_grad_enabled():
+            training_dispatch = current_flagos_training_dispatch()
+            if training_dispatch is None:
+                training_dispatch = FlagOSRuntimeDispatch(
+                    mode=self.flagos_mode,
+                    active=False,
+                    registered_aten_ops=(),
+                    reason="No FlagOS training scope is active",
+                    phase="training",
+                    strict=False,
+                )
+            self.last_flagos_runtime_dispatch = training_dispatch
+            return self._forward_impl(
+                token_embeddings,
+                attn_bias,
+                token_types,
+                need_attn=need_attn,
+                no_attn_bias=no_attn_bias,
+                return_pair_rep=return_pair_rep,
+                **unused,
+            )
+
         with self.flagos_inference_scope() as runtime_dispatch:
             self.last_flagos_runtime_dispatch = runtime_dispatch
             return self._forward_impl(
@@ -628,23 +661,34 @@ class SToFMForMaskedLM(SToFMPreTrainedModel):
         )
 
         if labels is not None:
-            pred = F.normalize(self.lm_head(outputs['last_hidden_state'][labels[:,:,0] != mask_token]), dim=-1)
-            loss_fct = nn.CosineEmbeddingLoss()
-            loss = loss_fct(pred, labels[labels[:,:,0] != mask_token], torch.ones(len(pred)).to(pred.device))
-            outputs['logits'] = pred
+            # Keep the original positive cosine objective while expressing the
+            # reduction with FlagGems-routable tensor primitives.  Advanced
+            # indexing is retained only for the optional logits payload.
+            valid = labels[:, :, 0].ne(mask_token)
+            prediction = self.lm_head(outputs['last_hidden_state'])
+            prediction = F.normalize(prediction, dim=-1)
+            target = F.normalize(labels, dim=-1)
+            cosine_error = 1.0 - (prediction * target).sum(dim=-1)
+            valid_float = valid.to(dtype=cosine_error.dtype)
+            denominator = valid_float.sum().clamp_min(1.0)
+            loss = (cosine_error * valid_float).sum() / denominator
+            outputs['logits'] = prediction[valid]
             outputs['loss'] = loss
 
         if pair_labels is not None:
-            pair_masked_pos = (pair_labels != pair_mask_token)# [bs, n_node, n_node]
-
-
-            pair_labels = pair_labels[pair_masked_pos] # [masked_pair_num]
-            pair_rep_pred = outputs['pair_rep'][pair_masked_pos] # [masked_pair_num, num_heads]
-            pair_pred = self.pair_head(pair_rep_pred).squeeze(-1) # [masked_pair_num]
-            
-            pair_loss_fct = nn.MSELoss()
-            pair_loss = pair_loss_fct(pair_pred, pair_labels)
-            outputs['pair_pred'] = pair_pred
+            pair_masked_pos = pair_labels.ne(pair_mask_token)
+            pair_pred_all = self.pair_head(outputs['pair_rep']).squeeze(-1)
+            safe_pair_labels = torch.where(
+                pair_masked_pos,
+                pair_labels,
+                torch.zeros_like(pair_labels),
+            )
+            pair_delta = pair_pred_all - safe_pair_labels
+            pair_error = pair_delta * pair_delta
+            pair_mask_float = pair_masked_pos.to(dtype=pair_error.dtype)
+            pair_denominator = pair_mask_float.sum().clamp_min(1.0)
+            pair_loss = (pair_error * pair_mask_float).sum() / pair_denominator
+            outputs['pair_pred'] = pair_pred_all[pair_masked_pos]
             outputs['pair_loss'] = pair_loss
 
         return outputs
