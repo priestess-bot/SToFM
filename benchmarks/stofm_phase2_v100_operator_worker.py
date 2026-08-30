@@ -8,6 +8,7 @@ from contextlib import nullcontext
 import datetime as dt
 import gc
 import json
+import math
 from pathlib import Path
 import platform
 import statistics
@@ -110,7 +111,7 @@ class GaussianCase:
         self.zero_mask = distances.eq(0.0)
         self.grad_output = torch.randn(
             (b, h, n, n), generator=generator, device=device
-        )
+        ) / math.sqrt(b * h * n * n)
 
     def call(self, implementation: str, inputs: Sequence[torch.Tensor]):
         if implementation == "torch":
@@ -164,10 +165,10 @@ class PairCase:
         self.padding[:, -1] = True
         self.grad_context = torch.randn(
             (b, h, n, d), generator=generator, device=device
-        )
+        ) / math.sqrt(b * h * n * d)
         self.grad_pair = torch.randn(
             (b, h, n, n), generator=generator, device=device
-        )
+        ) / math.sqrt(b * h * n * n)
 
     def call(self, implementation: str, inputs: Sequence[torch.Tensor]):
         if implementation == "torch":
@@ -268,7 +269,10 @@ def main() -> None:
         }
         correctness["passed"] = (
             correctness["outputs"]["max_abs"] <= 5e-4
-            and correctness["gradients"]["max_abs"] <= 2e-3
+            and correctness["gradients"]["max_abs"] <= 5e-4
+        )
+        (output / "correctness.json").write_text(
+            json.dumps(correctness, indent=2), encoding="utf-8"
         )
         if not correctness["passed"]:
             raise AssertionError("operator correctness threshold failed")

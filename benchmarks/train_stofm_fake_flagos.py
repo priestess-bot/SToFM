@@ -40,6 +40,7 @@ from model.flagos_runtime import (
     STOFM_TRAINING_METADATA_OPS,
     flagos_training_scope,
 )
+from model.flagos_optimizer import FlagOSFusedAdamW
 from model.se2transformer import SToFMForMaskedLM
 from model.utils import SToFMConfig
 
@@ -339,6 +340,7 @@ def _config(args: argparse.Namespace) -> SToFMConfig:
         flagos_mode="optimized",
         flagos_backend="nvidia" if args.device.startswith("cuda") else "torch",
         flagos_attention_backend="nvidia" if args.device.startswith("cuda") else "torch",
+        flagos_training_implementation=args.training_implementation,
     )
 
 
@@ -442,6 +444,16 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--layers", type=int, default=2)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
     parser.add_argument("--dropout", type=float, default=0.0)
+    parser.add_argument(
+        "--training-implementation",
+        choices=("reference", "native"),
+        default="reference",
+    )
+    parser.add_argument(
+        "--optimizer",
+        choices=("scalar", "flagos_fused"),
+        default="scalar",
+    )
     parser.add_argument("--seed", type=int, default=20260830)
     parser.add_argument("--strict", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--profile", action=argparse.BooleanOptionalAction, default=True)
@@ -458,6 +470,10 @@ def main() -> None:
         raise ValueError("strict FlagOS training requires --profile for fallback auditing")
     if args.device.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("CUDA training was requested but torch.cuda is unavailable")
+    if args.training_implementation == "native" and not args.device.startswith("cuda"):
+        raise ValueError("native training implementation currently requires CUDA")
+    if args.optimizer == "flagos_fused" and not args.device.startswith("cuda"):
+        raise ValueError("FlagOS fused AdamW currently requires CUDA")
 
     output_dir = args.output.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -495,7 +511,11 @@ def main() -> None:
         device,
     )
     batch = dataset.batch()
-    optimizer = FlagOSAdamW(model.parameters(), lr=args.learning_rate)
+    optimizer = (
+        FlagOSFusedAdamW(model.parameters(), lr=args.learning_rate)
+        if args.optimizer == "flagos_fused"
+        else FlagOSAdamW(model.parameters(), lr=args.learning_rate)
+    )
     start_step = 0
     resumed_from = None
     if args.resume is not None:
@@ -674,7 +694,11 @@ def main() -> None:
         "strict_pass": not fallback_compute_ops,
         "notes": {
             "cosine_embedding_loss": "replaced by an equivalent masked cosine decomposition",
-            "foreach_adamw": "disabled; FlagOSAdamW uses scalar AdamW updates",
+            "adamw": (
+                "FlagGems per-parameter fused AdamW; not a cross-parameter foreach kernel"
+                if args.optimizer == "flagos_fused"
+                else "single-tensor AdamW updates"
+            ),
             "amp": "not part of this FP32 smoke run",
         },
     }

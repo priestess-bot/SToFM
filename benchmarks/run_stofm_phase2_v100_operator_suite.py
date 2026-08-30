@@ -154,6 +154,11 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--heads", type=int, default=8)
     parser.add_argument("--gaussian-hidden-dim", type=int, default=128)
     parser.add_argument("--seed", type=int, default=20260830)
+    parser.add_argument(
+        "--resume-existing",
+        action="store_true",
+        help="reuse completed worker results and run only missing matrix entries",
+    )
     return parser.parse_args()
 
 
@@ -163,7 +168,12 @@ def main() -> None:
         raise ValueError("trials must be at least two; warmup and repetitions must be positive")
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    command_records = []
+    log_path = output / "execution_log.json"
+    command_records = (
+        json.loads(log_path.read_text(encoding="utf-8"))
+        if args.resume_existing and log_path.is_file()
+        else []
+    )
     trials: List[Dict[str, Any]] = []
     for trial_number in range(1, args.trials + 1):
         trial: Dict[str, Any] = {operator: {} for operator in OPERATORS}
@@ -180,6 +190,12 @@ def main() -> None:
                 / operator
                 / implementation
             )
+            result_path = route_output / "result.json"
+            if args.resume_existing and result_path.is_file():
+                trial[operator][implementation] = json.loads(
+                    result_path.read_text(encoding="utf-8")
+                )
+                continue
             command = [
                 sys.executable,
                 str(WORKER),
@@ -226,7 +242,7 @@ def main() -> None:
                     "stderr": completed.stderr,
                 }
             )
-            (output / "execution_log.json").write_text(
+            log_path.write_text(
                 json.dumps(command_records, indent=2), encoding="utf-8"
             )
             if completed.returncode:
@@ -235,7 +251,7 @@ def main() -> None:
                     f"operator={operator}, implementation={implementation}"
                 )
             trial[operator][implementation] = json.loads(
-                (route_output / "result.json").read_text(encoding="utf-8")
+                result_path.read_text(encoding="utf-8")
             )
         trials.append(trial)
 
@@ -281,6 +297,7 @@ def main() -> None:
             "warmup": args.warmup,
             "repetitions": args.repetitions,
             "bootstrap_resamples": args.bootstrap_resamples,
+            "resumed_existing_results": args.resume_existing,
         },
         "revisions": trials[0]["gaussian"]["torch"]["revisions"],
         "environment": trials[0]["gaussian"]["torch"]["environment"],

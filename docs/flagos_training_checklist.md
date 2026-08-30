@@ -104,21 +104,23 @@ Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
 - [x] Pair-score 前向、输入梯度逐项对照 PyTorch FP32 参考实现，覆盖 padding、
   `return_pair`、`return_weights` 和非默认 scale。
 - [x] AdamW 参数、一阶矩、二阶矩和 step 状态逐项对照 PyTorch。
-- [ ] 完整 SToFM 第一步 loss、梯度和参数更新三路对照；记录最大绝对/相对误差。
+- [x] 完整 SToFM 第一步 loss、梯度和参数更新六路对照；最大 loss/梯度/参数/
+  优化器状态绝对误差分别为 `1.19e-7`、`5.44e-9`、`3.20e-5`、`5.45e-10`。
 - [ ] 运行静态语法、CPU 单测、V100 集成测试和断点恢复回归。
 
 ### 7.3 V100 性能实验
 
-- [ ] 固定硬件、软件、seed、模型配置、合成 batch 与初始权重哈希。
-- [ ] 独立进程预热，至少 30 个 CUDA event 原始样本；分别记录 forward、backward、
+- [x] 固定硬件、软件、seed、模型配置、合成 batch 与初始权重哈希。
+- [x] 独立进程预热，至少 30 个 CUDA event 原始样本；分别记录 forward、backward、
   optimizer 和完整 train step。
-- [ ] 保存纯 PyTorch、初始 FlagOS、优化后 FlagOS结果，并增加算子优化/优化器优化
+- [x] 保存纯 PyTorch、初始 FlagOS、优化后 FlagOS 结果，并增加算子优化/优化器优化
   消融，避免把收益错误归因。
-- [ ] 报告 median、mean、p90、p95、标准差、bootstrap 95% CI、吞吐和相对加速比。
-- [ ] 报告峰值 allocated/reserved 显存、kernel 启动数和关键 CUDA kernel 时间。
-- [ ] 保存 Chrome trace、机器可读 JSON、运行命令、环境快照、git revision 与原始样本。
-- [ ] 对候选 workload 做稳定性与显存探索，最终 workload 必须在 V100 16GB 上留有
-  可重复运行余量；不得把微型 smoke shape 冒充性能结论。
+- [x] 报告 median、mean、p90、p95、标准差、bootstrap 95% CI、吞吐和相对加速比。
+- [x] 报告峰值 allocated/reserved 显存、kernel 启动数和关键 CUDA kernel 时间。
+- [x] 保存 Chrome trace、机器可读 JSON、运行命令、环境快照、git revision 与原始样本。
+- [x] 对候选 workload 做稳定性与显存探索，最终选择
+  `B=1,N=1050,L=4,D=256,H=8,K=128`，优化路线峰值 allocated 显存
+  `5.42 GiB`，在 V100 16GB 上有重复运行余量；未把微型 smoke shape 冒充性能结论。
 
 ### 7.4 交付与审计
 
