@@ -6,7 +6,7 @@
   "device": "cuda:0",
   "flag_gems_source": "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/src/flag_gems/__init__.py",
   "flag_gems_commit": "c2bee9932aa35730f9eeb919d24cf4e29202e4a1",
-  "stofm_commit": "9c1f29774fcb399aee7ca2ce24be7df9b78f9ef6",
+  "stofm_commit": "e1a04453731f1007df0321d9d8d5f793469b1fbe",
   "flag_gems_architecture": {
     "has_specialization": false,
     "arch": null,

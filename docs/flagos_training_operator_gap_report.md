@@ -41,9 +41,9 @@ CUDA_VISIBLE_DEVICES=0 PYTHONPATH=../FlagGems-stofm/src \
 ```
 
 结果为 `status=passed`、`fallback_compute_ops=[]`：总损失从 `2.239270687` 降至
-`1.965290308`，MCM 从 `0.930582344` 降至 `0.658767521`，PDR 从 `1.308688283`
-降至 `1.306522846`。首步约 `7038.8 ms`（包含惰性编译），去掉首步后的 steady
-step p50 约 `224.5 ms`；相对首步约 `31.4x`，但这是小 shape smoke test，不是完整
+`1.965290308`，MCM 从 `0.930582464` 降至 `0.658767462`，PDR 从 `1.308688283`
+降至 `1.306522846`。首步约 `7099.8 ms`（包含惰性编译），去掉首步后的 steady
+step p50 约 `247.5 ms`；相对首步约 `28.7x`，但这是小 shape smoke test，不是完整
 模型吞吐。总损失下降约 `12.24%`，MCM 下降约 `29.21%`，PDR 下降约 `0.17%`。
 
 执行证据有三层：
@@ -66,15 +66,16 @@ steady latency 当作最终优化上限。kernel 名称是原始 profiler 证据
 实现对应的两个 fork 提交：
 
 - SToFM 训练桥：
-  `https://github.com/priestess-bot/SToFM/tree/c66b44eaa6392aeff7e66aba2eda9316838649e0`
+  `https://github.com/priestess-bot/SToFM/tree/e1a04453731f1007df0321d9d8d5f793469b1fbe`
 - FlagGems 训练算子：
   `https://github.com/priestess-bot/FlagGems/tree/c2bee9932aa35730f9eeb919d24cf4e29202e4a1`
 
 checkpoint 恢复由 `benchmarks/validate_fake_training.py` 验证：step 10 的 loss、MCM、
-PDR 与连续 11 步运行一致，最大梯度差异 `2.38e-7`；模型参数最大绝对差异
-`3.72e-6`，优化器状态 `2.53e-7`，均低于声明的 FP32 GPU 容差 `1e-5`。不同进程
-可能选择不同的 kernel 调优/归约顺序，因此不要求参数字节级 SHA-256 相同；若要做
-更严格审计，可传 `--atol 1e-6`，失败时应记录为数值漂移而非静默放宽。
+PDR 与连续 11 步运行一致；本次最终对照的最大梯度差异为 `0`，模型参数最大绝对
+差异 `6.24e-8`，优化器状态 `2.09e-7`。此前多次独立进程复核的参数漂移上界为
+`3.72e-6`，仍低于声明的 FP32 GPU 容差 `1e-5`。不同进程可能选择不同的 kernel
+调优/归约顺序，因此不要求参数字节级 SHA-256 相同；若要做更严格审计，可传
+`--atol 1e-6`，失败时应记录为数值漂移而非静默放宽。
 
 ## 缺口与处理矩阵
 

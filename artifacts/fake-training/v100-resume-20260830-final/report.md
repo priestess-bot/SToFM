@@ -2,7 +2,7 @@
 
 - Origin Skill: experiment-agent
 - Origin Mode: run
-- Origin Date: 2026-08-30T08:43:04.937327+00:00
+- Origin Date: 2026-08-30T08:59:31.739482+00:00
 - Verification Status: UNVERIFIED
 - Version Label: stofm_flagos_training_v1
 
@@ -14,8 +14,8 @@
 - 模式：FlagGems ATen training（strict=True）
 - 步数：1
 - 总损失：1.951187 -> 1.951187
-- 初始参数 SHA-256：`b713d253b0d8b2fd624c83329775c3c4297d522c50eef17f66fe2fe2d476f31c`
-- 最终参数 SHA-256：`92265ea272aa481e3efc9cc9c863431ba4fa3d0b078cd203dfac106b3fd4457e`
+- 初始参数 SHA-256：`5ef343c74826d17e04109be6da2d466ba1d35e8ee09a2f5a23f5ea79e21e5b72`
+- 最终参数 SHA-256：`d3aa314aa9314c054fa0059df9d7e30c3b46ab88046eb519ec7c16a92d56639c`
 - V100 架构状态：generic FlagGems path; no architecture-specific profile
 - CUDA kernel 事件：776
 - FlagGems 函数族：42
@@ -33,7 +33,7 @@
 
 | Step | Total loss | MCM | PDR | Max grad | Step ms |
 | ---: | ---: | ---: | ---: | ---: | ---: |
-| 10 | 1.951187 | 0.644928 | 1.306259 | 2.1309 | 7011.955 |
+| 10 | 1.951187 | 0.644928 | 1.306259 | 2.1309 | 7134.834 |
 
 ## 产物
 

@@ -4,7 +4,7 @@
   "material_passport": {
     "origin_skill": "experiment-agent",
     "origin_mode": "validate",
-    "origin_date": "2026-08-30T08:47:55.596342+00:00",
+    "origin_date": "2026-08-30T09:00:31.203822+00:00",
     "verification_status": "VERIFIED",
     "version_label": "stofm_flagos_training_validation_v1",
     "upstream_dependencies": [
@@ -24,9 +24,9 @@
     "max_grad": 0.0
   },
   "checkpoint_difference": {
-    "model_max_abs": 3.7206336855888367e-06,
-    "model_worst_tensor": "model.encoder.layers.1.self_attn.k_proj.bias",
-    "optimizer_max_abs": 2.5331974029541016e-07,
+    "model_max_abs": 6.239861249923706e-08,
+    "model_worst_tensor": "model.encoder.layers.0.self_attn.k_proj.bias",
+    "optimizer_max_abs": 2.086162567138672e-07,
     "optimizer_worst_tensor": "46:exp_avg",
     "left_step": 11,
     "right_step": 11

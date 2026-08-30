@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "status": "passed",
-  "run_id": "fake-training-20260830T084228Z",
+  "run_id": "fake-training-20260830T085855Z",
   "mode": "flagos_training",
   "flagos_route": "FlagGems ATen training",
   "material_passport": {
     "origin_skill": "experiment-agent",
     "origin_mode": "run",
-    "origin_date": "2026-08-30T08:42:28.059464+00:00",
+    "origin_date": "2026-08-30T08:58:55.146096+00:00",
     "verification_status": "UNVERIFIED",
     "version_label": "stofm_flagos_training_v1",
     "upstream_dependencies": [
@@ -16,7 +16,7 @@
     ]
   },
   "strict": true,
-  "duration_ms": 14333.925027865916,
+  "duration_ms": 14810.534068383276,
   "start_step": 0,
   "end_step": 10,
   "resumed_from": null,
@@ -28,7 +28,7 @@
     "device": "cuda:0",
     "flag_gems_source": "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/src/flag_gems/__init__.py",
     "flag_gems_commit": "c2bee9932aa35730f9eeb919d24cf4e29202e4a1",
-    "stofm_commit": "9c1f29774fcb399aee7ca2ce24be7df9b78f9ef6",
+    "stofm_commit": "e1a04453731f1007df0321d9d8d5f793469b1fbe",
     "flag_gems_architecture": {
       "has_specialization": false,
       "arch": null,
@@ -168,10 +168,10 @@
     {
       "step": 0,
       "loss": 2.2392706871032715,
-      "mcm_loss": 0.9305823445320129,
+      "mcm_loss": 0.9305824637413025,
       "pdr_loss": 1.3086882829666138,
       "max_grad": 9.76512336730957,
-      "step_ms": 7038.821056019515,
+      "step_ms": 7099.803701043129,
       "gaussian_dispatch": {
         "operator": "gaussian_pair_bias",
         "requested": "nvidia",
@@ -192,8 +192,8 @@
       "loss": 2.1378159523010254,
       "mcm_loss": 0.8293522000312805,
       "pdr_loss": 1.3084638118743896,
-      "max_grad": 7.9017558097839355,
-      "step_ms": 223.47048530355096,
+      "max_grad": 7.901754856109619,
+      "step_ms": 251.58584117889404,
       "gaussian_dispatch": {
         "operator": "gaussian_pair_bias",
         "requested": "nvidia",
@@ -214,8 +214,8 @@
       "loss": 2.086953639984131,
       "mcm_loss": 0.7787172794342041,
       "pdr_loss": 1.3082364797592163,
-      "max_grad": 5.869752407073975,
-      "step_ms": 210.96912864595652,
+      "max_grad": 5.869751453399658,
+      "step_ms": 241.44441215321422,
       "gaussian_dispatch": {
         "operator": "gaussian_pair_bias",
         "requested": "nvidia",
@@ -236,8 +236,8 @@
       "loss": 2.058321714401245,
       "mcm_loss": 0.7503136992454529,
       "pdr_loss": 1.3080079555511475,
-      "max_grad": 4.1819868087768555,
-      "step_ms": 209.3507070094347,
+      "max_grad": 4.181985855102539,
+      "step_ms": 249.6814141049981,
       "gaussian_dispatch": {
         "operator": "gaussian_pair_bias",
         "requested": "nvidia",
@@ -256,10 +256,10 @@
     {
       "step": 4,
       "loss": 2.038825511932373,
-      "mcm_loss": 0.7310524582862854,
+      "mcm_loss": 0.7310523986816406,
       "pdr_loss": 1.3077729940414429,
-      "max_grad": 3.1060831546783447,
-      "step_ms": 208.95667234435678,
+      "max_grad": 3.1060824394226074,
+      "step_ms": 242.87846311926842,
       "gaussian_dispatch": {
         "operator": "gaussian_pair_bias",
         "requested": "nvidia",
@@ -280,8 +280,8 @@
       "loss": 2.0229625701904297,
       "mcm_loss": 0.7154285907745361,
       "pdr_loss": 1.307534098625183,
-      "max_grad": 2.43587327003479,
-      "step_ms": 246.27266684547067,
+      "max_grad": 2.4358737468719482,
+      "step_ms": 242.24530206993222,
       "gaussian_dispatch": {
         "operator": "gaussian_pair_bias",
         "requested": "nvidia",
@@ -300,10 +300,10 @@
     {
       "step": 6,
       "loss": 2.0072646141052246,
-      "mcm_loss": 0.6999754905700684,
+      "mcm_loss": 0.6999755501747131,
       "pdr_loss": 1.3072891235351562,
-      "max_grad": 1.9627418518066406,
-      "step_ms": 234.28393295034766,
+      "max_grad": 1.962741732597351,
+      "step_ms": 245.38781167939305,
       "gaussian_dispatch": {
         "operator": "gaussian_pair_bias",
         "requested": "nvidia",
@@ -324,8 +324,8 @@
       "loss": 1.9924695491790771,
       "mcm_loss": 0.6854303479194641,
       "pdr_loss": 1.3070391416549683,
-      "max_grad": 1.6098219156265259,
-      "step_ms": 224.7640830464661,
+      "max_grad": 1.6098222732543945,
+      "step_ms": 250.5769613198936,
       "gaussian_dispatch": {
         "operator": "gaussian_pair_bias",
         "requested": "nvidia",
@@ -346,8 +346,8 @@
       "loss": 1.9789860248565674,
       "mcm_loss": 0.6722036004066467,
       "pdr_loss": 1.3067823648452759,
-      "max_grad": 1.4491138458251953,
-      "step_ms": 224.2382699623704,
+      "max_grad": 1.4491136074066162,
+      "step_ms": 247.51346604898572,
       "gaussian_dispatch": {
         "operator": "gaussian_pair_bias",
         "requested": "nvidia",
@@ -366,10 +366,10 @@
     {
       "step": 9,
       "loss": 1.9652903079986572,
-      "mcm_loss": 0.6587675213813782,
+      "mcm_loss": 0.6587674617767334,
       "pdr_loss": 1.3065228462219238,
-      "max_grad": 1.7121891975402832,
-      "step_ms": 224.68132805079222,
+      "max_grad": 1.712188482284546,
+      "step_ms": 261.6713591851294,
       "gaussian_dispatch": {
         "operator": "gaussian_pair_bias",
         "requested": "nvidia",
@@ -387,7 +387,7 @@
     }
   ],
   "initial_parameter_sha256": "ac2e49b953d7af62e1b8f6854acdb514bdfaa21340d2c1075e4de0e493bf4cdf",
-  "final_parameter_sha256": "b713d253b0d8b2fd624c83329775c3c4297d522c50eef17f66fe2fe2d476f31c",
+  "final_parameter_sha256": "5ef343c74826d17e04109be6da2d466ba1d35e8ee09a2f5a23f5ea79e21e5b72",
   "checkpoint": "/home/ymm/ym/xl/20260815-first-operator/SToFM-flagos/artifacts/fake-training/v100-formal-20260830-final/checkpoint-step-010.pt",
   "profile": {
     "status": "captured",
@@ -1439,7 +1439,7 @@
   "flaggems_log": "/home/ymm/ym/xl/20260815-first-operator/SToFM-flagos/artifacts/fake-training/v100-formal-20260830-final/flaggems_ops.log",
   "flaggems_log_summary": {
     "status": "captured",
-    "line_count": 21770,
+    "line_count": 21719,
     "operator_functions": [
       "abs",
       "add",
@@ -2655,8 +2655,8 @@
     }
   },
   "timing_summary": {
-    "first_step_ms": 7038.821056019515,
-    "steady_step_p50_ms": 224.2382699623704,
+    "first_step_ms": 7099.803701043129,
+    "steady_step_p50_ms": 247.51346604898572,
     "note": "first step includes any lazy FlagGems compilation; steady p50 excludes the first recorded step"
   }
 }

@@ -7,7 +7,7 @@
 本清单只针对当前 V100、FlagGems ATen 训练路由和假数据 MCM+PDR 训练；不把
 Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
 
-本轮验收版本：SToFM `c66b44eaa6392aeff7e66aba2eda9316838649e0`，FlagGems
+本轮验收版本：SToFM `e1a04453731f1007df0321d9d8d5f793469b1fbe`，FlagGems
 `c2bee9932aa35730f9eeb919d24cf4e29202e4a1`。
 
 ## 1. 训练运行时
@@ -52,7 +52,8 @@ Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
 - [x] checkpoint 恢复后继续训练一致性测试。
   证据：`artifacts/fake-training/v100-resume-validation-20260830/`；使用
   `benchmarks/validate_fake_training.py --atol 1e-5`，step 10/11 指标和状态误差均
-  小于声明的 `1e-5`（参数最大差异 `3.72e-6`）。
+  小于声明的 `1e-5`（本次参数最大差异 `6.24e-8`；独立进程历史观测上界
+  `3.72e-6`）。
 - [x] MCM/PDR 与原始损失逐项数值等价测试。
   证据：`tests/test_fake_flagos_training.py` 的 cosine 与 pair-MSE reduction 对照
   测试；模型使用 mask 加权归约，覆盖 CLS、padding 和 pair mask。
