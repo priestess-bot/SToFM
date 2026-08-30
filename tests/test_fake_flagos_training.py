@@ -143,6 +143,34 @@ def test_masked_pair_mse_reduction_matches_pytorch_mse_loss():
     torch.testing.assert_close(ours, reference, rtol=1e-6, atol=1e-6)
 
 
+def test_model_mcm_and_pdr_losses_match_original_pytorch_objectives():
+    torch.manual_seed(32)
+    config = _small_config()
+    model = SToFMForMaskedLM(config).eval()
+    dataset = SyntheticSToFMDataset(
+        FakeTrainingConfig(seed=32, batch_size=1, nodes=7, input_dim=8, embedding_dim=16),
+        torch.device("cpu"),
+    )
+    batch = dataset.batch()
+    outputs = model(**batch)
+
+    valid = batch["labels"][:, :, 0].ne(-100.0)
+    raw_prediction = model.lm_head(outputs["last_hidden_state"])
+    reference_mcm = torch.nn.functional.cosine_embedding_loss(
+        torch.nn.functional.normalize(raw_prediction[valid], dim=-1),
+        batch["labels"][valid],
+        torch.ones(int(valid.sum())),
+        reduction="mean",
+    )
+    pair_valid = batch["pair_labels"].ne(-100.0)
+    raw_pair_prediction = model.pair_head(outputs["pair_rep"]).squeeze(-1)
+    reference_pdr = torch.nn.functional.mse_loss(
+        raw_pair_prediction[pair_valid], batch["pair_labels"][pair_valid], reduction="mean"
+    )
+    torch.testing.assert_close(outputs["loss"], reference_mcm, rtol=1e-6, atol=1e-6)
+    torch.testing.assert_close(outputs["pair_loss"], reference_pdr, rtol=1e-6, atol=1e-6)
+
+
 def test_checkpoint_payload_restores_model_and_optimizer_state(tmp_path):
     torch.manual_seed(41)
     config = _small_config()

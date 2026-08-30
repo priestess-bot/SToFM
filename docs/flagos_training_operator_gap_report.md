@@ -41,9 +41,9 @@ CUDA_VISIBLE_DEVICES=0 PYTHONPATH=../FlagGems-stofm/src \
 ```
 
 结果为 `status=passed`、`fallback_compute_ops=[]`：总损失从 `2.239270687` 降至
-`1.965290308`，MCM 从 `0.930582345` 降至 `0.658767521`，PDR 从 `1.308688283`
-降至 `1.306522846`。首步约 `6935.0 ms`（包含惰性编译），去掉首步后的 steady
-step p50 约 `213.6 ms`；这是小 shape smoke test，不是完整模型吞吐。
+`1.965290308`，MCM 从 `0.930582464` 降至 `0.658767462`，PDR 从 `1.308688283`
+降至 `1.306522846`。首步约 `6946.5 ms`（包含惰性编译），去掉首步后的 steady
+step p50 约 `211.3 ms`；这是小 shape smoke test，不是完整模型吞吐。
 
 执行证据有三层：
 
@@ -53,7 +53,7 @@ step p50 约 `213.6 ms`；这是小 shape smoke test，不是完整模型吞吐�
    FlagGems 函数调用。
 3. `training_trace.json` 的 CUDA kernel 标签包含 `mm_kernel_general`、`addmm_kernel`、
    `bmm_kernel`、`softmax_kernel_inner`、`layer_norm_backward_kernel` 等；
-   `training_profile.json` 同时保留原始标签和 721 个 kernel 事件计数；
+   `training_profile.json` 同时保留原始标签和 725 个 kernel 事件计数；
    `operator_attribution` 通过 `External id` 逐调用区分 FlagGems 与原生 kernel。
 
 V100 的 `compute capability=(7,0)` 在当前 FlagGems 版本没有架构专门化 profile，运行
@@ -62,9 +62,16 @@ V100 的 `compute capability=(7,0)` 在当前 FlagGems 版本没有架构专门�
 steady latency 当作最终优化上限。kernel 名称是原始 profiler 证据，正式发布前仍应
 用 Nsight Systems/Compute 做最终归因。
 
+实现对应的两个 fork 提交：
+
+- SToFM 训练桥：
+  `https://github.com/priestess-bot/SToFM/tree/ecc343bc2ec6d1127b5a333ac5c3198874a85d54`
+- FlagGems 训练算子：
+  `https://github.com/priestess-bot/FlagGems/tree/c2bee9932aa35730f9eeb919d24cf4e29202e4a1`
+
 checkpoint 恢复由 `benchmarks/validate_fake_training.py` 验证：step 10 的 loss、MCM、
-PDR 与连续 11 步运行完全一致，最大梯度差异 `4.77e-7`；模型参数最大绝对差异
-`8.61e-8`，优化器状态 `1.19e-7`，均低于 `1e-6`。
+PDR 与连续 11 步运行完全一致，最大梯度差异 `2.38e-7`；模型参数最大绝对差异
+`1.54e-7`，优化器状态 `1.19e-7`，均低于 `1e-6`。
 
 ## 缺口与处理矩阵
 

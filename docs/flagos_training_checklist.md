@@ -7,6 +7,9 @@
 本清单只针对当前 V100、FlagGems ATen 训练路由和假数据 MCM+PDR 训练；不把
 Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
 
+本轮验收版本：SToFM `ecc343bc2ec6d1127b5a333ac5c3198874a85d54`，FlagGems
+`c2bee9932aa35730f9eeb919d24cf4e29202e4a1`。
+
 ## 1. 训练运行时
 
 - [x] 新增 `flagos_training_scope()`，作用域覆盖 forward、backward 和 optimizer step。
@@ -43,8 +46,8 @@ Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
   证据：`artifacts/fake-training/v100-formal-20260830-final/`；FP32 总损失
   `2.239270687 -> 1.965290308`，10/10 步通过，最大梯度有限。
 - [x] 训练 profile 与算子清单复核。
-  证据：`training_profile.json`（96 个高层事件、721 个 CUDA kernel 事件）、
-  `flaggems_ops.log`（37 个 FlagGems 函数族）、`fallback_report.json`（计算型
+  证据：`training_profile.json`（95 个高层事件、725 个 CUDA kernel 事件）、
+  `flaggems_ops.log`（42 个 FlagGems 函数族）、`fallback_report.json`（计算型
   fallback 为空）。
 - [x] checkpoint 恢复后继续训练一致性测试。
   证据：`artifacts/fake-training/v100-resume-validation-20260830/`；使用

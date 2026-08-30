@@ -617,6 +617,10 @@ def main() -> None:
     }
     normalized_observed = {aliases.get(name, name) for name in observed}
     fallback_reasons: Dict[str, List[str]] = defaultdict(list)
+    flaggems_execution_ops = set()
+    native_execution_ops = set()
+    partial_execution_ops = set()
+    unmapped_execution_ops = set()
     for raw_name in observed:
         normalized_name = aliases.get(raw_name, raw_name)
         if normalized_name in metadata:
@@ -625,7 +629,16 @@ def main() -> None:
             fallback_reasons[normalized_name].append("not in training allowlist")
         details = operator_attribution.get("operators", {}).get(raw_name)
         if not details:
+            unmapped_execution_ops.add(normalized_name)
             continue
+        if details.get("flaggems_kernel_event_count", 0):
+            flaggems_execution_ops.add(normalized_name)
+        if details.get("native_kernel_event_count", 0):
+            native_execution_ops.add(normalized_name)
+        if details.get("classification") == "partial_native_fallback":
+            partial_execution_ops.add(normalized_name)
+        if details.get("classification") == "unmapped":
+            unmapped_execution_ops.add(normalized_name)
         if details.get("native_kernel_event_count", 0):
             classification = details.get("classification", "native_fallback")
             fallback_reasons[normalized_name].append(
@@ -647,6 +660,17 @@ def main() -> None:
             for name, reasons in sorted(fallback_reasons.items())
         },
         "operator_attribution": operator_attribution,
+        "execution_summary": {
+            "observed_compute_ops": sorted(normalized_observed - metadata),
+            "flaggems_kernel_ops": sorted(flaggems_execution_ops),
+            "native_kernel_ops": sorted(native_execution_ops),
+            "partial_native_fallback_ops": sorted(partial_execution_ops),
+            "unmapped_ops": sorted(unmapped_execution_ops),
+            "flaggems_kernel_coverage": (
+                len(flaggems_execution_ops)
+                / max(1, len(normalized_observed - metadata))
+            ),
+        },
         "strict_pass": not fallback_compute_ops,
         "notes": {
             "cosine_embedding_loss": "replaced by an equivalent masked cosine decomposition",
@@ -666,6 +690,9 @@ def main() -> None:
                     name: sorted(set(reasons))
                     for name, reasons in sorted(fallback_reasons.items())
                 },
+                "native_kernel_ops": sorted(native_execution_ops),
+                "partial_native_fallback_ops": sorted(partial_execution_ops),
+                "unmapped_ops": sorted(unmapped_execution_ops),
                 "metadata_ops": sorted(metadata & normalized_observed),
                 "host_sync_ops": sorted(
                     {"item", "_local_scalar_dense"} & normalized_observed
@@ -741,6 +768,9 @@ def _markdown_report(result: Dict[str, Any]) -> str:
     passport = result.get("material_passport", {})
     environment = result.get("environment", {})
     architecture = environment.get("flag_gems_architecture") or {}
+    execution_summary = result.get("operator_inventory", {}).get(
+        "execution_summary", {}
+    )
     output_root = Path(result.get("config", {}).get("output", ".")).resolve()
 
     def display_path(value: Any) -> str:
@@ -773,6 +803,8 @@ def _markdown_report(result: Dict[str, Any]) -> str:
         f"- V100 架构状态：{architecture.get('note', '未知')}",
         f"- CUDA kernel 事件：{result.get('profile', {}).get('kernel_evidence', {}).get('event_count', '未采集')}",
         f"- FlagGems 函数族：{len(result.get('flaggems_log_summary', {}).get('operator_functions', []))}",
+        f"- 计算算子 FlagGems kernel 覆盖：{len(execution_summary.get('flaggems_kernel_ops', []))}/{len(execution_summary.get('observed_compute_ops', []))}",
+        f"- 原生 kernel fallback：{', '.join(execution_summary.get('native_kernel_ops', [])) or '无'}",
         "",
         "## 训练算子缺口状态",
         "",
