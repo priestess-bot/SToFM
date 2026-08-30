@@ -7,7 +7,7 @@ import argparse
 import datetime as dt
 import json
 from pathlib import Path
-from typing import Any, Dict, Iterable, Tuple
+from typing import Any, Dict, Tuple
 
 import torch
 

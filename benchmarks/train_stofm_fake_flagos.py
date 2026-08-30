@@ -9,14 +9,13 @@ biological benchmark.
 from __future__ import annotations
 
 import argparse
-import csv
 import copy
-from dataclasses import asdict, dataclass
 import datetime as dt
 from collections import Counter, defaultdict
+from dataclasses import asdict, dataclass
+from functools import lru_cache
 import hashlib
 import json
-from functools import lru_cache
 from pathlib import Path
 import platform
 import random
@@ -65,7 +64,8 @@ class SyntheticSToFMDataset:
 
     def __init__(self, config: FakeTrainingConfig, device: torch.device):
         cpu_generator = torch.Generator(device="cpu").manual_seed(config.seed)
-        b, n, d, h = config.batch_size, config.nodes, config.input_dim, config.embedding_dim
+        b, n, d = config.batch_size, config.nodes, config.input_dim
+        h = config.embedding_dim
         self.token_embeddings = torch.randn(b, n, d, generator=cpu_generator)
         self.attn_bias = torch.rand(b, n, n, generator=cpu_generator)
         self.attn_bias[:, torch.arange(n), torch.arange(n)] = 0.0

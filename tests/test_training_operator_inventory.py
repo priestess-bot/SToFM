@@ -25,4 +25,3 @@ def test_training_report_mentions_known_gap_solutions(tmp_path):
     assert "foreach" in report
     assert "AMP" in report
     assert "fallback：无" in report
-
