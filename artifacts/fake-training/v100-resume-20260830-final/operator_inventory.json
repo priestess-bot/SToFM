@@ -211,7 +211,6 @@
     "matmul",
     "rsub",
     "square",
-    "select",
     "fill_",
     "set_",
     "detach_"

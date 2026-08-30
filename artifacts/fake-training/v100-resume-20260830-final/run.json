@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "status": "passed",
-  "run_id": "fake-training-20260830T085931Z",
+  "run_id": "fake-training-20260830T090801Z",
   "mode": "flagos_training",
   "flagos_route": "FlagGems ATen training",
   "material_passport": {
     "origin_skill": "experiment-agent",
     "origin_mode": "run",
-    "origin_date": "2026-08-30T08:59:31.739482+00:00",
+    "origin_date": "2026-08-30T09:08:01.860554+00:00",
     "verification_status": "UNVERIFIED",
     "version_label": "stofm_flagos_training_v1",
     "upstream_dependencies": [
@@ -16,7 +16,7 @@
     ]
   },
   "strict": true,
-  "duration_ms": 12355.761271901429,
+  "duration_ms": 12570.747478865087,
   "start_step": 10,
   "end_step": 11,
   "resumed_from": "/home/ymm/ym/xl/20260815-first-operator/SToFM-flagos/artifacts/fake-training/v100-formal-20260830-final/checkpoint-step-010.pt",
@@ -28,7 +28,7 @@
     "device": "cuda:0",
     "flag_gems_source": "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/src/flag_gems/__init__.py",
     "flag_gems_commit": "c2bee9932aa35730f9eeb919d24cf4e29202e4a1",
-    "stofm_commit": "e1a04453731f1007df0321d9d8d5f793469b1fbe",
+    "stofm_commit": "28e8794b0ceb93c5e7fa2fb1492bc2a3d3f6a42a",
     "flag_gems_architecture": {
       "has_specialization": false,
       "arch": null,
@@ -167,11 +167,11 @@
   "steps": [
     {
       "step": 10,
-      "loss": 1.951187252998352,
-      "mcm_loss": 0.6449284553527832,
+      "loss": 1.9511871337890625,
+      "mcm_loss": 0.6449283957481384,
       "pdr_loss": 1.3062587976455688,
-      "max_grad": 2.1309332847595215,
-      "step_ms": 7134.833600372076,
+      "max_grad": 2.1309337615966797,
+      "step_ms": 7129.632669966668,
       "gaussian_dispatch": {
         "operator": "gaussian_pair_bias",
         "requested": "nvidia",
@@ -188,8 +188,8 @@
       }
     }
   ],
-  "initial_parameter_sha256": "5ef343c74826d17e04109be6da2d466ba1d35e8ee09a2f5a23f5ea79e21e5b72",
-  "final_parameter_sha256": "d3aa314aa9314c054fa0059df9d7e30c3b46ab88046eb519ec7c16a92d56639c",
+  "initial_parameter_sha256": "fb2c14dd9654e585d1f7005812ff31114b8e68841e5e04f973ba1bdaddd44a9c",
+  "final_parameter_sha256": "8d12fb9ef8b0db6c7906cf8e4d2231195b1c481bd702da5e94883440891315b3",
   "checkpoint": "/home/ymm/ym/xl/20260815-first-operator/SToFM-flagos/artifacts/fake-training/v100-resume-20260830-final/checkpoint-step-011.pt",
   "profile": {
     "status": "captured",
@@ -1241,7 +1241,7 @@
   "flaggems_log": "/home/ymm/ym/xl/20260815-first-operator/SToFM-flagos/artifacts/fake-training/v100-resume-20260830-final/flaggems_ops.log",
   "flaggems_log_summary": {
     "status": "captured",
-    "line_count": 12823,
+    "line_count": 12859,
     "operator_functions": [
       "abs",
       "add",
@@ -1500,7 +1500,6 @@
       "matmul",
       "rsub",
       "square",
-      "select",
       "fill_",
       "set_",
       "detach_"
@@ -2457,7 +2456,7 @@
     }
   },
   "timing_summary": {
-    "first_step_ms": 7134.833600372076,
+    "first_step_ms": 7129.632669966668,
     "steady_step_p50_ms": null,
     "note": "first step includes any lazy FlagGems compilation; steady p50 excludes the first recorded step"
   }
