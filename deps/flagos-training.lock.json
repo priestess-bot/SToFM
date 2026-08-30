@@ -4,6 +4,7 @@
   "repository": "https://github.com/priestess-bot/FlagGems.git",
   "commit": "c2bee9932aa35730f9eeb919d24cf4e29202e4a1",
   "branch": "r3/stofm-training",
+  "tested_stofm_commit": "9c1f29774fcb399aee7ca2ce24be7df9b78f9ef6",
   "local_development_path": "../FlagGems-stofm",
   "environment_manifest": "requirements/flagos-training-v100.txt",
   "required_environment": {
