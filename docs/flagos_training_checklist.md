@@ -10,6 +10,9 @@ Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
 本轮验收版本：SToFM `28e8794b0ceb93c5e7fa2fb1492bc2a3d3f6a42a`，FlagGems
 `c2bee9932aa35730f9eeb919d24cf4e29202e4a1`。
 
+PHASE 2 锁定版本：SToFM `2154e0d82fae98c5a3e0b7dd65028300d73f3962`，
+FlagGems `a4bb672191bcdccdbc974f640a5e799fdd2ee9ae`。
+
 ## 1. 训练运行时
 
 - [x] 新增 `flagos_training_scope()`，作用域覆盖 forward、backward 和 optimizer step。
@@ -96,7 +99,7 @@ Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
 - [x] 在 SToFM 配置中显式区分 `reference` 与 `native` 训练实现，并把实际选择写入
   dispatch provenance。
 - [x] 增加 FlagOS AdamW 优化路径；实测实现为每个参数一次融合 Triton kernel，
-  不是跨参数 foreach，后续报告必须按这一启动模型标注。
+  不是跨参数 foreach；生产 workload 性能门禁拒绝该候选，最终保留 scalar AdamW。
 
 ### 7.2 严格正确性
 
@@ -106,7 +109,9 @@ Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
 - [x] AdamW 参数、一阶矩、二阶矩和 step 状态逐项对照 PyTorch。
 - [x] 完整 SToFM 第一步 loss、梯度和参数更新六路对照；最大 loss/梯度/参数/
   优化器状态绝对误差分别为 `1.19e-7`、`5.44e-9`、`3.20e-5`、`5.45e-10`。
-- [ ] 运行静态语法、CPU 单测、V100 集成测试和断点恢复回归。
+- [x] 运行静态语法、CPU 单测、V100 集成测试和断点恢复回归。
+  FlagGems `36 passed, 25 skipped`；SToFM `52 passed, 3 skipped`；Ascend/MUSA
+  离线 gate `2 passed`；native resume 模型/优化器最大误差 `3.10e-7/1.49e-8`。
 
 ### 7.3 V100 性能实验
 
@@ -124,8 +129,9 @@ Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
 
 ### 7.4 交付与审计
 
-- [ ] 形成 PHASE 2 Markdown 技术报告，逐项解释计算公式、实现、收益与限制。
-- [ ] 将 PHASE 2 数据和可视化补入统一的 `stofm-flagos-training-report.html`，保持
+- [x] 形成 PHASE 2 Markdown 技术报告，逐项解释计算公式、实现、收益与限制。
+- [x] 将 PHASE 2 数据和可视化补入统一的 `stofm-flagos-training-report.html`，保持
   KaTeX、代码引用 GitHub 化和单文件离线打开。
-- [ ] Playwright 验收桌面/移动端、公式渲染、图表、无横向溢出和零外部资源请求。
-- [ ] 锁定两个 fork 的提交 SHA、实验目录和最终结论，更新本 checklist 全部状态。
+- [x] Playwright 验收桌面/移动端：6/6 KaTeX、6 路性能图、逐算子图、trace 图，
+  无横向溢出、外部资源请求或控制台错误。
+- [x] 锁定两个 fork 的提交 SHA、正式实验目录、checksum、phase manifest 和最终结论。
