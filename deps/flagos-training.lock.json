@@ -1,10 +1,10 @@
 {
-  "schema_version": 1,
-  "role": "stofm-fake-training-v100",
+  "schema_version": 2,
+  "role": "stofm-phase2-training-v100",
   "repository": "https://github.com/priestess-bot/FlagGems.git",
-  "commit": "c2bee9932aa35730f9eeb919d24cf4e29202e4a1",
-  "branch": "r3/stofm-training",
-  "tested_stofm_commit": "28e8794b0ceb93c5e7fa2fb1492bc2a3d3f6a42a",
+  "commit": "a4bb672191bcdccdbc974f640a5e799fdd2ee9ae",
+  "branch": "r4/v100-training-performance",
+  "tested_stofm_commit": "709f2d7edd62da3094f8ca69d1cfa84010d98014",
   "local_development_path": "../FlagGems-stofm",
   "environment_manifest": "requirements/flagos-training-v100.txt",
   "required_environment": {
@@ -17,9 +17,19 @@
   "training_contract": {
     "objective": "SToFM MCM + PDR",
     "data": "deterministic synthetic tensors",
-    "optimizer": "AdamW foreach=False fused=False",
+    "operator_routes": [
+      "PyTorch original",
+      "FlagOS reference training ABI",
+      "FlagOS NVIDIA native training ABI"
+    ],
+    "optimizer_routes": [
+      "single-tensor AdamW",
+      "PyTorch CUDA fused AdamW",
+      "FlagGems per-parameter fused AdamW"
+    ],
     "precision": "fp32",
-    "steps": 10
+    "workload": "B=1,N=1050,L=4,D=256,H=8,K=128",
+    "measurement": "3 independent trials x 30 CUDA-event samples"
   },
-  "update_policy": "Advance only after the training operator gap report, strict route audit, checkpoint restore test, and V100 smoke all pass."
+  "update_policy": "Advance only after operator and full-step correctness, raw timing, peak-memory, profile, bootstrap, and report audits all pass."
 }
