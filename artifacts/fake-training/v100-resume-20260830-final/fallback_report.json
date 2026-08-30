@@ -1,0 +1,15 @@
+{
+  "status": "clean",
+  "compute_ops": [],
+  "reasons": {},
+  "native_kernel_ops": [],
+  "partial_native_fallback_ops": [],
+  "unmapped_ops": [],
+  "metadata_ops": [
+    "_local_scalar_dense",
+    "_to_copy"
+  ],
+  "host_sync_ops": [
+    "_local_scalar_dense"
+  ]
+}

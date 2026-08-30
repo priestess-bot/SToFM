@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "material_passport": {
+    "origin_skill": "experiment-agent",
+    "origin_mode": "validate",
+    "origin_date": "2026-08-30T08:47:55.596342+00:00",
+    "verification_status": "VERIFIED",
+    "version_label": "stofm_flagos_training_validation_v1",
+    "upstream_dependencies": [
+      "/home/ymm/ym/xl/20260815-first-operator/SToFM-flagos/artifacts/fake-training/v100-resume-20260830-final/run.json",
+      "/home/ymm/ym/xl/20260815-first-operator/SToFM-flagos/artifacts/fake-training/v100-uninterrupted-20260830-final/run.json"
+    ]
+  },
+  "method": "same-seed resume versus uninterrupted run with FP32 GPU tolerance",
+  "absolute_tolerance": 1e-05,
+  "resumed_run": "/home/ymm/ym/xl/20260815-first-operator/SToFM-flagos/artifacts/fake-training/v100-resume-20260830-final",
+  "continuous_run": "/home/ymm/ym/xl/20260815-first-operator/SToFM-flagos/artifacts/fake-training/v100-uninterrupted-20260830-final",
+  "compared_step": 10,
+  "metric_absolute_differences": {
+    "loss": 1.1920928955078125e-07,
+    "mcm_loss": 5.960464477539063e-08,
+    "pdr_loss": 0.0,
+    "max_grad": 0.0
+  },
+  "checkpoint_difference": {
+    "model_max_abs": 3.7206336855888367e-06,
+    "model_worst_tensor": "model.encoder.layers.1.self_attn.k_proj.bias",
+    "optimizer_max_abs": 2.5331974029541016e-07,
+    "optimizer_worst_tensor": "46:exp_avg",
+    "left_step": 11,
+    "right_step": 11
+  },
+  "conclusion": "checkpoint restore is reproducible within the declared FP32 GPU tolerance; byte-level parameter hashes are not required because CUDA reduction order and per-process kernel tuning can differ by a few ulps"
+}

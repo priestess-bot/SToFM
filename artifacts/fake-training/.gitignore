@@ -1,0 +1,8 @@
+# Keep exploratory runs local; the four promoted evidence directories are
+# force-added by the release commit below.
+v100-audit-*/
+v100-attribution-audit-*/
+v100-formal-20260830/
+v100-formal-20260830-r2/
+v100-formal-20260830-r3/
+v100-resume-20260830/

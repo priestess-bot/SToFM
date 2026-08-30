@@ -1,0 +1,1616 @@
+{
+  "status": "captured",
+  "events": [
+    {
+      "name": "Optimizer.step#FlagOSAdamW.step",
+      "count": 1,
+      "self_cpu_us": 0.0,
+      "self_device_us": 103314.742
+    },
+    {
+      "name": "aten::broadcast_to",
+      "count": 18,
+      "self_cpu_us": 5684.037,
+      "self_device_us": 888.235
+    },
+    {
+      "name": "aten::mm",
+      "count": 42,
+      "self_cpu_us": 8988.357,
+      "self_device_us": 598.343
+    },
+    {
+      "name": "aten::addmm",
+      "count": 16,
+      "self_cpu_us": 3591.586,
+      "self_device_us": 208.707
+    },
+    {
+      "name": "aten::copy_",
+      "count": 196,
+      "self_cpu_us": 11946.313,
+      "self_device_us": 205.884
+    },
+    {
+      "name": "aten::mul_",
+      "count": 104,
+      "self_cpu_us": 24159.587,
+      "self_device_us": 143.946
+    },
+    {
+      "name": "aten::div",
+      "count": 69,
+      "self_cpu_us": 16121.094,
+      "self_device_us": 101.956
+    },
+    {
+      "name": "aten::add_",
+      "count": 121,
+      "self_cpu_us": 14188.339,
+      "self_device_us": 98.654
+    },
+    {
+      "name": "aten::lerp_",
+      "count": 51,
+      "self_cpu_us": 9382.121,
+      "self_device_us": 79.973
+    },
+    {
+      "name": "aten::addcmul_",
+      "count": 51,
+      "self_cpu_us": 9507.725,
+      "self_device_us": 74.401
+    },
+    {
+      "name": "aten::addcdiv_",
+      "count": 51,
+      "self_cpu_us": 9593.038,
+      "self_device_us": 68.324
+    },
+    {
+      "name": "aten::sqrt",
+      "count": 51,
+      "self_cpu_us": 10220.379,
+      "self_device_us": 65.404
+    },
+    {
+      "name": "aten::sum",
+      "count": 30,
+      "self_cpu_us": 5942.621,
+      "self_device_us": 62.72
+    },
+    {
+      "name": "aten::bmm",
+      "count": 10,
+      "self_cpu_us": 2220.672,
+      "self_device_us": 62.431
+    },
+    {
+      "name": "aten::mul",
+      "count": 24,
+      "self_cpu_us": 6106.112,
+      "self_device_us": 41.761
+    },
+    {
+      "name": "aten::masked_fill",
+      "count": 6,
+      "self_cpu_us": 1895.354,
+      "self_device_us": 23.168
+    },
+    {
+      "name": "aten::native_layer_norm_backward",
+      "count": 4,
+      "self_cpu_us": 1325.602,
+      "self_device_us": 20.927
+    },
+    {
+      "name": "aten::where",
+      "count": 8,
+      "self_cpu_us": 2181.891,
+      "self_device_us": 17.278
+    },
+    {
+      "name": "aten::nonzero",
+      "count": 2,
+      "self_cpu_us": 445.942,
+      "self_device_us": 12.575
+    },
+    {
+      "name": "aten::add",
+      "count": 6,
+      "self_cpu_us": 1352.177,
+      "self_device_us": 10.881
+    },
+    {
+      "name": "aten::clamp_min",
+      "count": 7,
+      "self_cpu_us": 1413.147,
+      "self_device_us": 9.92
+    },
+    {
+      "name": "aten::native_layer_norm",
+      "count": 4,
+      "self_cpu_us": 777.351,
+      "self_device_us": 8.64
+    },
+    {
+      "name": "aten::eq",
+      "count": 5,
+      "self_cpu_us": 1073.522,
+      "self_device_us": 7.679
+    },
+    {
+      "name": "aten::neg",
+      "count": 5,
+      "self_cpu_us": 1176.436,
+      "self_device_us": 7.104
+    },
+    {
+      "name": "aten::_softmax_backward_data",
+      "count": 2,
+      "self_cpu_us": 478.881,
+      "self_device_us": 6.337
+    },
+    {
+      "name": "aten::sub",
+      "count": 3,
+      "self_cpu_us": 728.739,
+      "self_device_us": 5.984
+    },
+    {
+      "name": "aten::gelu_backward",
+      "count": 2,
+      "self_cpu_us": 538.317,
+      "self_device_us": 5.376
+    },
+    {
+      "name": "aten::cumsum",
+      "count": 2,
+      "self_cpu_us": 298.052,
+      "self_device_us": 4.736
+    },
+    {
+      "name": "aten::threshold_backward",
+      "count": 3,
+      "self_cpu_us": 818.976,
+      "self_device_us": 4.641
+    },
+    {
+      "name": "aten::linalg_vector_norm",
+      "count": 2,
+      "self_cpu_us": 407.306,
+      "self_device_us": 4.415
+    },
+    {
+      "name": "aten::gelu",
+      "count": 2,
+      "self_cpu_us": 424.919,
+      "self_device_us": 4.096
+    },
+    {
+      "name": "aten::masked_fill_",
+      "count": 1,
+      "self_cpu_us": 302.206,
+      "self_device_us": 4.032
+    },
+    {
+      "name": "aten::scalar_tensor",
+      "count": 3,
+      "self_cpu_us": 611.955,
+      "self_device_us": 3.904
+    },
+    {
+      "name": "aten::zeros",
+      "count": 3,
+      "self_cpu_us": 495.766,
+      "self_device_us": 3.841
+    },
+    {
+      "name": "aten::ne",
+      "count": 2,
+      "self_cpu_us": 454.001,
+      "self_device_us": 3.745
+    },
+    {
+      "name": "aten::_local_scalar_dense",
+      "count": 53,
+      "self_cpu_us": 70.051,
+      "self_device_us": 3.713
+    },
+    {
+      "name": "aten::index",
+      "count": 2,
+      "self_cpu_us": 541.158,
+      "self_device_us": 3.52
+    },
+    {
+      "name": "aten::_softmax",
+      "count": 2,
+      "self_cpu_us": 360.879,
+      "self_device_us": 3.392
+    },
+    {
+      "name": "aten::_to_copy",
+      "count": 106,
+      "self_cpu_us": 2957.47,
+      "self_device_us": 3.04
+    },
+    {
+      "name": "aten::zero_",
+      "count": 2,
+      "self_cpu_us": 379.667,
+      "self_device_us": 2.463
+    },
+    {
+      "name": "aten::embedding",
+      "count": 1,
+      "self_cpu_us": 194.111,
+      "self_device_us": 1.888
+    },
+    {
+      "name": "aten::embedding_backward",
+      "count": 1,
+      "self_cpu_us": 171.579,
+      "self_device_us": 1.888
+    },
+    {
+      "name": "aten::ones_like",
+      "count": 1,
+      "self_cpu_us": 144.63,
+      "self_device_us": 1.728
+    },
+    {
+      "name": "aten::abs",
+      "count": 1,
+      "self_cpu_us": 237.18,
+      "self_device_us": 1.632
+    },
+    {
+      "name": "aten::sgn",
+      "count": 1,
+      "self_cpu_us": 252.485,
+      "self_device_us": 1.632
+    },
+    {
+      "name": "aten::exp",
+      "count": 1,
+      "self_cpu_us": 218.342,
+      "self_device_us": 1.631
+    },
+    {
+      "name": "aten::ge",
+      "count": 1,
+      "self_cpu_us": 255.583,
+      "self_device_us": 1.6
+    },
+    {
+      "name": "aten::zeros_like",
+      "count": 1,
+      "self_cpu_us": 165.406,
+      "self_device_us": 1.376
+    },
+    {
+      "name": "Optimizer.zero_grad#FlagOSAdamW.zero_grad",
+      "count": 1,
+      "self_cpu_us": 178.894,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::linear",
+      "count": 20,
+      "self_cpu_us": 337.225,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::reshape",
+      "count": 96,
+      "self_cpu_us": 546.644,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::view",
+      "count": 134,
+      "self_cpu_us": 865.861,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::t",
+      "count": 98,
+      "self_cpu_us": 595.957,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::transpose",
+      "count": 126,
+      "self_cpu_us": 827.618,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::as_strided",
+      "count": 188,
+      "self_cpu_us": 558.662,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::empty",
+      "count": 377,
+      "self_cpu_us": 7793.547,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::to",
+      "count": 169,
+      "self_cpu_us": 273.306,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::lift_fresh",
+      "count": 53,
+      "self_cpu_us": 15.503,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::detach_",
+      "count": 53,
+      "self_cpu_us": 11.585,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::pin_memory",
+      "count": 48,
+      "self_cpu_us": 168.177,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::is_pinned",
+      "count": 48,
+      "self_cpu_us": 329.636,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::_pin_memory",
+      "count": 48,
+      "self_cpu_us": 501.268,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::set_",
+      "count": 48,
+      "self_cpu_us": 92.042,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::empty_strided",
+      "count": 296,
+      "self_cpu_us": 4044.199,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::empty_like",
+      "count": 226,
+      "self_cpu_us": 1420.041,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "flagos_stofm::gaussian_pair_bias",
+      "count": 1,
+      "self_cpu_us": 405.065,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::slice",
+      "count": 9,
+      "self_cpu_us": 55.566,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::unsqueeze",
+      "count": 8,
+      "self_cpu_us": 46.127,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::result_type",
+      "count": 238,
+      "self_cpu_us": 223.59,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::new_empty",
+      "count": 114,
+      "self_cpu_us": 381.395,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::relu",
+      "count": 3,
+      "self_cpu_us": 63.156,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::cat",
+      "count": 1,
+      "self_cpu_us": 67.117,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::permute",
+      "count": 14,
+      "self_cpu_us": 125.294,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::contiguous",
+      "count": 24,
+      "self_cpu_us": 55.033,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::clone",
+      "count": 38,
+      "self_cpu_us": 352.375,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::expand",
+      "count": 14,
+      "self_cpu_us": 99.305,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::dropout",
+      "count": 9,
+      "self_cpu_us": 9.766,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::matmul",
+      "count": 4,
+      "self_cpu_us": 95.849,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::_unsafe_view",
+      "count": 16,
+      "self_cpu_us": 90.693,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "flagos_stofm::pair_score_epilogue",
+      "count": 2,
+      "self_cpu_us": 482.888,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::baddbmm",
+      "count": 2,
+      "self_cpu_us": 160.112,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::softmax",
+      "count": 2,
+      "self_cpu_us": 9.81,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::layer_norm",
+      "count": 4,
+      "self_cpu_us": 23.648,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::select",
+      "count": 8,
+      "self_cpu_us": 46.459,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::expand_as",
+      "count": 2,
+      "self_cpu_us": 6.738,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::squeeze",
+      "count": 2,
+      "self_cpu_us": 24.028,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::rsub",
+      "count": 1,
+      "self_cpu_us": 16.7,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::item",
+      "count": 53,
+      "self_cpu_us": 157.617,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::broadcast_tensors",
+      "count": 2,
+      "self_cpu_us": 194.817,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::detach",
+      "count": 51,
+      "self_cpu_us": 133.511,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::_reshape_alias",
+      "count": 8,
+      "self_cpu_us": 34.235,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::new_zeros",
+      "count": 2,
+      "self_cpu_us": 19.039,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::new_empty_strided",
+      "count": 2,
+      "self_cpu_us": 9.64,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "aten::narrow",
+      "count": 1,
+      "self_cpu_us": 107.295,
+      "self_device_us": 0.0
+    },
+    {
+      "name": "Optimizer.step#FlagOSAdamW.step",
+      "count": 1,
+      "self_cpu_us": 9054.852,
+      "self_device_us": 0.0
+    }
+  ],
+  "kernel_evidence": {
+    "status": "captured",
+    "event_count": 725,
+    "unique_kernel_names": [
+      "_addcmul_kernel_kernel_rank_1",
+      "_copy_kernel_kernel_rank_1",
+      "_copy_kernel_kernel_rank_2",
+      "_copy_kernel_kernel_rank_3",
+      "_copy_kernel_kernel_rank_4",
+      "_index_linearized_jit_function",
+      "_to_copy_func_kernel_rank_1",
+      "abs_func_kernel_rank_1",
+      "add_func_kernel_rank_1",
+      "add_func_kernel_rank_3",
+      "add_func_tensor_scalar_kernel_rank_1",
+      "addcdiv_kernel_kernel_rank_1",
+      "addmm_kernel",
+      "baddbmm_kernel",
+      "bmm_kernel",
+      "broadcast_to_kernel",
+      "clamp_func_min_kernel_rank_1",
+      "embedding_backward_kernel",
+      "embedding_kernel",
+      "eq_func_scalar_kernel_rank_1",
+      "exp_func_kernel_rank_1",
+      "ge_func_scalar_kernel_rank_1",
+      "gelu_backward_none_kernel_rank_1",
+      "gelu_none_kernel_rank_1",
+      "l2_norm_kernel",
+      "layer_norm_backward_kernel",
+      "layer_norm_persistent_kernel_multiline",
+      "lerp_scalar_kernel_head_kernel_rank_1",
+      "masked_fill_kernel_kernel_rank_3",
+      "masked_fill_kernel_kernel_rank_4",
+      "mm_kernel_general",
+      "mul_broadcast_2d_kernel",
+      "mul_generic_nd_runtime_meta_kernel",
+      "mul_kernel",
+      "mul_scalar_kernel",
+      "ne_func_scalar_kernel_rank_1",
+      "ne_func_scalar_kernel_rank_2",
+      "neg_func_kernel_rank_1",
+      "nonzero_kernel",
+      "ones_kernel",
+      "reduce_then_scan_root_scan_kernel_row",
+      "scalar_tensor_kernel",
+      "sgn_func_kernel_rank_1",
+      "softmax_backward_kernel_inner",
+      "softmax_kernel_inner",
+      "sqrt_func_kernel_rank_1",
+      "sub_func_kernel_rank_1",
+      "sub_func_kernel_rank_2",
+      "sub_func_scalar_tensor_kernel_rank_1",
+      "sum_dim_kernel",
+      "sum_dim_kernel_inner",
+      "sum_dim_kernel_non_inner",
+      "sum_kernel_1",
+      "sum_kernel_2",
+      "threshold_backward_kernel_kernel_rank_1",
+      "true_div_func_kernel_rank_1",
+      "true_div_func_kernel_rank_2",
+      "true_div_func_kernel_rank_3",
+      "true_div_func_tensor_scalar_kernel_rank_1",
+      "weight_bias_backward_kernel",
+      "where_inner_kernel_rank_1",
+      "where_inner_kernel_rank_3",
+      "zeros_kernel"
+    ],
+    "kernel_counts": {
+      "_addcmul_kernel_kernel_rank_1": 51,
+      "_copy_kernel_kernel_rank_1": 5,
+      "_copy_kernel_kernel_rank_2": 2,
+      "_copy_kernel_kernel_rank_3": 25,
+      "_copy_kernel_kernel_rank_4": 12,
+      "_index_linearized_jit_function": 2,
+      "_to_copy_func_kernel_rank_1": 2,
+      "abs_func_kernel_rank_1": 1,
+      "add_func_kernel_rank_1": 19,
+      "add_func_kernel_rank_3": 5,
+      "add_func_tensor_scalar_kernel_rank_1": 52,
+      "addcdiv_kernel_kernel_rank_1": 51,
+      "addmm_kernel": 16,
+      "baddbmm_kernel": 2,
+      "bmm_kernel": 10,
+      "broadcast_to_kernel": 16,
+      "clamp_func_min_kernel_rank_1": 7,
+      "embedding_backward_kernel": 1,
+      "embedding_kernel": 1,
+      "eq_func_scalar_kernel_rank_1": 5,
+      "exp_func_kernel_rank_1": 1,
+      "ge_func_scalar_kernel_rank_1": 1,
+      "gelu_backward_none_kernel_rank_1": 2,
+      "gelu_none_kernel_rank_1": 2,
+      "l2_norm_kernel": 2,
+      "layer_norm_backward_kernel": 4,
+      "layer_norm_persistent_kernel_multiline": 4,
+      "lerp_scalar_kernel_head_kernel_rank_1": 51,
+      "masked_fill_kernel_kernel_rank_3": 1,
+      "masked_fill_kernel_kernel_rank_4": 6,
+      "mm_kernel_general": 42,
+      "mul_broadcast_2d_kernel": 1,
+      "mul_generic_nd_runtime_meta_kernel": 3,
+      "mul_kernel": 14,
+      "mul_scalar_kernel": 110,
+      "ne_func_scalar_kernel_rank_1": 1,
+      "ne_func_scalar_kernel_rank_2": 1,
+      "neg_func_kernel_rank_1": 5,
+      "nonzero_kernel": 2,
+      "ones_kernel": 1,
+      "reduce_then_scan_root_scan_kernel_row": 2,
+      "scalar_tensor_kernel": 3,
+      "sgn_func_kernel_rank_1": 1,
+      "softmax_backward_kernel_inner": 2,
+      "softmax_kernel_inner": 2,
+      "sqrt_func_kernel_rank_1": 51,
+      "sub_func_kernel_rank_1": 1,
+      "sub_func_kernel_rank_2": 1,
+      "sub_func_scalar_tensor_kernel_rank_1": 1,
+      "sum_dim_kernel": 4,
+      "sum_dim_kernel_inner": 5,
+      "sum_dim_kernel_non_inner": 17,
+      "sum_kernel_1": 4,
+      "sum_kernel_2": 4,
+      "threshold_backward_kernel_kernel_rank_1": 3,
+      "true_div_func_kernel_rank_1": 4,
+      "true_div_func_kernel_rank_2": 8,
+      "true_div_func_kernel_rank_3": 6,
+      "true_div_func_tensor_scalar_kernel_rank_1": 51,
+      "weight_bias_backward_kernel": 4,
+      "where_inner_kernel_rank_1": 1,
+      "where_inner_kernel_rank_3": 5,
+      "zeros_kernel": 6
+    },
+    "candidate_flaggems_kernel_names": [
+      "_addcmul_kernel_kernel_rank_1",
+      "_copy_kernel_kernel_rank_1",
+      "_copy_kernel_kernel_rank_2",
+      "_copy_kernel_kernel_rank_3",
+      "_copy_kernel_kernel_rank_4",
+      "_to_copy_func_kernel_rank_1",
+      "abs_func_kernel_rank_1",
+      "add_func_kernel_rank_1",
+      "add_func_kernel_rank_3",
+      "add_func_tensor_scalar_kernel_rank_1",
+      "addcdiv_kernel_kernel_rank_1",
+      "addmm_kernel",
+      "baddbmm_kernel",
+      "bmm_kernel",
+      "broadcast_to_kernel",
+      "clamp_func_min_kernel_rank_1",
+      "embedding_backward_kernel",
+      "embedding_kernel",
+      "eq_func_scalar_kernel_rank_1",
+      "exp_func_kernel_rank_1",
+      "ge_func_scalar_kernel_rank_1",
+      "gelu_backward_none_kernel_rank_1",
+      "gelu_none_kernel_rank_1",
+      "l2_norm_kernel",
+      "layer_norm_backward_kernel",
+      "layer_norm_persistent_kernel_multiline",
+      "lerp_scalar_kernel_head_kernel_rank_1",
+      "masked_fill_kernel_kernel_rank_3",
+      "masked_fill_kernel_kernel_rank_4",
+      "mm_kernel_general",
+      "mul_broadcast_2d_kernel",
+      "mul_generic_nd_runtime_meta_kernel",
+      "mul_kernel",
+      "mul_scalar_kernel",
+      "ne_func_scalar_kernel_rank_1",
+      "ne_func_scalar_kernel_rank_2",
+      "neg_func_kernel_rank_1",
+      "nonzero_kernel",
+      "ones_kernel",
+      "reduce_then_scan_root_scan_kernel_row",
+      "scalar_tensor_kernel",
+      "sgn_func_kernel_rank_1",
+      "softmax_backward_kernel_inner",
+      "softmax_kernel_inner",
+      "sqrt_func_kernel_rank_1",
+      "sub_func_kernel_rank_1",
+      "sub_func_kernel_rank_2",
+      "sub_func_scalar_tensor_kernel_rank_1",
+      "sum_dim_kernel",
+      "sum_dim_kernel_inner",
+      "sum_dim_kernel_non_inner",
+      "sum_kernel_1",
+      "sum_kernel_2",
+      "threshold_backward_kernel_kernel_rank_1",
+      "true_div_func_kernel_rank_1",
+      "true_div_func_kernel_rank_2",
+      "true_div_func_kernel_rank_3",
+      "true_div_func_tensor_scalar_kernel_rank_1",
+      "weight_bias_backward_kernel",
+      "where_inner_kernel_rank_1",
+      "where_inner_kernel_rank_3",
+      "zeros_kernel"
+    ],
+    "attribution_note": "Raw profiler labels only; candidate names should be confirmed with Nsight Systems/Compute before making a kernel-level performance claim."
+  },
+  "operator_attribution": {
+    "status": "captured",
+    "operators": {
+      "_local_scalar_dense": {
+        "cpu_event_count": 53,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "_pin_memory": {
+        "cpu_event_count": 48,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "_reshape_alias": {
+        "cpu_event_count": 8,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "_softmax": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 2,
+        "flaggems_kernel_event_count": 2,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "softmax_kernel_inner": 2
+        },
+        "classification": "flaggems_kernel"
+      },
+      "_softmax_backward_data": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 2,
+        "flaggems_kernel_event_count": 2,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "softmax_backward_kernel_inner": 2
+        },
+        "classification": "flaggems_kernel"
+      },
+      "_to_copy": {
+        "cpu_event_count": 106,
+        "mapped_cpu_event_count": 2,
+        "flaggems_kernel_event_count": 2,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "_to_copy_func_kernel_rank_1": 2
+        },
+        "classification": "flaggems_kernel"
+      },
+      "_unsafe_view": {
+        "cpu_event_count": 16,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "abs": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 1,
+        "flaggems_kernel_event_count": 1,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "abs_func_kernel_rank_1": 1
+        },
+        "classification": "flaggems_kernel"
+      },
+      "add": {
+        "cpu_event_count": 6,
+        "mapped_cpu_event_count": 6,
+        "flaggems_kernel_event_count": 6,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "add_func_kernel_rank_1": 4,
+          "add_func_kernel_rank_3": 1,
+          "add_func_tensor_scalar_kernel_rank_1": 1
+        },
+        "classification": "flaggems_kernel"
+      },
+      "add_": {
+        "cpu_event_count": 121,
+        "mapped_cpu_event_count": 70,
+        "flaggems_kernel_event_count": 70,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "add_func_kernel_rank_1": 15,
+          "add_func_kernel_rank_3": 4,
+          "add_func_tensor_scalar_kernel_rank_1": 51
+        },
+        "classification": "flaggems_kernel"
+      },
+      "addcdiv_": {
+        "cpu_event_count": 51,
+        "mapped_cpu_event_count": 51,
+        "flaggems_kernel_event_count": 51,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "addcdiv_kernel_kernel_rank_1": 51
+        },
+        "classification": "flaggems_kernel"
+      },
+      "addcmul_": {
+        "cpu_event_count": 51,
+        "mapped_cpu_event_count": 51,
+        "flaggems_kernel_event_count": 51,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "_addcmul_kernel_kernel_rank_1": 51
+        },
+        "classification": "flaggems_kernel"
+      },
+      "addmm": {
+        "cpu_event_count": 16,
+        "mapped_cpu_event_count": 16,
+        "flaggems_kernel_event_count": 16,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "addmm_kernel": 16
+        },
+        "classification": "flaggems_kernel"
+      },
+      "as_strided": {
+        "cpu_event_count": 188,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "baddbmm": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "bmm": {
+        "cpu_event_count": 10,
+        "mapped_cpu_event_count": 10,
+        "flaggems_kernel_event_count": 10,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "bmm_kernel": 10
+        },
+        "classification": "flaggems_kernel"
+      },
+      "broadcast_tensors": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "broadcast_to": {
+        "cpu_event_count": 18,
+        "mapped_cpu_event_count": 16,
+        "flaggems_kernel_event_count": 16,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "broadcast_to_kernel": 16
+        },
+        "classification": "flaggems_kernel"
+      },
+      "cat": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "clamp_min": {
+        "cpu_event_count": 7,
+        "mapped_cpu_event_count": 7,
+        "flaggems_kernel_event_count": 7,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "clamp_func_min_kernel_rank_1": 7
+        },
+        "classification": "flaggems_kernel"
+      },
+      "clone": {
+        "cpu_event_count": 38,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "contiguous": {
+        "cpu_event_count": 24,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "copy_": {
+        "cpu_event_count": 196,
+        "mapped_cpu_event_count": 44,
+        "flaggems_kernel_event_count": 44,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "_copy_kernel_kernel_rank_1": 5,
+          "_copy_kernel_kernel_rank_2": 2,
+          "_copy_kernel_kernel_rank_3": 25,
+          "_copy_kernel_kernel_rank_4": 12
+        },
+        "classification": "flaggems_kernel"
+      },
+      "cumsum": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 2,
+        "flaggems_kernel_event_count": 2,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "reduce_then_scan_root_scan_kernel_row": 2
+        },
+        "classification": "flaggems_kernel"
+      },
+      "detach": {
+        "cpu_event_count": 51,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "detach_": {
+        "cpu_event_count": 53,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "div": {
+        "cpu_event_count": 69,
+        "mapped_cpu_event_count": 69,
+        "flaggems_kernel_event_count": 69,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "true_div_func_kernel_rank_1": 4,
+          "true_div_func_kernel_rank_2": 8,
+          "true_div_func_kernel_rank_3": 6,
+          "true_div_func_tensor_scalar_kernel_rank_1": 51
+        },
+        "classification": "flaggems_kernel"
+      },
+      "dropout": {
+        "cpu_event_count": 9,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "embedding": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 1,
+        "flaggems_kernel_event_count": 1,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "embedding_kernel": 1
+        },
+        "classification": "flaggems_kernel"
+      },
+      "embedding_backward": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 1,
+        "flaggems_kernel_event_count": 1,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "embedding_backward_kernel": 1
+        },
+        "classification": "flaggems_kernel"
+      },
+      "empty": {
+        "cpu_event_count": 377,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "empty_like": {
+        "cpu_event_count": 226,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "empty_strided": {
+        "cpu_event_count": 296,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "eq": {
+        "cpu_event_count": 5,
+        "mapped_cpu_event_count": 5,
+        "flaggems_kernel_event_count": 5,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "eq_func_scalar_kernel_rank_1": 5
+        },
+        "classification": "flaggems_kernel"
+      },
+      "exp": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 1,
+        "flaggems_kernel_event_count": 1,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "exp_func_kernel_rank_1": 1
+        },
+        "classification": "flaggems_kernel"
+      },
+      "expand": {
+        "cpu_event_count": 14,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "expand_as": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "ge": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 1,
+        "flaggems_kernel_event_count": 1,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "ge_func_scalar_kernel_rank_1": 1
+        },
+        "classification": "flaggems_kernel"
+      },
+      "gelu": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 2,
+        "flaggems_kernel_event_count": 2,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "gelu_none_kernel_rank_1": 2
+        },
+        "classification": "flaggems_kernel"
+      },
+      "gelu_backward": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 2,
+        "flaggems_kernel_event_count": 2,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "gelu_backward_none_kernel_rank_1": 2
+        },
+        "classification": "flaggems_kernel"
+      },
+      "index": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 2,
+        "flaggems_kernel_event_count": 2,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "_index_linearized_jit_function": 2
+        },
+        "classification": "flaggems_kernel"
+      },
+      "is_pinned": {
+        "cpu_event_count": 48,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "item": {
+        "cpu_event_count": 53,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "layer_norm": {
+        "cpu_event_count": 4,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "lerp_": {
+        "cpu_event_count": 51,
+        "mapped_cpu_event_count": 51,
+        "flaggems_kernel_event_count": 51,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "lerp_scalar_kernel_head_kernel_rank_1": 51
+        },
+        "classification": "flaggems_kernel"
+      },
+      "lift_fresh": {
+        "cpu_event_count": 53,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "linalg_vector_norm": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 2,
+        "flaggems_kernel_event_count": 2,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "l2_norm_kernel": 2
+        },
+        "classification": "flaggems_kernel"
+      },
+      "linear": {
+        "cpu_event_count": 20,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "masked_fill": {
+        "cpu_event_count": 6,
+        "mapped_cpu_event_count": 6,
+        "flaggems_kernel_event_count": 6,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "masked_fill_kernel_kernel_rank_4": 6
+        },
+        "classification": "flaggems_kernel"
+      },
+      "masked_fill_": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 1,
+        "flaggems_kernel_event_count": 1,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "masked_fill_kernel_kernel_rank_3": 1
+        },
+        "classification": "flaggems_kernel"
+      },
+      "matmul": {
+        "cpu_event_count": 4,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "mm": {
+        "cpu_event_count": 42,
+        "mapped_cpu_event_count": 42,
+        "flaggems_kernel_event_count": 42,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "mm_kernel_general": 42
+        },
+        "classification": "flaggems_kernel"
+      },
+      "mul": {
+        "cpu_event_count": 24,
+        "mapped_cpu_event_count": 24,
+        "flaggems_kernel_event_count": 24,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "mul_broadcast_2d_kernel": 1,
+          "mul_generic_nd_runtime_meta_kernel": 3,
+          "mul_kernel": 14,
+          "mul_scalar_kernel": 6
+        },
+        "classification": "flaggems_kernel"
+      },
+      "mul_": {
+        "cpu_event_count": 104,
+        "mapped_cpu_event_count": 104,
+        "flaggems_kernel_event_count": 104,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "mul_scalar_kernel": 104
+        },
+        "classification": "flaggems_kernel"
+      },
+      "narrow": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "native_layer_norm": {
+        "cpu_event_count": 4,
+        "mapped_cpu_event_count": 4,
+        "flaggems_kernel_event_count": 4,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "layer_norm_persistent_kernel_multiline": 4
+        },
+        "classification": "flaggems_kernel"
+      },
+      "native_layer_norm_backward": {
+        "cpu_event_count": 4,
+        "mapped_cpu_event_count": 4,
+        "flaggems_kernel_event_count": 8,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "layer_norm_backward_kernel": 4,
+          "weight_bias_backward_kernel": 4
+        },
+        "classification": "flaggems_kernel"
+      },
+      "ne": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 2,
+        "flaggems_kernel_event_count": 2,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "ne_func_scalar_kernel_rank_1": 1,
+          "ne_func_scalar_kernel_rank_2": 1
+        },
+        "classification": "flaggems_kernel"
+      },
+      "neg": {
+        "cpu_event_count": 5,
+        "mapped_cpu_event_count": 5,
+        "flaggems_kernel_event_count": 5,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "neg_func_kernel_rank_1": 5
+        },
+        "classification": "flaggems_kernel"
+      },
+      "new_empty": {
+        "cpu_event_count": 114,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "new_empty_strided": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "new_zeros": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "nonzero": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 2,
+        "flaggems_kernel_event_count": 2,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "nonzero_kernel": 2
+        },
+        "classification": "flaggems_kernel"
+      },
+      "ones_like": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 1,
+        "flaggems_kernel_event_count": 1,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "ones_kernel": 1
+        },
+        "classification": "flaggems_kernel"
+      },
+      "permute": {
+        "cpu_event_count": 14,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "pin_memory": {
+        "cpu_event_count": 48,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "relu": {
+        "cpu_event_count": 3,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "reshape": {
+        "cpu_event_count": 96,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "result_type": {
+        "cpu_event_count": 238,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "rsub": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "scalar_tensor": {
+        "cpu_event_count": 3,
+        "mapped_cpu_event_count": 3,
+        "flaggems_kernel_event_count": 3,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "scalar_tensor_kernel": 3
+        },
+        "classification": "flaggems_kernel"
+      },
+      "select": {
+        "cpu_event_count": 8,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "set_": {
+        "cpu_event_count": 48,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "sgn": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 1,
+        "flaggems_kernel_event_count": 1,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "sgn_func_kernel_rank_1": 1
+        },
+        "classification": "flaggems_kernel"
+      },
+      "slice": {
+        "cpu_event_count": 9,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "softmax": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "sqrt": {
+        "cpu_event_count": 51,
+        "mapped_cpu_event_count": 51,
+        "flaggems_kernel_event_count": 51,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "sqrt_func_kernel_rank_1": 51
+        },
+        "classification": "flaggems_kernel"
+      },
+      "squeeze": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "sub": {
+        "cpu_event_count": 3,
+        "mapped_cpu_event_count": 3,
+        "flaggems_kernel_event_count": 3,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "sub_func_kernel_rank_1": 1,
+          "sub_func_kernel_rank_2": 1,
+          "sub_func_scalar_tensor_kernel_rank_1": 1
+        },
+        "classification": "flaggems_kernel"
+      },
+      "sum": {
+        "cpu_event_count": 30,
+        "mapped_cpu_event_count": 30,
+        "flaggems_kernel_event_count": 34,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "sum_dim_kernel": 4,
+          "sum_dim_kernel_inner": 5,
+          "sum_dim_kernel_non_inner": 17,
+          "sum_kernel_1": 4,
+          "sum_kernel_2": 4
+        },
+        "classification": "flaggems_kernel"
+      },
+      "t": {
+        "cpu_event_count": 98,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "threshold_backward": {
+        "cpu_event_count": 3,
+        "mapped_cpu_event_count": 3,
+        "flaggems_kernel_event_count": 3,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "threshold_backward_kernel_kernel_rank_1": 3
+        },
+        "classification": "flaggems_kernel"
+      },
+      "to": {
+        "cpu_event_count": 169,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "transpose": {
+        "cpu_event_count": 126,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "unsqueeze": {
+        "cpu_event_count": 8,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "view": {
+        "cpu_event_count": 134,
+        "mapped_cpu_event_count": 0,
+        "flaggems_kernel_event_count": 0,
+        "native_kernel_event_count": 0,
+        "kernel_names": {},
+        "classification": "unmapped"
+      },
+      "where": {
+        "cpu_event_count": 8,
+        "mapped_cpu_event_count": 6,
+        "flaggems_kernel_event_count": 6,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "where_inner_kernel_rank_1": 1,
+          "where_inner_kernel_rank_3": 5
+        },
+        "classification": "flaggems_kernel"
+      },
+      "zero_": {
+        "cpu_event_count": 2,
+        "mapped_cpu_event_count": 2,
+        "flaggems_kernel_event_count": 2,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "zeros_kernel": 2
+        },
+        "classification": "flaggems_kernel"
+      },
+      "zeros": {
+        "cpu_event_count": 3,
+        "mapped_cpu_event_count": 3,
+        "flaggems_kernel_event_count": 3,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "zeros_kernel": 3
+        },
+        "classification": "flaggems_kernel"
+      },
+      "zeros_like": {
+        "cpu_event_count": 1,
+        "mapped_cpu_event_count": 1,
+        "flaggems_kernel_event_count": 1,
+        "native_kernel_event_count": 0,
+        "kernel_names": {
+          "zeros_kernel": 1
+        },
+        "classification": "flaggems_kernel"
+      }
+    },
+    "join_key": "traceEvents[*].args['External id']",
+    "native_kernel_rule": "kernel name starts with 'void at::' or 'at::'",
+    "attribution_note": "This is a deterministic profiler join. Native/FlagGems labels are retained for audit; Nsight remains the final kernel attribution tool."
+  }
+}
