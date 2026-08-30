@@ -7,7 +7,7 @@
 本清单只针对当前 V100、FlagGems ATen 训练路由和假数据 MCM+PDR 训练；不把
 Torch-FL PrivateUse1、真实数据或国产芯片训练混入本轮验收。
 
-本轮验收版本：SToFM `9c1f29774fcb399aee7ca2ce24be7df9b78f9ef6`，FlagGems
+本轮验收版本：SToFM `c66b44eaa6392aeff7e66aba2eda9316838649e0`，FlagGems
 `c2bee9932aa35730f9eeb919d24cf4e29202e4a1`。
 
 ## 1. 训练运行时

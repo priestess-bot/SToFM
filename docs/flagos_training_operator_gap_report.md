@@ -66,7 +66,7 @@ steady latency 当作最终优化上限。kernel 名称是原始 profiler 证据
 实现对应的两个 fork 提交：
 
 - SToFM 训练桥：
-  `https://github.com/priestess-bot/SToFM/tree/9c1f29774fcb399aee7ca2ce24be7df9b78f9ef6`
+  `https://github.com/priestess-bot/SToFM/tree/c66b44eaa6392aeff7e66aba2eda9316838649e0`
 - FlagGems 训练算子：
   `https://github.com/priestess-bot/FlagGems/tree/c2bee9932aa35730f9eeb919d24cf4e29202e4a1`
 
