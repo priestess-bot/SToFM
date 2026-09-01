@@ -31,6 +31,7 @@ PRIMARY_PROFILE_ROUTES = {
     "flagos_native_scalar",
     "flagos_vendor_native_scalar",
     "flagos_vendor_native_fused_v100_tuned",
+    "flagos_self_hosted_native_fused_v100_tuned",
 }
 
 
@@ -160,6 +161,11 @@ def _aggregate(
             "v100_tuned_vendor_vs_torch_fused",
             "torch_fused",
             "flagos_vendor_native_fused_v100_tuned",
+        ),
+        (
+            "v100_self_hosted_vs_torch_fused",
+            "torch_fused",
+            "flagos_self_hosted_native_fused_v100_tuned",
         ),
         (
             "v100_tuned_dispatch_gain_vs_full_registrar",

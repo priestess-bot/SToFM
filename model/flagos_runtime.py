@@ -22,7 +22,7 @@ FLAGOS_MODES = ("torch", "stock", "optimized")
 # additional FlagGems implementation is both exercised and correct.
 STOFM_ATEN_ALLOWLIST = ("addmm", "baddbmm", "bmm", "softmax")
 STOFM_GEMM_ATEN_OPS = ("mm", "addmm", "bmm", "baddbmm")
-STOFM_GEMM_BACKENDS = ("triton", "vendor")
+STOFM_GEMM_BACKENDS = ("triton", "vendor", "self_hosted")
 
 # These are function names from FlagGems' operator manifest (not necessarily
 # the ATen schema spelling).  Keep the list explicit: registering all 700+
@@ -168,6 +168,7 @@ class FlagOSRuntimeDispatch:
     strict: bool = False
     gemm_backend: str = "triton"
     vendor_gemm_library: Optional[str] = None
+    gemm_library: Optional[str] = None
 
 
 _ACTIVE_SCOPE: ContextVar[Optional[FlagOSRuntimeDispatch]] = ContextVar(
@@ -192,10 +193,10 @@ def validate_flagos_gemm_backend(backend: str) -> str:
     return normalized
 
 
-def prepare_flagos_vendor_training_fusion(
+def prepare_flagos_training_fusion(
     model: torch.nn.Module, batch: Mapping[str, torch.Tensor]
 ) -> Optional[float]:
-    """Precompile the NVIDIA Gaussian backward while only Vendor dispatch is active.
+    """Precompile NVIDIA training backward graphs under direct GEMM dispatch.
 
     The broad FlagGems ATen registrar is intentionally not entered here.  This
     helper is a boundary for benchmark/train drivers: it returns the one-time
@@ -223,14 +224,19 @@ def prepare_flagos_vendor_training_fusion(
         attention is not None
         and getattr(attention, "flagos_training_implementation", "reference") == "native"
     )
-    if dispatch != "vendor" or not (gaussian_native or pair_native):
+    if dispatch not in {"vendor", "self_hosted"} or not (gaussian_native or pair_native):
         return None
     if distances is None or gaussian is None or distances.device.type != "cuda":
         return None
     if distances.dtype != torch.float32:
         return None
     from flag_gems.experimental_ops.stofm_backends import nvidia
-    from flag_gems.experimental_ops.vendor_gemm import vendor_gemm_scope
+    if dispatch == "vendor":
+        from flag_gems.experimental_ops.vendor_gemm import vendor_gemm_scope as gemm_scope
+    else:
+        from flag_gems.experimental_ops.self_hosted_gemm import (
+            self_hosted_gemm_scope as gemm_scope,
+        )
 
     batch_size, nodes, _ = distances.shape
     grad_output = torch.empty(
@@ -288,7 +294,7 @@ def prepare_flagos_vendor_training_fusion(
             False,
             pair_padding is not None,
         )
-    with torch.no_grad(), vendor_gemm_scope(required=True):
+    with torch.no_grad(), gemm_scope(required=True):
         gaussian_ms = (
             nvidia.prepare_gaussian_pair_bias_training_backward(*args)
             if gaussian_native
@@ -300,6 +306,10 @@ def prepare_flagos_vendor_training_fusion(
             else 0.0
         )
     return float(gaussian_ms + pair_ms)
+
+
+# Backward compatibility for Stage A commands and external callers.
+prepare_flagos_vendor_training_fusion = prepare_flagos_training_fusion
 
 
 def current_flagos_runtime_dispatch() -> Optional[FlagOSRuntimeDispatch]:
@@ -523,23 +533,34 @@ def flagos_training_scope(
                 )
                 return
 
-            # Vendor GEMM is a separate FlagOS dispatcher. Remove its ATen
+            # Direct GEMM is a separate FlagOS dispatcher. Remove its ATen
             # names from the Python Triton registrar so the two scopes never
             # override each other; the strict record adds them back as owned
             # FlagOS implementations below.
             requested_flaggems = tuple(
                 name for name in requested
-                if not (gemm_backend == "vendor" and name in STOFM_GEMM_ATEN_OPS)
+                if not (
+                    gemm_backend in {"vendor", "self_hosted"}
+                    and name in STOFM_GEMM_ATEN_OPS
+                )
             )
             # ``use_gems`` accepts manifest function names such as
             # ``layer_norm`` and ``vector_norm``; it expands them to the
             # corresponding native_layer_norm/linalg_vector_norm schemas.
             with ExitStack() as stack:
-                vendor_dispatch = None
+                direct_dispatch = None
                 if gemm_backend == "vendor":
                     from flag_gems.experimental_ops.vendor_gemm import vendor_gemm_scope
 
-                    vendor_dispatch = stack.enter_context(vendor_gemm_scope(required=True))
+                    direct_dispatch = stack.enter_context(vendor_gemm_scope(required=True))
+                elif gemm_backend == "self_hosted":
+                    from flag_gems.experimental_ops.self_hosted_gemm import (
+                        self_hosted_gemm_scope,
+                    )
+
+                    direct_dispatch = stack.enter_context(
+                        self_hosted_gemm_scope(required=True)
+                    )
                 if requested_flaggems:
                     stack.enter_context(
                         flag_gems.use_gems(
@@ -549,7 +570,7 @@ def flagos_training_scope(
                         )
                     )
                 registered = set(_registered_aten_ops(flag_gems))
-                if vendor_dispatch is not None:
+                if direct_dispatch is not None:
                     registered.update(STOFM_GEMM_ATEN_OPS)
                 registered = tuple(sorted(registered))
                 missing = sorted(set(requested_flaggems) - set(registered))
@@ -568,7 +589,10 @@ def flagos_training_scope(
                     strict=strict,
                     gemm_backend=gemm_backend,
                     vendor_gemm_library=(
-                        vendor_dispatch.loaded_library if vendor_dispatch is not None else None
+                        direct_dispatch.loaded_library if direct_dispatch is not None else None
+                    ),
+                    gemm_library=(
+                        direct_dispatch.loaded_library if direct_dispatch is not None else None
                     ),
                 )
                 token = _ACTIVE_SCOPE.set(record)

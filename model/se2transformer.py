@@ -186,9 +186,9 @@ class MultiheadAttention(nn.Module):
                         "The batch shape does not match the key or value shapes provided to the attention."
                     )
 
-        if self.flagos_gemm_backend == "vendor" and query.device.type == "cuda":
+        if self.flagos_gemm_backend in {"vendor", "self_hosted"} and query.device.type == "cuda":
             # Keep the public parameter layout/checkpoint names unchanged, but
-            # concatenate the three projection matrices for one Vendor GEMM.
+            # concatenate the three projection matrices for one direct GEMM.
             # Gradients through cat/chunk are exact, while the fused launch is
             # material for the many small V100 attention projections.
             qkv_weight = torch.cat(
@@ -229,7 +229,7 @@ class MultiheadAttention(nn.Module):
 
         training_dispatch = current_flagos_training_dispatch()
         vendor_reference_attention = (
-            self.flagos_gemm_backend == "vendor"
+            self.flagos_gemm_backend in {"vendor", "self_hosted"}
             and self.flagos_training_implementation == "reference"
             and training_dispatch is not None
         )

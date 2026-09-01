@@ -32,7 +32,7 @@ from benchmarks.train_stofm_fake_flagos import FakeTrainingConfig, SyntheticSToF
 from model.flagos_optimizer import FlagOSFusedAdamW
 from model.flagos_runtime import (
     flagos_training_scope,
-    prepare_flagos_vendor_training_fusion,
+    prepare_flagos_training_fusion,
 )
 from model.se2transformer import SToFMForMaskedLM
 from model.utils import SToFMConfig
@@ -124,6 +124,18 @@ ROUTES: Dict[str, Dict[str, Any]] = {
         # registrar remains a separate route for regression and gap accounting.
         "aten_include": (),
     },
+    "flagos_self_hosted_native_fused_v100_tuned": {
+        "display_name": (
+            "FlagOS Stage B：自研 GEMM/BMM + Gaussian 融合反向 + 多张量 AdamW"
+        ),
+        "framework": "flagos",
+        "training_implementation": "native",
+        "optimizer": "flagos_fused",
+        "gemm_backend": "self_hosted",
+        "gaussian_training_implementation": "native",
+        "attention_training_implementation": "native",
+        "aten_include": (),
+    },
 }
 
 
@@ -159,6 +171,12 @@ def _tensor_digest(tensors: Mapping[str, torch.Tensor]) -> str:
         digest.update(name.encode("utf-8"))
         digest.update(tensor.detach().contiguous().cpu().numpy().tobytes())
     return digest.hexdigest()
+
+
+def _file_sha256(path: str | None) -> str | None:
+    if not path or not Path(path).is_file():
+        return None
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
 def _model_digest(model: torch.nn.Module) -> str:
@@ -406,27 +424,40 @@ def _gemm_provenance(events: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
             ),
             "missing",
         )
+        vendor_owned = "stofm_vendor_gemm.cu" in cuda_entry
+        self_hosted_owned = "stofm_self_hosted_gemm.cu" in cuda_entry
         dispatcher_ownership[operator] = {
             "cuda_entry": cuda_entry,
             "autograd_cuda_entry": autograd_entry,
-            "vendor_cpp_cuda_kernel": "stofm_vendor_gemm.cu" in cuda_entry,
+            "vendor_cpp_cuda_kernel": vendor_owned,
+            "self_hosted_cpp_cuda_kernel": self_hosted_owned,
+            "flagos_cpp_cuda_kernel": vendor_owned or self_hosted_owned,
         }
     native_events = [
         event
         for event in aten_events
-        if not dispatcher_ownership[event["name"]]["vendor_cpp_cuda_kernel"]
+        if not dispatcher_ownership[event["name"]]["flagos_cpp_cuda_kernel"]
     ]
     vendor_events = [
         event
         for event in events
-        if str(event.get("name", "")).startswith("flagos_stofm_vendor::")
+        if str(event.get("name", "")).startswith(
+            ("flagos_stofm_vendor::", "flagos_stofm_self_hosted::")
+        )
     ]
     vendor_kernels = [
         event
         for event in events
         if any(
             marker in str(event.get("name", "")).lower()
-            for marker in ("sgemm", "gemmex", "gemmstrided", "cublas")
+            for marker in (
+                "sgemm",
+                "gemmex",
+                "gemmstrided",
+                "cublas",
+                "tiled_gemm_kernel",
+                "split_k_reduce_kernel",
+            )
         )
     ]
     return {
@@ -439,8 +470,13 @@ def _gemm_provenance(events: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
         "vendor_dispatch_event_count": len(vendor_events),
         "vendor_kernel_events": vendor_kernels,
         "native_gemm_absent": not native_events,
+        "all_profiled_aten_gemm_owned_by_flagos_cpp": all(
+            dispatcher_ownership[event["name"]]["flagos_cpp_cuda_kernel"]
+            for event in aten_events
+        ),
+        # Kept for Stage A artifact readers; new reports use the general key above.
         "all_profiled_aten_gemm_owned_by_vendor_cpp": all(
-            dispatcher_ownership[event["name"]]["vendor_cpp_cuda_kernel"]
+            dispatcher_ownership[event["name"]]["flagos_cpp_cuda_kernel"]
             for event in aten_events
         ),
     }
@@ -611,7 +647,7 @@ def main() -> None:
         ("warmup", warmup_model),
         ("benchmark", benchmark_model),
     ):
-        elapsed = prepare_flagos_vendor_training_fusion(preparation_model, batch)
+        elapsed = prepare_flagos_training_fusion(preparation_model, batch)
         if elapsed is not None:
             preparation_records.append(
                 {"model": preparation_name, "elapsed_ms": float(elapsed)}
@@ -673,12 +709,13 @@ def main() -> None:
                 "steps": 1,
             }
         if (
-            route.get("gemm_backend") == "vendor"
+            route.get("gemm_backend") in {"vendor", "self_hosted"}
             and profile.get("gemm_provenance", {}).get("native_aten_gemm_event_count", 0)
             > 0
         ):
             raise RuntimeError(
-                "Vendor route profile observed native ATen GEMM events; see profile_summary.json"
+                "FlagOS direct GEMM route observed native ATen GEMM events; "
+                "see profile_summary.json"
             )
         runtime_dispatch = asdict(runtime) if runtime is not None else None
 
@@ -745,10 +782,15 @@ def main() -> None:
         "gemm_contract": {
             "backend": route.get("gemm_backend", "triton"),
             "native_torch_gemm_allowed": False
-            if route.get("gemm_backend") == "vendor"
+            if route.get("gemm_backend") in {"vendor", "self_hosted"}
             else None,
-            "vendor_library": (
-                runtime_dispatch.get("vendor_gemm_library")
+            "gemm_library": (
+                runtime_dispatch.get("gemm_library")
+                if runtime_dispatch is not None
+                else None
+            ),
+            "gemm_library_sha256": _file_sha256(
+                runtime_dispatch.get("gemm_library")
                 if runtime_dispatch is not None
                 else None
             ),

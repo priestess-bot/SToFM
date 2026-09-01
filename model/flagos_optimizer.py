@@ -59,8 +59,11 @@ class FlagOSFusedAdamW(torch.optim.Optimizer):
                 "FlagOSFusedAdamW.step() requires an active FlagOS training scope "
                 "with a registered FlagOS optimizer implementation"
             )
-        vendor_backend = getattr(dispatch, "gemm_backend", "triton") == "vendor"
-        if not vendor_backend and "_fused_adamw_" not in dispatch.registered_aten_ops:
+        direct_backend = getattr(dispatch, "gemm_backend", "triton") in {
+            "vendor",
+            "self_hosted",
+        }
+        if not direct_backend and "_fused_adamw_" not in dispatch.registered_aten_ops:
             raise RuntimeError(
                 "FlagOSFusedAdamW.step() requires '_fused_adamw_' in the active "
                 "FlagOS training scope"
@@ -97,7 +100,7 @@ class FlagOSFusedAdamW(torch.optim.Optimizer):
                         state["exp_avg_sq"] = torch.zeros_like(
                             parameter, memory_format=torch.preserve_format
                         )
-                    if vendor_backend:
+                    if direct_backend:
                         # Keep a host mirror so grouped tensors with missing
                         # gradients preserve AdamW's per-parameter step without
                         # launching one CUDA scalar update per parameter.
@@ -118,8 +121,15 @@ class FlagOSFusedAdamW(torch.optim.Optimizer):
                 if not params:
                     continue
                 beta1, beta2 = group["betas"]
-                if vendor_backend:
-                    from flag_gems.experimental_ops.vendor_gemm import vendor_adamw_multi
+                if direct_backend:
+                    if dispatch.gemm_backend == "vendor":
+                        from flag_gems.experimental_ops.vendor_gemm import (
+                            vendor_adamw_multi as adamw_multi,
+                        )
+                    else:
+                        from flag_gems.experimental_ops.self_hosted_gemm import (
+                            self_hosted_adamw_multi as adamw_multi,
+                        )
 
                     # Usually all SToFM parameters have gradients and this is
                     # one launch.  Grouping keeps the adapter correct for a
@@ -130,7 +140,7 @@ class FlagOSFusedAdamW(torch.optim.Optimizer):
                     for host_step, indices in grouped.items():
                         for start in range(0, len(indices), 64):
                             chunk = indices[start : start + 64]
-                            vendor_adamw_multi(
+                            adamw_multi(
                                 [params[index] for index in chunk],
                                 [grads[index] for index in chunk],
                                 [exp_avgs[index] for index in chunk],

@@ -206,6 +206,62 @@ FlagGems `8ac4ea5aa3ebdbe793cfda768c8ccee2b89e0c82`。
 - [x] 更新统一单文件 `reporting/stofm-flagos-training-report.html`；代码链接全部固定到
   两个 fork SHA，8/8 KaTeX 离线渲染。Playwright 验收 1440×1000 与 390×844：
   无横向溢出、无重复 ID、无控制台/请求错误，形状切换与缺口过滤交互通过。
-- [ ] 推送两个 fork、打阶段 A tag，并核对远端 commit 可访问。
-- [ ] 阶段 A 完成后创建阶段 B goal：移除 cuBLAS/cuBLASLt/CUTLASS，进入纯自研
-  CUDA C++/PTX + Triton kernel 实现。
+- [x] 推送两个 fork、打阶段 A tag，并核对远端 commit 可访问。
+- [x] 阶段 A 完成后创建阶段 B goal；本节 9 继续执行纯自研 CUDA C++/PTX +
+  Triton kernel 实现。
+
+## 9. STAGE B：纯自研 V100 GEMM/BMM（r6）
+
+目标：最终训练 route 不链接、不加载、不调用 cuBLAS、cuBLASLt 或 CUTLASS；使用
+自研 CUDA C++/PTX 与 Triton，在保持 Stage A 严格正确性的前提下继续超过 PyTorch
+eager + fused AdamW。状态定义沿用文件顶部。
+
+### 9.1 分支与实验锁
+
+- [x] 从两个 fork 的 `stofm-v100-stage-a-20260901` tag 创建
+  `r6/v100-self-hosted-gemm`。
+- [x] 从真实训练 trace 生成 `docs/stage_b_matrix_manifest.json`，覆盖代表/生产形状的
+  forward、backward 与 fused QKV 矩阵族。
+- [x] 固化 Stage A eager、初始 FlagOS、Vendor tuned 与 Torch compile 辅助基线。
+- [-] 增加静态/动态禁用依赖门禁：源码、ELF NEEDED、Dispatcher owner、profile kernel
+  均不得出现 cuBLAS/cuBLASLt/CUTLASS。
+
+### 9.2 自研 GEMM/BMM
+
+- [x] 新增独立 `flagos_stofm_self_hosted` C++ ABI 与 build 入口，只链接 CUDA runtime。
+- [x] 实现 FP32 tiled GEMM：128×128 主 tile、skinny-M/N tile、transpose/stride 输入。
+- [x] 实现 split-K workspace + reduction，覆盖 `M,N <= 128` 且超大 K 的 Gaussian
+  weight-gradient 矩阵。
+- [x] 实现 strided batched GEMM，覆盖三类 attention BMM 及 alpha/beta epilogue。
+- [x] 补 FP16 正确路径；当前保留严格 FP32 accumulate 的 SIMT 路径，不冒险启用
+  误差边界尚未证明的 Tensor Core。
+- [x] 实现默认/out variant、广播 bias 与多 stream 语义。
+
+### 9.3 训练融合与优化器
+
+- [x] 将 QKV、FFN、head、Gaussian、Pair 的全部矩阵计算切换到 self-hosted backend；
+  生产 profile 中 `aten::mm/addmm/bmm` 的 CUDA owner 全部为 self-hosted 实现。
+- [x] Gaussian/Pair 反向编译图不得重新引入外部 GEMM；生产 profile 中 Gaussian
+  analytical backward 与 Pair 四个 BMM 均由 self-hosted CUDA kernel 执行，外部 GEMM
+  kernel 事件为 0。
+- [x] packed AdamW 保持纯 CUDA kernel，并消除所有外部 BLAS 链接。
+- [x] 保持 checkpoint/state dict 与 Stage A 兼容，一阶梯度一致，二阶梯度 fail-closed；
+  连续 2 步与 1+1 resume 的模型/优化器共 140 个 tensor 逐位一致，最大误差为 0。
+
+### 9.4 严格测试与性能
+
+- [x] 单算子：shape manifest 全覆盖，FP32/FP16、layout、stride、broadcast、out、stream；
+  7 项语义测试与 21 个真实矩阵族隔离进程 oracle 全部通过。
+- [-] 模型：loss、全部梯度、更新后参数、optimizer state、1+1 checkpoint resume；代表
+  形状 51 个梯度张量最大误差 1.86e-8，更新参数最大误差 1.05e-6，resume 逐位一致，
+  待生产形状正式 suite 再次闭环。
+- [ ] 代表形状与生产形状各 5 trial × 50 样本，20,000 次分层 bootstrap。
+- [ ] 两形状均快于 PyTorch eager；联合 speedup >= 1.05x 且 CI 下界 > 1.0x。
+- [ ] 峰值显存 <= Torch 1.25x；报告 compile/autotune/capture 开销与稳态分离结果。
+- [ ] Ascend CANN / MTT MUSA 离线 gate 保持通过，不把 V100 代码误导入国产后端。
+
+### 9.5 交付
+
+- [ ] 生成 Stage B raw samples、profile、Nsight、checksum、acceptance manifest。
+- [ ] 更新 Markdown 技术报告与统一单文件 HTML，KaTeX 和桌面/移动 QA 通过。
+- [ ] 推送 r6 双 fork、创建 Stage B tag，核对远端 commit 可访问。

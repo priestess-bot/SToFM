@@ -174,8 +174,10 @@ class SToFMConfig(PretrainedConfig):
             raise ValueError(
                 "flagos_attention_training_implementation must be 'reference' or 'native'"
             )
-        if flagos_gemm_backend not in {"triton", "vendor"}:
-            raise ValueError("flagos_gemm_backend must be 'triton' or 'vendor'")
+        if flagos_gemm_backend not in {"triton", "vendor", "self_hosted"}:
+            raise ValueError(
+                "flagos_gemm_backend must be 'triton', 'vendor', or 'self_hosted'"
+            )
         self.flagos_gemm_backend = flagos_gemm_backend
         self.flagos_aten_dispatch = flagos_aten_dispatch
         self.flagos_attention_backend = (

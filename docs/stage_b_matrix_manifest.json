@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "stage": "B",
+  "created_at": "2026-09-01T00:00:00+08:00",
+  "source": "one profiled FP32 forward+backward+optimizer step per locked workload",
+  "baseline_tag": "stofm-v100-stage-a-20260901",
+  "requirements": {
+    "forbidden_gemm_dependencies": ["cuBLAS", "cuBLASLt", "CUTLASS"],
+    "target": "NVIDIA V100 SM70",
+    "precision": "FP32",
+    "dispatcher_ops": ["mm", "addmm", "bmm", "baddbmm"]
+  },
+  "workloads": {
+    "representative": {
+      "model": {"batch": 1, "nodes": 384, "embedding_dim": 64, "layers": 2, "heads": 8, "gaussian_dim": 32},
+      "matrix_calls": [
+        {"op": "addmm", "count": 8, "m": 384, "k": 64, "n": 64},
+        {"op": "addmm", "count": 2, "m": 384, "k": 64, "n": 192, "role": "fused QKV"},
+        {"op": "bmm", "count": 6, "batch": 8, "m": 384, "k": 384, "n": 8},
+        {"op": "bmm", "count": 4, "batch": 8, "m": 384, "k": 8, "n": 384},
+        {"op": "bmm", "count": 2, "batch": 8, "m": 8, "k": 384, "n": 384},
+        {"op": "mm", "count": 2, "m": 147456, "k": 32, "n": 32, "role": "Gaussian projection"},
+        {"op": "mm", "count": 1, "m": 32, "k": 147456, "n": 32, "role": "Gaussian weight gradient", "requires_split_k": true},
+        {"op": "mm", "count": 1, "m": 8, "k": 147456, "n": 32, "role": "Gaussian output weight gradient", "requires_split_k": true},
+        {"op": "mm", "count": 1, "m": 1, "k": 147456, "n": 8, "role": "head reduction", "requires_split_k": true}
+      ]
+    },
+    "production": {
+      "model": {"batch": 1, "nodes": 1050, "embedding_dim": 256, "layers": 4, "heads": 8, "gaussian_dim": 128},
+      "matrix_calls": [
+        {"op": "addmm", "count": 15, "m": 1050, "k": 256, "n": 256},
+        {"op": "addmm", "count": 4, "m": 1050, "k": 256, "n": 768, "role": "fused QKV"},
+        {"op": "bmm", "count": 12, "batch": 8, "m": 1050, "k": 1050, "n": 32},
+        {"op": "bmm", "count": 8, "batch": 8, "m": 1050, "k": 32, "n": 1050},
+        {"op": "bmm", "count": 4, "batch": 8, "m": 32, "k": 1050, "n": 1050},
+        {"op": "mm", "count": 2, "m": 1102500, "k": 128, "n": 128, "role": "Gaussian projection"},
+        {"op": "mm", "count": 1, "m": 128, "k": 1102500, "n": 128, "role": "Gaussian weight gradient", "requires_split_k": true},
+        {"op": "mm", "count": 1, "m": 8, "k": 1102500, "n": 128, "role": "Gaussian output weight gradient", "requires_split_k": true},
+        {"op": "mm", "count": 1, "m": 1, "k": 1102500, "n": 8, "role": "head reduction", "requires_split_k": true},
+        {"op": "mm", "count": 14, "m": 1050, "k": 256, "n": 256},
+        {"op": "mm", "count": 15, "m": 256, "k": 1050, "n": 256},
+        {"op": "mm", "count": 4, "m": 768, "k": 1050, "n": 256}
+      ]
+    }
+  }
+}

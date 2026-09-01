@@ -39,7 +39,7 @@ from model.flagos_runtime import (
     STOFM_TRAINING_ALLOWLIST,
     STOFM_TRAINING_METADATA_OPS,
     flagos_training_scope,
-    prepare_flagos_vendor_training_fusion,
+    prepare_flagos_training_fusion,
 )
 from model.flagos_optimizer import FlagOSFusedAdamW
 from model.se2transformer import SToFMForMaskedLM
@@ -465,9 +465,12 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--gemm-backend",
-        choices=("triton", "vendor"),
+        choices=("triton", "vendor", "self_hosted"),
         default="triton",
-        help="FlagOS-owned GEMM dispatcher; vendor calls the C++/CUDA cuBLAS ABI",
+        help=(
+            "FlagOS-owned GEMM dispatcher; self_hosted uses the BLAS-free "
+            "V100 CUDA implementation"
+        ),
     )
     parser.add_argument(
         "--dispatch-surface",
@@ -556,7 +559,7 @@ def main() -> None:
 
     flaggems_log_path = output_dir / "flaggems_ops.log"
     training_mode = "optimized" if device.type == "cuda" else "torch"
-    preparation_ms = prepare_flagos_vendor_training_fusion(model, batch)
+    preparation_ms = prepare_flagos_training_fusion(model, batch)
     training_include = () if args.dispatch_surface == "v100_tuned" else None
     with flagos_training_scope(
         mode=training_mode,
@@ -665,16 +668,21 @@ def main() -> None:
     approved_native_compute_ops = set()
     gemm_names = {"mm", "addmm", "bmm", "baddbmm"}
     gemm_dispatcher_ownership = {}
-    if args.gemm_backend == "vendor":
+    if args.gemm_backend in {"vendor", "self_hosted"}:
         for name in sorted(gemm_names):
             table = torch._C._dispatch_dump_table(f"aten::{name}")
             cuda_entry = next(
                 (line for line in table.splitlines() if line.startswith("CUDA:")),
                 "missing",
             )
+            source_marker = (
+                "stofm_vendor_gemm.cu"
+                if args.gemm_backend == "vendor"
+                else "stofm_self_hosted_gemm.cu"
+            )
             gemm_dispatcher_ownership[name] = {
                 "cuda_entry": cuda_entry,
-                "vendor_cpp_cuda_kernel": "stofm_vendor_gemm.cu" in cuda_entry,
+                "flagos_cpp_cuda_kernel": source_marker in cuda_entry,
             }
     flaggems_execution_ops = set()
     native_execution_ops = set()
@@ -689,7 +697,7 @@ def main() -> None:
             and (
                 normalized_name not in gemm_names
                 or gemm_dispatcher_ownership.get(normalized_name, {}).get(
-                    "vendor_cpp_cuda_kernel", False
+                    "flagos_cpp_cuda_kernel", False
                 )
             )
         )
@@ -759,7 +767,8 @@ def main() -> None:
             "cosine_embedding_loss": "replaced by an equivalent masked cosine decomposition",
             "adamw": (
                 "FlagOS packed multi-tensor AdamW; up to 64 tensors per CUDA launch"
-                if args.optimizer == "flagos_fused" and args.gemm_backend == "vendor"
+                if args.optimizer == "flagos_fused"
+                and args.gemm_backend in {"vendor", "self_hosted"}
                 else "FlagGems per-parameter fused AdamW; not a cross-parameter foreach kernel"
                 if args.optimizer == "flagos_fused"
                 else "single-tensor AdamW updates"
@@ -767,7 +776,7 @@ def main() -> None:
             "amp": "not part of this FP32 smoke run",
             "v100_tuned_surface": (
                 "non-GEMM CUDA kernels are explicitly approved; GEMM CUDA ownership "
-                "must resolve to stofm_vendor_gemm.cu"
+                "must resolve to the selected FlagOS C++/CUDA dispatcher"
                 if args.dispatch_surface == "v100_tuned"
                 else "not active"
             ),
