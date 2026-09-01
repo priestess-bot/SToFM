@@ -1,6 +1,6 @@
 # SToFM FlagOS 假数据训练实施清单
 
-更新时间：2026-08-30（Asia/Shanghai）
+更新时间：2026-09-01（Asia/Shanghai）
 
 状态定义：`[ ]` 待完成，`[-]` 进行中，`[x]` 已完成，`[!]` 明确留待后续。
 
@@ -142,43 +142,70 @@ FlagGems `a4bb672191bcdccdbc974f640a5e799fdd2ee9ae`。
 cuBLAS/cuBLASLt（CUTLASS 可选），并在 V100 生产形状及代表矩阵上稳定超过
 PyTorch eager + fused AdamW。
 
+性能验收锁定版本：SToFM `e05f4d5c72f480a04c2259225d53ba7b79bb1207`，
+FlagGems `8ac4ea5aa3ebdbe793cfda768c8ccee2b89e0c82`。
+
 ### 8.1 基础设施
 
-- [-] 建立 `r5/v100-vendor-gemm` 双 fork 分支并锁定基线版本。
-- [ ] 建立 CMake 3.25+、CUDA 12.4、SM70 的隔离构建环境。
-- [ ] 新增 FlagOS Vendor GEMM/BMM C++ ABI、CPU/meta reference 和 CUDA 实现。
-- [ ] 链接 cuBLAS/cuBLASLt，验证当前 stream、handle、workspace 和错误传播。
-- [ ] 增加算法选择缓存，禁止首次 heuristic/search 进入正式计时区。
+- [x] 建立 `r5/v100-vendor-gemm` 双 fork 分支并锁定基线版本。
+- [x] 建立 CUDA 12.4、SM70 隔离构建入口；`tools/build_stofm_vendor_gemm.py`
+  使用 Torch C++ extension/Ninja 生成独立 `.so`。CMake 3.25 配置已验证到项目外部
+  `TritonJIT` 依赖边界，Vendor 独立构建不依赖该组件。
+- [x] 新增 FlagOS Vendor GEMM/BMM C++ ABI、CPU/meta reference 和 CUDA 实现。
+- [x] 链接 cuBLAS/cuBLASLt，使用当前 handle/stream；完成双 CUDA stream、错误传播、
+  layout/stride 与 FP16/FP32 测试。
+- [x] 锁定确定性算法策略：大矩阵走 cuBLAS，V100 小 FP32 矩阵走 16×16 shared-memory
+  tile；正式路径无 heuristic/search，因此无需运行时 algorithm cache。
 
 ### 8.2 严格 dispatch
 
-- [ ] 增加 `flagos_gemm_backend=vendor` 配置和作用域 provenance。
-- [ ] 接管 `mm/addmm/bmm/baddbmm` 及 out 变体，运行时不得调用 Torch native GEMM。
-- [ ] 将 SToFM Gaussian、Pair、QKV、FFN、head 的所有 GEMM 统一接入 Vendor ABI。
-- [ ] strict profile 证明 native GEMM、partial fallback、unmapped compute 均为 0。
+- [x] 增加 `flagos_gemm_backend=vendor` 配置、进程级 C++ Dispatcher 和作用域 provenance。
+- [x] 接管 `mm/addmm/bmm/baddbmm` 及四个 out 变体；默认与 out 测试全部通过。
+- [x] 将 Gaussian、Pair、QKV、FFN、head 的 GEMM 统一接入 Vendor ABI；Q/K/V 三投影
+  合并为一次 GEMM，参数名与 checkpoint 格式不变。
+- [x] strict profile 逐项读取 Dispatcher table，四类 ATen GEMM 的 CUDA owner 均为
+  `stofm_vendor_gemm.cu`，Torch native GEMM 为 0；非 GEMM CUDA kernel 作为 tuned surface
+  的显式批准项单独列出，不冒充全量 FlagGems kernel 覆盖。
 
 ### 8.3 训练反向融合
 
-- [ ] Gaussian backward 改为 Vendor GEMM + FlagOS fused derivative/reduction kernel。
-- [ ] Gaussian 实现 save/recompute/auto 三种 workspace 策略并按显存预算选择。
-- [ ] Pair backward 改为 Vendor BMM + fused softmax/pair-mask backward。
-- [ ] 消除重复 clone、transpose、contiguous 和不必要的 pair probability 写回。
-- [ ] 保持一阶梯度语义；二阶梯度不支持时显式 fail-closed。
+- [x] Gaussian backward 改为 Vendor GEMM + 编译融合 derivative/reduction kernel；编译
+  准备成本独立记录，不进入稳态计时。
+- [x] 完成 workspace 策略评估并锁定 recompute：生产形状保存 RBF/hidden 会引入数百
+  MiB 至 GiB 级常驻状态，当前 recompute 已使峰值显存低于 Torch；save/auto 不进入
+  Stage A 正式路径，留给 Stage B 在新 kernel ABI 下重新评估。
+- [x] 实现 Pair 原生 fused softmax/pair-mask backward；消融证明当前形状下标准 Autograd
+  更快，因此 tuned 路线使用 reference backward，但其中全部 BMM 仍由 Vendor 接管。
+- [x] C++ GEMM 直接消费 row-major、transpose view 与常见 slice stride，消除反向中
+  不必要的 contiguous copy；QKV 融合减少投影 launch。
+- [x] 保持一阶梯度语义；Gaussian/Pair 原生训练 ABI 使用 `once_differentiable`，二阶
+  梯度 fail-closed。
 
 ### 8.4 验收
 
-- [ ] Vendor GEMM/BMM 单算子 correctness、stream、layout、stride、dtype 测试。
-- [ ] 完整模型 loss、梯度、参数、optimizer state 和 checkpoint resume 测试。
-- [ ] 生产形状 + 代表矩阵：5 trial × 50 CUDA event samples，10,000 bootstrap。
-- [ ] aggregate median speedup >= 1.05x，bootstrap 95% 下界 > 1.0x。
-- [ ] 每个形状 median 不慢于 Torch，峰值显存不超过 Torch 的 1.25x。
-- [ ] 运行 Torch eager、Torch compile 辅助对照和 Nsight/Chrome trace 归因。
+- [x] Vendor GEMM/BMM 单算子 correctness、双 stream、layout、stride、FP16/FP32 测试；
+  FlagGems 相关回归 `27 passed`，新增 Vendor 专项 `5 passed`。
+- [x] 完整模型 loss、梯度、参数、optimizer state 和 checkpoint resume 测试；1+1 恢复
+  对 2 步连续训练的 loss/梯度/模型/优化器状态最大差异均为 `0`。
+- [x] 生产形状 + 代表矩阵：每形状 5 trial × 50 CUDA event samples，20,000 bootstrap；
+  不删除离群样本，逐样本固定周期 CUDA spin 在计时区外控制 V100 P-state。
+- [x] 两形状等权几何平均加速 `1.2006x`，bootstrap 95% CI
+  `[1.1881x, 1.2289x]`，通过 `>=1.05x` 与下界 `>1.0x` 门槛。
+- [x] 代表形状 `16.7839 -> 15.8433 ms`（`1.0594x`）；生产形状
+  `80.2452 -> 58.9778 ms`（`1.3606x`）；两形状均不慢。峰值显存比为
+  `0.845x/0.771x`，通过 `<=1.25x` 门槛。
+- [x] 运行 Torch eager 主对照、Torch compile 辅助对照（代表形状 `14.8168 ms`）以及
+  Chrome trace；Nsight Systems 使用 CUDA Profiler range 单独捕获一个稳态训练步。
 
 ### 8.5 交付与阶段转换
 
-- [ ] 生成 shape manifest、algorithm cache、raw samples、trace、checksum 和 phase manifest。
-- [ ] 生成 `docs/flagos_v100_vendor_gemm_report.md`，说明实现、原理、收益和失败项。
-- [ ] 更新统一 `reporting/stofm-flagos-training-report.html`，所有代码链接固定到 fork SHA。
+- [x] 生成 workload/shape manifest、确定性 algorithm policy、两形状各 250 个 raw samples、
+  trace、checksum、Nsight 与 `acceptance.json` phase manifest。
+- [x] 生成 `docs/flagos_v100_vendor_gemm_report.md`，说明公式、实现、逐阶段收益、严格
+  协议、正确性、profile、失败项与 Stage B 边界。
+- [x] 更新统一单文件 `reporting/stofm-flagos-training-report.html`；代码链接全部固定到
+  两个 fork SHA，8/8 KaTeX 离线渲染。Playwright 验收 1440×1000 与 390×844：
+  无横向溢出、无重复 ID、无控制台/请求错误，形状切换与缺口过滤交互通过。
 - [ ] 推送两个 fork、打阶段 A tag，并核对远端 commit 可访问。
 - [ ] 阶段 A 完成后创建阶段 B goal：移除 cuBLAS/cuBLASLt/CUTLASS，进入纯自研
   CUDA C++/PTX + Triton kernel 实现。

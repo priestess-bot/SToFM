@@ -53,6 +53,13 @@ ROUTES: Dict[str, Dict[str, Any]] = {
         "optimizer": "torch_fused",
         "gemm_backend": "triton",
     },
+    "torch_compile_fused": {
+        "display_name": "PyTorch compile 辅助对照 + CUDA fused AdamW",
+        "framework": "torch_compile",
+        "training_implementation": "reference",
+        "optimizer": "torch_fused",
+        "gemm_backend": "triton",
+    },
     "flagos_reference_scalar": {
         "display_name": "初始 FlagOS 可微参考算子 + 单张量 AdamW",
         "framework": "flagos",
@@ -155,7 +162,11 @@ def _tensor_digest(tensors: Mapping[str, torch.Tensor]) -> str:
 
 
 def _model_digest(model: torch.nn.Module) -> str:
-    return _tensor_digest(dict(model.named_parameters()))
+    return _tensor_digest(dict(_unwrap_model(model).named_parameters()))
+
+
+def _unwrap_model(model: torch.nn.Module) -> torch.nn.Module:
+    return getattr(model, "_orig_mod", model)
 
 
 def _model_config(args: argparse.Namespace, route: Mapping[str, str]) -> SToFMConfig:
@@ -202,6 +213,8 @@ def _build_model_and_optimizer(
             foreach=False,
             fused=route["optimizer"] == "torch_fused",
         )
+    if route["framework"] == "torch_compile":
+        model = torch.compile(model, dynamic=False, fullgraph=False, mode="default")
     return model, optimizer
 
 
@@ -211,6 +224,7 @@ def _loss(model: torch.nn.Module, batch: Mapping[str, torch.Tensor]):
 
 
 def _dispatch_snapshot(model: SToFMForMaskedLM) -> Dict[str, Any]:
+    model = _unwrap_model(model)
     gaussian = model.model.gaussian.last_flagos_dispatch
     pair = model.model.encoder.layers[0].self_attn.last_flagos_dispatch
     return {
@@ -245,9 +259,10 @@ def _correctness_step(
     optimizer.zero_grad(set_to_none=True)
     outputs, total_loss = _loss(model, batch)
     total_loss.backward()
+    raw_model = _unwrap_model(model)
     gradients = {
         name: parameter.grad.detach().cpu().clone()
-        for name, parameter in model.named_parameters()
+        for name, parameter in raw_model.named_parameters()
         if parameter.grad is not None
     }
     dispatch = _dispatch_snapshot(model)
@@ -260,13 +275,13 @@ def _correctness_step(
     torch.cuda.synchronize()
     updated_parameters = {
         name: parameter.detach().cpu().clone()
-        for name, parameter in model.named_parameters()
+        for name, parameter in raw_model.named_parameters()
     }
     payload = {
         "losses": scalar_losses,
         "gradients": gradients,
         "updated_parameters": updated_parameters,
-        "optimizer_state": _optimizer_state_by_name(model, optimizer),
+        "optimizer_state": _optimizer_state_by_name(raw_model, optimizer),
     }
     snapshot_path = output / "first_step.pt"
     torch.save(payload, snapshot_path)
@@ -537,6 +552,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--weight-decay", type=float, default=0.01)
     parser.add_argument("--seed", type=int, default=20260830)
     parser.add_argument("--profile", action=argparse.BooleanOptionalAction, default=False)
+    parser.add_argument(
+        "--cuda-profiler-range",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Bracket one additional steady step with cudaProfilerStart/Stop for Nsight",
+    )
     return parser.parse_args()
 
 
@@ -636,6 +657,21 @@ def main() -> None:
             if args.profile
             else {"status": "not_requested"}
         )
+        cuda_profiler_range = {"status": "not_requested"}
+        if args.cuda_profiler_range:
+            cudart = torch.cuda.cudart()
+            start_status = int(cudart.cudaProfilerStart())
+            _untimed_step(benchmark_model, benchmark_optimizer, batch)
+            torch.cuda.synchronize()
+            stop_status = int(cudart.cudaProfilerStop())
+            cuda_profiler_range = {
+                "status": "captured"
+                if start_status == 0 and stop_status == 0
+                else "failed",
+                "start_status": start_status,
+                "stop_status": stop_status,
+                "steps": 1,
+            }
         if (
             route.get("gemm_backend") == "vendor"
             and profile.get("gemm_provenance", {}).get("native_aten_gemm_event_count", 0)
@@ -725,6 +761,7 @@ def main() -> None:
         "correctness": correctness,
         "timing": timing,
         "profile": profile,
+        "cuda_profiler_range": cuda_profiler_range,
     }
     (output / "result.json").write_text(
         json.dumps(result, indent=2), encoding="utf-8"

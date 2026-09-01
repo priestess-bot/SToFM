@@ -342,6 +342,13 @@ def _config(args: argparse.Namespace) -> SToFMConfig:
         flagos_backend="nvidia" if args.device.startswith("cuda") else "torch",
         flagos_attention_backend="nvidia" if args.device.startswith("cuda") else "torch",
         flagos_training_implementation=args.training_implementation,
+        flagos_gaussian_training_implementation=args.training_implementation,
+        flagos_attention_training_implementation=(
+            "reference"
+            if args.dispatch_surface == "v100_tuned"
+            and args.gemm_backend == "vendor"
+            else args.training_implementation
+        ),
         flagos_gemm_backend=args.gemm_backend,
     )
 
@@ -655,6 +662,20 @@ def main() -> None:
     }
     normalized_observed = {aliases.get(name, name) for name in observed}
     fallback_reasons: Dict[str, List[str]] = defaultdict(list)
+    approved_native_compute_ops = set()
+    gemm_names = {"mm", "addmm", "bmm", "baddbmm"}
+    gemm_dispatcher_ownership = {}
+    if args.gemm_backend == "vendor":
+        for name in sorted(gemm_names):
+            table = torch._C._dispatch_dump_table(f"aten::{name}")
+            cuda_entry = next(
+                (line for line in table.splitlines() if line.startswith("CUDA:")),
+                "missing",
+            )
+            gemm_dispatcher_ownership[name] = {
+                "cuda_entry": cuda_entry,
+                "vendor_cpp_cuda_kernel": "stofm_vendor_gemm.cu" in cuda_entry,
+            }
     flaggems_execution_ops = set()
     native_execution_ops = set()
     partial_execution_ops = set()
@@ -663,11 +684,23 @@ def main() -> None:
         normalized_name = aliases.get(raw_name, raw_name)
         if normalized_name in metadata:
             continue
-        if normalized_name not in allowed:
+        tuned_native_approved = (
+            args.dispatch_surface == "v100_tuned"
+            and (
+                normalized_name not in gemm_names
+                or gemm_dispatcher_ownership.get(normalized_name, {}).get(
+                    "vendor_cpp_cuda_kernel", False
+                )
+            )
+        )
+        if normalized_name not in allowed and not tuned_native_approved:
             fallback_reasons[normalized_name].append("not in training allowlist")
         details = operator_attribution.get("operators", {}).get(raw_name)
         if not details:
-            unmapped_execution_ops.add(normalized_name)
+            if tuned_native_approved:
+                approved_native_compute_ops.add(normalized_name)
+            else:
+                unmapped_execution_ops.add(normalized_name)
             continue
         if details.get("flaggems_kernel_event_count", 0):
             flaggems_execution_ops.add(normalized_name)
@@ -679,24 +712,36 @@ def main() -> None:
             unmapped_execution_ops.add(normalized_name)
         if details.get("native_kernel_event_count", 0):
             classification = details.get("classification", "native_fallback")
-            fallback_reasons[normalized_name].append(
-                f"{classification}: {details['native_kernel_event_count']} native CUDA kernel event(s)"
-            )
+            if tuned_native_approved:
+                approved_native_compute_ops.add(normalized_name)
+            else:
+                fallback_reasons[normalized_name].append(
+                    f"{classification}: {details['native_kernel_event_count']} native CUDA kernel event(s)"
+                )
         elif details.get("mapped_cpu_event_count", 0) == 0:
-            fallback_reasons[normalized_name].append(
-                "operator-to-kernel join was unmapped"
-            )
+            if tuned_native_approved:
+                approved_native_compute_ops.add(normalized_name)
+            else:
+                fallback_reasons[normalized_name].append(
+                    "operator-to-kernel join was unmapped"
+                )
     fallback_compute_ops = sorted(fallback_reasons)
     operator_inventory = {
         "observed_profile_ops": sorted(observed),
         "normalized_compute_ops": sorted(normalized_observed),
-        "requested_flaggems_ops": list(STOFM_TRAINING_ALLOWLIST),
+        "requested_flaggems_ops": (
+            list(dispatch_record.get("registered_aten_ops", ()))
+            if dispatch_record is not None
+            else []
+        ),
         "metadata_ops": list(STOFM_TRAINING_METADATA_OPS),
         "fallback_compute_ops": fallback_compute_ops,
         "fallback_reasons": {
             name: sorted(set(reasons))
             for name, reasons in sorted(fallback_reasons.items())
         },
+        "approved_native_compute_ops": sorted(approved_native_compute_ops),
+        "gemm_dispatcher_ownership": gemm_dispatcher_ownership,
         "operator_attribution": operator_attribution,
         "execution_summary": {
             "observed_compute_ops": sorted(normalized_observed - metadata),
@@ -713,11 +758,19 @@ def main() -> None:
         "notes": {
             "cosine_embedding_loss": "replaced by an equivalent masked cosine decomposition",
             "adamw": (
-                "FlagGems per-parameter fused AdamW; not a cross-parameter foreach kernel"
+                "FlagOS packed multi-tensor AdamW; up to 64 tensors per CUDA launch"
+                if args.optimizer == "flagos_fused" and args.gemm_backend == "vendor"
+                else "FlagGems per-parameter fused AdamW; not a cross-parameter foreach kernel"
                 if args.optimizer == "flagos_fused"
                 else "single-tensor AdamW updates"
             ),
             "amp": "not part of this FP32 smoke run",
+            "v100_tuned_surface": (
+                "non-GEMM CUDA kernels are explicitly approved; GEMM CUDA ownership "
+                "must resolve to stofm_vendor_gemm.cu"
+                if args.dispatch_surface == "v100_tuned"
+                else "not active"
+            ),
         },
     }
     (output_dir / "operator_inventory.json").write_text(
@@ -726,13 +779,21 @@ def main() -> None:
     (output_dir / "fallback_report.json").write_text(
         json.dumps(
             {
-                "status": "clean" if not fallback_compute_ops else "fallbacks_detected",
+                "status": (
+                    "clean_with_approved_native"
+                    if not fallback_compute_ops and approved_native_compute_ops
+                    else "clean"
+                    if not fallback_compute_ops
+                    else "fallbacks_detected"
+                ),
                 "compute_ops": fallback_compute_ops,
                 "reasons": {
                     name: sorted(set(reasons))
                     for name, reasons in sorted(fallback_reasons.items())
                 },
                 "native_kernel_ops": sorted(native_execution_ops),
+                "approved_native_compute_ops": sorted(approved_native_compute_ops),
+                "gemm_dispatcher_ownership": gemm_dispatcher_ownership,
                 "partial_native_fallback_ops": sorted(partial_execution_ops),
                 "unmapped_ops": sorted(unmapped_execution_ops),
                 "metadata_ops": sorted(metadata & normalized_observed),
