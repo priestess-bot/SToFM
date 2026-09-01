@@ -206,6 +206,7 @@ FlagGems `8ac4ea5aa3ebdbe793cfda768c8ccee2b89e0c82`。
 - [x] 更新统一单文件 `reporting/stofm-flagos-training-report.html`；代码链接全部固定到
   两个 fork SHA，8/8 KaTeX 离线渲染。Playwright 验收 1440×1000 与 390×844：
   无横向溢出、无重复 ID、无控制台/请求错误，形状切换与缺口过滤交互通过。
-- [ ] 推送两个 fork、打阶段 A tag，并核对远端 commit 可访问。
+- [x] 推送两个 fork 的 `r5/v100-vendor-gemm`，创建 annotated tag
+  `stofm-v100-stage-a-20260901`；`git ls-remote` 已核对远端 branch/tag commit 可访问。
 - [ ] 阶段 A 完成后创建阶段 B goal：移除 cuBLAS/cuBLASLt/CUTLASS，进入纯自研
   CUDA C++/PTX + Triton kernel 实现。
