@@ -208,5 +208,6 @@ FlagGems `8ac4ea5aa3ebdbe793cfda768c8ccee2b89e0c82`。
   无横向溢出、无重复 ID、无控制台/请求错误，形状切换与缺口过滤交互通过。
 - [x] 推送两个 fork 的 `r5/v100-vendor-gemm`，创建 annotated tag
   `stofm-v100-stage-a-20260901`；`git ls-remote` 已核对远端 branch/tag commit 可访问。
-- [ ] 阶段 A 完成后创建阶段 B goal：移除 cuBLAS/cuBLASLt/CUTLASS，进入纯自研
-  CUDA C++/PTX + Triton kernel 实现。
+- [x] 阶段 A 完成后创建阶段 B goal（thread
+  `01a000e6-c6fc-7e40-be2a-5a7a92608d36`）：移除 cuBLAS/cuBLASLt/CUTLASS，进入
+  纯自研 CUDA C++/PTX + Triton kernel 实现；goal 保持 active，后续独立验收。
