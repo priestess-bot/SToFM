@@ -268,4 +268,5 @@ eager + fused AdamW。状态定义沿用文件顶部。
   dependency acceptance manifest。
 - [x] 更新 Markdown 技术报告与统一单文件 HTML；11/11 KaTeX 离线渲染，Playwright
   1440×1000 / 390×844 无溢出、重复 ID、console/request 错误，形状切换与缺口过滤通过。
-- [ ] 推送 r6 双 fork、创建 Stage B tag，核对远端 commit 可访问。
+- [x] 推送 r6 双 fork、创建 `stofm-v100-stage-b-20260901` tag；远端 peeled commit
+  已核对为 FlagGems `4534b88689da`、SToFM `d26467c174ac`。
