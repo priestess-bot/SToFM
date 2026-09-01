@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "benchmark": "SToFM Stage B V100 self-hosted two-shape acceptance",
+  "created_at": "2026-09-01T08:27:52.071189+00:00",
+  "material_passport": {
+    "origin_skill": "experiment-agent",
+    "origin_mode": "validation",
+    "verification_status": "VERIFIED",
+    "version_label": "stofm_stageB_v100_acceptance_v1"
+  },
+  "routes": {
+    "baseline": "torch_fused",
+    "candidate": "flagos_self_hosted_native_fused_v100_tuned"
+  },
+  "revisions": {
+    "flaggems": "4534b88689da2630145c75d7612284f3fecb61cc",
+    "stofm": "b2f36fa80ad5f1bbe7575ece3a3e4d64f4ce56a6"
+  },
+  "dependency_audit": {
+    "library_sha256": "83a0e569fe38f3ea5d3365268eb3d403bd9274757814ea26a65bec5c6d07f392",
+    "library_size_bytes": 8811656,
+    "needed_entries": [
+      "0x0000000000000001 (NEEDED)             \u5171\u4eab\u5e93\uff1a[libc10.so]",
+      "0x0000000000000001 (NEEDED)             \u5171\u4eab\u5e93\uff1a[libc10_cuda.so]",
+      "0x0000000000000001 (NEEDED)             \u5171\u4eab\u5e93\uff1a[libtorch_cpu.so]",
+      "0x0000000000000001 (NEEDED)             \u5171\u4eab\u5e93\uff1a[libcudart.so.12]",
+      "0x0000000000000001 (NEEDED)             \u5171\u4eab\u5e93\uff1a[libstdc++.so.6]",
+      "0x0000000000000001 (NEEDED)             \u5171\u4eab\u5e93\uff1a[libm.so.6]",
+      "0x0000000000000001 (NEEDED)             \u5171\u4eab\u5e93\uff1a[libgcc_s.so.1]",
+      "0x0000000000000001 (NEEDED)             \u5171\u4eab\u5e93\uff1a[libc.so.6]"
+    ],
+    "source_hits": {},
+    "dynamic_dependency_hits": [],
+    "dynamic_symbol_hits": [],
+    "passed": true,
+    "scope_note": "The audit covers the self-hosted extension and profiled GEMM calls. The PyTorch binary distribution may preload external BLAS libraries independently; Stage B does not link or call them."
+  },
+  "profile_audits": {
+    "representative": {
+      "native_aten_gemm_event_count": 0,
+      "all_profiled_gemm_owned_by_flagos_cpp": true,
+      "forbidden_profile_events": [],
+      "gaussian_selected": "nvidia",
+      "pair_selected": "nvidia",
+      "passed": true
+    },
+    "production": {
+      "native_aten_gemm_event_count": 0,
+      "all_profiled_gemm_owned_by_flagos_cpp": true,
+      "forbidden_profile_events": [],
+      "gaussian_selected": "nvidia",
+      "pair_selected": "nvidia",
+      "passed": true
+    }
+  },
+  "shapes": {
+    "representative": {
+      "workload": {
+        "precision": "fp32",
+        "batch_size": 1,
+        "nodes": 384,
+        "input_dim": 32,
+        "embedding_dim": 64,
+        "heads": 8,
+        "gaussian_hidden_dim": 32,
+        "layers": 2,
+        "objective": "MCM + PDR",
+        "data": "deterministic synthetic tensors"
+      },
+      "trial_count": 5,
+      "sample_count_per_route": 250,
+      "torch_fused_step_median_ms": 16.623615264892578,
+      "self_hosted_step_median_ms": 14.494208335876465,
+      "speedup": 1.1469143315503025,
+      "torch_fused_step_p95_ms": 18.192486095428468,
+      "self_hosted_step_p95_ms": 17.8011643409729,
+      "peak_memory_ratio": 0.6433251564019566,
+      "correctness_passed": true,
+      "profile_audit_passed": true,
+      "suite_sha256": "7dd00de38fa9f84069d0d34ed3c273d16e3cddb5621d5e461b8a6ceab5a34435"
+    },
+    "production": {
+      "workload": {
+        "precision": "fp32",
+        "batch_size": 1,
+        "nodes": 1050,
+        "input_dim": 256,
+        "embedding_dim": 256,
+        "heads": 8,
+        "gaussian_hidden_dim": 128,
+        "layers": 4,
+        "objective": "MCM + PDR",
+        "data": "deterministic synthetic tensors"
+      },
+      "trial_count": 5,
+      "sample_count_per_route": 250,
+      "torch_fused_step_median_ms": 80.23808288574219,
+      "self_hosted_step_median_ms": 71.00569534301758,
+      "speedup": 1.1300231974086636,
+      "torch_fused_step_p95_ms": 82.39436874389648,
+      "self_hosted_step_p95_ms": 71.31612281799316,
+      "peak_memory_ratio": 0.647587199172067,
+      "correctness_passed": true,
+      "profile_audit_passed": true,
+      "suite_sha256": "a773afbe48a661de95c036416b935ba68c8a2c47e0d1738bca0157da037dbf5b"
+    }
+  },
+  "aggregate": {
+    "method": "equal-weight geometric mean of per-shape median speedups",
+    "speedup": 1.1384374379351256,
+    "latency_reduction_percent": 12.160302650114929,
+    "bootstrap_95_ci": {
+      "lower": 1.0410321716932767,
+      "upper": 1.1505183472274225
+    },
+    "bootstrap_method": "fixed workload matrix; paired hierarchical resampling of trial blocks and CUDA-event samples within each shape",
+    "bootstrap_resamples": 20000
+  },
+  "gates": {
+    "aggregate_speedup_at_least_1_05": true,
+    "bootstrap_lower_above_1": true,
+    "no_shape_slower_than_torch": true,
+    "peak_memory_at_most_1_25x_torch": true,
+    "strict_correctness": true,
+    "profile_dispatch_and_kernel_provenance": true,
+    "extension_dependency_audit": true,
+    "measured_library_hash_matches": true,
+    "five_trials_fifty_samples": true
+  }
+}

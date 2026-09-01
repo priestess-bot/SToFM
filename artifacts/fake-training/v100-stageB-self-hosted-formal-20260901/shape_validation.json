@@ -1,0 +1,596 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "created_at": "2026-09-01T08:32:09.425697+00:00",
+  "material_passport": {
+    "origin_skill": "experiment-agent",
+    "origin_mode": "validation",
+    "verification_status": "VERIFIED",
+    "version_label": "stofm_self_hosted_shape_validation_v1"
+  },
+  "oracle": "PyTorch CUDA result materialized before process-global self-hosted Dispatcher registration; one isolated process per matrix family",
+  "tolerance_policy": "rtol=5e-4; atol=max(5e-3, 2e-5*sqrt(K)) for random FP32 reduction stress. Full-model loss/gradient/parameter gates are stricter.",
+  "manifest_sha256": "5a05359007dcbdbdd9751c5479a97511c3d862c85c0cc53303125a1a01ce6e93",
+  "library_sha256": "83a0e569fe38f3ea5d3365268eb3d403bd9274757814ea26a65bec5c6d07f392",
+  "case_count": 21,
+  "completed_case_count": 21,
+  "max_abs": 0.0110931396484375,
+  "max_mean_abs": 0.0021473339293152094,
+  "cases": [
+    {
+      "workload": "representative",
+      "op": "addmm",
+      "batch": 1,
+      "m": 384,
+      "k": 64,
+      "n": 64,
+      "layout_a": "row",
+      "layout_b": "column",
+      "role": "training matrix",
+      "output_shape": [
+        384,
+        64
+      ],
+      "max_abs": 1.33514404296875e-05,
+      "mean_abs": 1.081840764527442e-06,
+      "max_rel": 0.005759165156632662,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "representative",
+      "op": "addmm",
+      "batch": 1,
+      "m": 384,
+      "k": 64,
+      "n": 192,
+      "layout_a": "row",
+      "layout_b": "column",
+      "role": "fused QKV",
+      "output_shape": [
+        384,
+        192
+      ],
+      "max_abs": 1.33514404296875e-05,
+      "mean_abs": 1.0974571296173963e-06,
+      "max_rel": 0.005759165156632662,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "representative",
+      "op": "bmm",
+      "batch": 8,
+      "m": 384,
+      "k": 384,
+      "n": 8,
+      "layout_a": "row",
+      "layout_b": "row",
+      "role": "training matrix",
+      "output_shape": [
+        8,
+        384,
+        8
+      ],
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "max_rel": 0.0,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "representative",
+      "op": "bmm",
+      "batch": 8,
+      "m": 384,
+      "k": 8,
+      "n": 384,
+      "layout_a": "row",
+      "layout_b": "column",
+      "role": "training matrix",
+      "output_shape": [
+        8,
+        384,
+        384
+      ],
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "max_rel": 0.0,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "representative",
+      "op": "bmm",
+      "batch": 8,
+      "m": 8,
+      "k": 384,
+      "n": 384,
+      "layout_a": "column",
+      "layout_b": "row",
+      "role": "training matrix",
+      "output_shape": [
+        8,
+        8,
+        384
+      ],
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "max_rel": 0.0,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "representative",
+      "op": "mm",
+      "batch": 1,
+      "m": 147456,
+      "k": 32,
+      "n": 32,
+      "layout_a": "row",
+      "layout_b": "column",
+      "role": "Gaussian projection",
+      "output_shape": [
+        147456,
+        32
+      ],
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "max_rel": 0.0,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "representative",
+      "op": "mm",
+      "batch": 1,
+      "m": 32,
+      "k": 147456,
+      "n": 32,
+      "layout_a": "column",
+      "layout_b": "row",
+      "role": "Gaussian weight gradient",
+      "output_shape": [
+        32,
+        32
+      ],
+      "max_abs": 0.0014495849609375,
+      "mean_abs": 0.0003557370509952307,
+      "max_rel": 0.0005442537367343903,
+      "rtol": 0.0005,
+      "atol": 0.007680000000000001,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "representative",
+      "op": "mm",
+      "batch": 1,
+      "m": 8,
+      "k": 147456,
+      "n": 32,
+      "layout_a": "column",
+      "layout_b": "row",
+      "role": "Gaussian output weight gradient",
+      "output_shape": [
+        8,
+        32
+      ],
+      "max_abs": 0.0015869140625,
+      "mean_abs": 0.00035790540277957916,
+      "max_rel": 0.00018292575259692967,
+      "rtol": 0.0005,
+      "atol": 0.007680000000000001,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "representative",
+      "op": "mm",
+      "batch": 1,
+      "m": 1,
+      "k": 147456,
+      "n": 8,
+      "layout_a": "column",
+      "layout_b": "row",
+      "role": "head reduction",
+      "output_shape": [
+        1,
+        8
+      ],
+      "max_abs": 0.00054931640625,
+      "mean_abs": 0.0002598762512207031,
+      "max_rel": 9.807661626837216e-06,
+      "rtol": 0.0005,
+      "atol": 0.007680000000000001,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "addmm",
+      "batch": 1,
+      "m": 1050,
+      "k": 256,
+      "n": 256,
+      "layout_a": "row",
+      "layout_b": "column",
+      "role": "training matrix",
+      "output_shape": [
+        1050,
+        256
+      ],
+      "max_abs": 6.4849853515625e-05,
+      "mean_abs": 4.3774225559900515e-06,
+      "max_rel": 0.7883954048156738,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "addmm",
+      "batch": 1,
+      "m": 1050,
+      "k": 256,
+      "n": 768,
+      "layout_a": "row",
+      "layout_b": "column",
+      "role": "fused QKV",
+      "output_shape": [
+        1050,
+        768
+      ],
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "max_rel": 0.0,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "bmm",
+      "batch": 8,
+      "m": 1050,
+      "k": 1050,
+      "n": 32,
+      "layout_a": "row",
+      "layout_b": "row",
+      "role": "training matrix",
+      "output_shape": [
+        8,
+        1050,
+        32
+      ],
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "max_rel": 0.0,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "bmm",
+      "batch": 8,
+      "m": 1050,
+      "k": 32,
+      "n": 1050,
+      "layout_a": "row",
+      "layout_b": "column",
+      "role": "training matrix",
+      "output_shape": [
+        8,
+        1050,
+        1050
+      ],
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "max_rel": 0.0,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "bmm",
+      "batch": 8,
+      "m": 32,
+      "k": 1050,
+      "n": 1050,
+      "layout_a": "column",
+      "layout_b": "row",
+      "role": "training matrix",
+      "output_shape": [
+        8,
+        32,
+        1050
+      ],
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "max_rel": 0.0,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "mm",
+      "batch": 1,
+      "m": 1102500,
+      "k": 128,
+      "n": 128,
+      "layout_a": "row",
+      "layout_b": "column",
+      "role": "Gaussian projection",
+      "output_shape": [
+        1102500,
+        128
+      ],
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "max_rel": 0.0,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "mm",
+      "batch": 1,
+      "m": 128,
+      "k": 1102500,
+      "n": 128,
+      "layout_a": "column",
+      "layout_b": "row",
+      "role": "Gaussian weight gradient",
+      "output_shape": [
+        128,
+        128
+      ],
+      "max_abs": 0.0110931396484375,
+      "mean_abs": 0.0021473339293152094,
+      "max_rel": 4.405536651611328,
+      "rtol": 0.0005,
+      "atol": 0.021,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "mm",
+      "batch": 1,
+      "m": 8,
+      "k": 1102500,
+      "n": 128,
+      "layout_a": "column",
+      "layout_b": "row",
+      "role": "Gaussian output weight gradient",
+      "output_shape": [
+        8,
+        128
+      ],
+      "max_abs": 0.0059814453125,
+      "mean_abs": 0.0016224468126893044,
+      "max_rel": 0.03601887822151184,
+      "rtol": 0.0005,
+      "atol": 0.021,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "mm",
+      "batch": 1,
+      "m": 1,
+      "k": 1102500,
+      "n": 8,
+      "layout_a": "column",
+      "layout_b": "row",
+      "role": "head reduction",
+      "output_shape": [
+        1,
+        8
+      ],
+      "max_abs": 0.00262451171875,
+      "mean_abs": 0.0011749267578125,
+      "max_rel": 1.0093749551742803e-05,
+      "rtol": 0.0005,
+      "atol": 0.021,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "mm",
+      "batch": 1,
+      "m": 1050,
+      "k": 256,
+      "n": 256,
+      "layout_a": "row",
+      "layout_b": "row",
+      "role": "training matrix",
+      "output_shape": [
+        1050,
+        256
+      ],
+      "max_abs": 6.866455078125e-05,
+      "mean_abs": 3.6168407859804574e-06,
+      "max_rel": 0.8487221598625183,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "mm",
+      "batch": 1,
+      "m": 256,
+      "k": 1050,
+      "n": 256,
+      "layout_a": "column",
+      "layout_b": "row",
+      "role": "training matrix",
+      "output_shape": [
+        256,
+        256
+      ],
+      "max_abs": 0.000179290771484375,
+      "mean_abs": 1.388624332321342e-05,
+      "max_rel": 0.052008166909217834,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    },
+    {
+      "workload": "production",
+      "op": "mm",
+      "batch": 1,
+      "m": 768,
+      "k": 1050,
+      "n": 256,
+      "layout_a": "column",
+      "layout_b": "row",
+      "role": "training matrix",
+      "output_shape": [
+        768,
+        256
+      ],
+      "max_abs": 0.000213623046875,
+      "mean_abs": 1.3738217603531666e-05,
+      "max_rel": 0.06667666882276535,
+      "rtol": 0.0005,
+      "atol": 0.005,
+      "loaded_library": "/tmp/flagos-self-hosted-stageb-4534b8868/flagos_stofm_self_hosted_v100_4534b8868.so",
+      "passed": true
+    }
+  ],
+  "commands": [
+    {
+      "case": 1,
+      "returncode": 0,
+      "stderr": "[W901 16:29:58.632061940 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 2,
+      "returncode": 0,
+      "stderr": "[W901 16:30:05.141727434 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 3,
+      "returncode": 0,
+      "stderr": "[W901 16:30:11.576793020 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 4,
+      "returncode": 0,
+      "stderr": "[W901 16:30:17.023903556 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 5,
+      "returncode": 0,
+      "stderr": "[W901 16:30:24.465327514 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 6,
+      "returncode": 0,
+      "stderr": "[W901 16:30:30.962483032 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 7,
+      "returncode": 0,
+      "stderr": "[W901 16:30:37.400422354 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 8,
+      "returncode": 0,
+      "stderr": "[W901 16:30:43.939151733 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 9,
+      "returncode": 0,
+      "stderr": "[W901 16:30:50.455637946 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 10,
+      "returncode": 0,
+      "stderr": "[W901 16:30:57.146895149 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 11,
+      "returncode": 0,
+      "stderr": "[W901 16:31:03.859996748 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 12,
+      "returncode": 0,
+      "stderr": "[W901 16:31:10.331056701 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 13,
+      "returncode": 0,
+      "stderr": "[W901 16:31:16.812133068 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 14,
+      "returncode": 0,
+      "stderr": "[W901 16:31:23.299633606 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 15,
+      "returncode": 0,
+      "stderr": "[W901 16:31:29.803299263 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 16,
+      "returncode": 0,
+      "stderr": "[W901 16:31:36.368359732 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 17,
+      "returncode": 0,
+      "stderr": "[W901 16:31:42.783623843 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 18,
+      "returncode": 0,
+      "stderr": "[W901 16:31:49.234844536 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 19,
+      "returncode": 0,
+      "stderr": "[W901 16:31:55.704207627 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 20,
+      "returncode": 0,
+      "stderr": "[W901 16:32:02.227696703 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    },
+    {
+      "case": 21,
+      "returncode": 0,
+      "stderr": "[W901 16:32:08.676016645 OperatorEntry.cpp:154] Warning: Warning only once for all operators,  other operators may also be overridden.\n  Overriding a previously registered kernel for the same operator and the same dispatch key\n  operator: aten::mm(Tensor self, Tensor mat2) -> Tensor\n    registered at /pytorch/build/aten/src/ATen/RegisterSchema.cpp:6\n  dispatch key: CUDA\n  previous kernel: registered at /pytorch/aten/src/ATen/LegacyBatchingRegistrations.cpp:1079\n       new kernel: registered at /home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/cpp/lib/stofm_self_hosted_gemm.cu:891 (function operator())\n"
+    }
+  ]
+}

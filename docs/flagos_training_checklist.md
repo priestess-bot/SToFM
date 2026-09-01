@@ -223,7 +223,7 @@ eager + fused AdamW。状态定义沿用文件顶部。
 - [x] 从真实训练 trace 生成 `docs/stage_b_matrix_manifest.json`，覆盖代表/生产形状的
   forward、backward 与 fused QKV 矩阵族。
 - [x] 固化 Stage A eager、初始 FlagOS、Vendor tuned 与 Torch compile 辅助基线。
-- [-] 增加静态/动态禁用依赖门禁：源码、ELF NEEDED、Dispatcher owner、profile kernel
+- [x] 增加静态/动态禁用依赖门禁：源码、ELF NEEDED、Dispatcher owner、profile kernel
   均不得出现 cuBLAS/cuBLASLt/CUTLASS。
 
 ### 9.2 自研 GEMM/BMM
@@ -252,16 +252,20 @@ eager + fused AdamW。状态定义沿用文件顶部。
 
 - [x] 单算子：shape manifest 全覆盖，FP32/FP16、layout、stride、broadcast、out、stream；
   7 项语义测试与 21 个真实矩阵族隔离进程 oracle 全部通过。
-- [-] 模型：loss、全部梯度、更新后参数、optimizer state、1+1 checkpoint resume；代表
-  形状 51 个梯度张量最大误差 1.86e-8，更新参数最大误差 1.05e-6，resume 逐位一致，
-  待生产形状正式 suite 再次闭环。
-- [ ] 代表形状与生产形状各 5 trial × 50 样本，20,000 次分层 bootstrap。
-- [ ] 两形状均快于 PyTorch eager；联合 speedup >= 1.05x 且 CI 下界 > 1.0x。
-- [ ] 峰值显存 <= Torch 1.25x；报告 compile/autotune/capture 开销与稳态分离结果。
-- [ ] Ascend CANN / MTT MUSA 离线 gate 保持通过，不把 V100 代码误导入国产后端。
+- [x] 模型：loss、全部梯度、更新后参数、optimizer state、1+1 checkpoint resume；代表/
+  生产梯度最大误差 1.86e-8/5.42e-9，resume 的 140 个 tensor 逐位一致。
+- [x] 代表形状与生产形状各 5 trial × 50 样本，20,000 次分层 bootstrap。
+- [x] 两形状均快于 PyTorch eager；联合 speedup 1.1384x，95% CI
+  [1.0410x, 1.1505x]。
+- [x] 峰值显存 <= Torch 1.25x；实际为 0.643x/0.648x，并将约 3.3-3.6 s
+  Gaussian/Pair 编译准备与稳态 CUDA-event 计时分离。
+- [x] Ascend CANN / MTT MUSA 离线 gate 保持通过；host syntax、manifest、deferred
+  CMake configure/build 均通过，且明确不声称真实芯片二进制。
 
 ### 9.5 交付
 
-- [ ] 生成 Stage B raw samples、profile、Nsight、checksum、acceptance manifest。
-- [ ] 更新 Markdown 技术报告与统一单文件 HTML，KaTeX 和桌面/移动 QA 通过。
+- [x] 生成 Stage B raw samples、profile、Nsight Compute、checksum、shape/checkpoint/
+  dependency acceptance manifest。
+- [x] 更新 Markdown 技术报告与统一单文件 HTML；11/11 KaTeX 离线渲染，Playwright
+  1440×1000 / 390×844 无溢出、重复 ID、console/request 错误，形状切换与缺口过滤通过。
 - [ ] 推送 r6 双 fork、创建 Stage B tag，核对远端 commit 可访问。

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "workload": "Gaussian forward: 1102500x128 @ 128x128, FP32, NVIDIA V100 SM70",
+  "method": "Nsight Compute 2024.1, full metric set, one kernel invocation, 76 replay passes",
+  "baseline": {
+    "label": "development build before adaptive low-register policy",
+    "report_sha256": "222e53942283019dcf84877a199c9e8e666ae6a2c914750ef544f37e2710fe0f",
+    "verification_scope": "development optimization evidence; not a formal 5x50 route result",
+    "metrics": {
+      "registers_per_thread": 221,
+      "achieved_occupancy_percent": 12.36,
+      "issue_slots_busy_percent": 23.88,
+      "compute_throughput_percent": 32.91,
+      "memory_throughput_gb_per_second": 181.02,
+      "no_eligible_warp_percent": 76.11,
+      "profile_duration_ms": 9.79
+    }
+  },
+  "final": {
+    "label": "adaptive 128-register kernel",
+    "flaggems_revision": "4534b88689da2630145c75d7612284f3fecb61cc",
+    "report_sha256": "60119ae5991ab4de613e8b317a4c707f00126558cc6e115a0d54eb5a16e599bc",
+    "csv_sha256": "a8b6b9032b0d9ae9e519833c99ec0f0c215e7e693bc6f167123d41af7b0a1621",
+    "metrics": {
+      "registers_per_thread": 128,
+      "achieved_occupancy_percent": 24.69,
+      "issue_slots_busy_percent": 31.15,
+      "compute_throughput_percent": 40.44,
+      "memory_throughput_gb_per_second": 301.12,
+      "no_eligible_warp_percent": 69.08,
+      "profile_duration_ms": 8.22
+    }
+  },
+  "derived": {
+    "register_reduction_percent": 42.08,
+    "occupancy_ratio": 1.9976,
+    "memory_throughput_ratio": 1.6635,
+    "profile_duration_reduction_percent": 16.04
+  },
+  "note": "Nsight replay duration is hardware diagnostic evidence. End-to-end acceptance uses independent CUDA-event 5x50 suites."
+}

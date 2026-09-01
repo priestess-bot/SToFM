@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "workload": "B=1, N=1050, D=256, L=4, H=8, Gaussian K=128, FP32",
+  "scope": "development probes retained for optimization attribution; final acceptance is the separate 5x50 suite",
+  "loss_total": 2.0003857612609863,
+  "iterations": [
+    {
+      "name": "initial self-hosted tiled kernel",
+      "step_median_ms": 87.13830184936523,
+      "change": "shared-memory tiled GEMM/BMM, split-K and packed AdamW",
+      "speedup_vs_previous": null
+    },
+    {
+      "name": "direct out writes",
+      "step_median_ms": 82.75302124023438,
+      "change": "write ATen out variants directly and remove temporary GEMM output copies",
+      "speedup_vs_previous": 1.052992393
+    },
+    {
+      "name": "stride-aware tile loading",
+      "step_median_ms": 80.28364944458008,
+      "change": "coalesced row/column-major global-to-shared mapping",
+      "speedup_vs_previous": 1.030758091
+    },
+    {
+      "name": "adaptive low-register main tile",
+      "step_median_ms": 76.29055786132812,
+      "change": "use the 128-register two-block-per-SM kernel only for large grids and split-K",
+      "speedup_vs_previous": 1.052340574
+    },
+    {
+      "name": "native Pair forward and backward",
+      "step_median_ms": 70.9560317993164,
+      "change": "Triton score/softmax epilogue plus analytical backward with self-hosted BMM",
+      "speedup_vs_previous": 1.075180727
+    },
+    {
+      "name": "reproducible optimization flags and block-index AdamW",
+      "step_median_ms": 70.92633438110352,
+      "change": "-O3/-lineinfo build and one tensor lookup per CUDA block",
+      "speedup_vs_previous": 1.000418708
+    }
+  ],
+  "formal_result": {
+    "trial_count": 5,
+    "samples_per_trial": 50,
+    "step_median_ms": 71.00569534301758,
+    "torch_eager_fused_median_ms": 80.23808288574219,
+    "speedup": 1.1300231974086636
+  }
+}

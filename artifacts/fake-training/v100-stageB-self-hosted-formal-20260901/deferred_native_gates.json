@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "checks": [
+    {
+      "name": "python_lazy_dispatch",
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "name": "ascendc_stofm",
+      "path": "src/flag_gems/experimental_ops/vendor/ascendc_stofm",
+      "status": "passed",
+      "failures": [],
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/g++",
+            "-std=c++17",
+            "-fsyntax-only",
+            "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/src/flag_gems/experimental_ops/vendor/ascendc_stofm/op_host/stofm_ops.cpp"
+          ],
+          "returncode": 0,
+          "output": ""
+        },
+        {
+          "command": [
+            "/usr/bin/g++",
+            "-std=c++17",
+            "-fsyntax-only",
+            "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/src/flag_gems/experimental_ops/vendor/ascendc_stofm/op_kernel/stofm_gaussian_pair_bias.cpp"
+          ],
+          "returncode": 0,
+          "output": ""
+        },
+        {
+          "command": [
+            "/usr/bin/g++",
+            "-std=c++17",
+            "-fsyntax-only",
+            "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/src/flag_gems/experimental_ops/vendor/ascendc_stofm/op_kernel/stofm_pair_score_epilogue.cpp"
+          ],
+          "returncode": 0,
+          "output": ""
+        },
+        {
+          "command": [
+            "/usr/bin/cmake",
+            "-S",
+            "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/src/flag_gems/experimental_ops/vendor/ascendc_stofm",
+            "-B",
+            "/tmp/ascendc_stofm-nzty1cr1/build",
+            "-DFLAGOS_STOFM_DEFERRED_VALIDATE=ON"
+          ],
+          "returncode": 0,
+          "output": "-- The CXX compiler identification is GNU 11.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done\n-- Generating done\n-- Build files have been written to: /tmp/ascendc_stofm-nzty1cr1/build\n"
+        },
+        {
+          "command": [
+            "/usr/bin/cmake",
+            "--build",
+            "/tmp/ascendc_stofm-nzty1cr1/build"
+          ],
+          "returncode": 0,
+          "output": "Deferred CANN source validation only\nBuilt target flagos_stofm_ascendc_deferred_validate\n"
+        }
+      ]
+    },
+    {
+      "name": "musa_stofm",
+      "path": "src/flag_gems/experimental_ops/vendor/musa_stofm",
+      "status": "passed",
+      "failures": [],
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/g++",
+            "-std=c++17",
+            "-fsyntax-only",
+            "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/src/flag_gems/experimental_ops/vendor/musa_stofm/src/stofm_musa_registration.cpp"
+          ],
+          "returncode": 0,
+          "output": ""
+        },
+        {
+          "command": [
+            "/usr/bin/g++",
+            "-std=c++17",
+            "-fsyntax-only",
+            "-x",
+            "c++",
+            "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/src/flag_gems/experimental_ops/vendor/musa_stofm/src/stofm_gaussian_pair_bias.mu"
+          ],
+          "returncode": 0,
+          "output": ""
+        },
+        {
+          "command": [
+            "/usr/bin/g++",
+            "-std=c++17",
+            "-fsyntax-only",
+            "-x",
+            "c++",
+            "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/src/flag_gems/experimental_ops/vendor/musa_stofm/src/stofm_pair_score_epilogue.mu"
+          ],
+          "returncode": 0,
+          "output": ""
+        },
+        {
+          "command": [
+            "/usr/bin/cmake",
+            "-S",
+            "/home/ymm/ym/xl/20260815-first-operator/FlagGems-stofm/src/flag_gems/experimental_ops/vendor/musa_stofm",
+            "-B",
+            "/tmp/musa_stofm-3ua1y8r5/build",
+            "-DFLAGOS_STOFM_DEFERRED_VALIDATE=ON"
+          ],
+          "returncode": 0,
+          "output": "-- The CXX compiler identification is GNU 11.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done\n-- Generating done\n-- Build files have been written to: /tmp/musa_stofm-3ua1y8r5/build\n"
+        },
+        {
+          "command": [
+            "/usr/bin/cmake",
+            "--build",
+            "/tmp/musa_stofm-3ua1y8r5/build"
+          ],
+          "returncode": 0,
+          "output": "Deferred MUSA source validation only\nBuilt target flagos_stofm_musa_deferred_validate\n"
+        }
+      ]
+    }
+  ],
+  "scope": "offline static validation only; no CANN or MUSA binary is claimed"
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "scope": "single-process auxiliary probes; excluded from Stage B acceptance and confidence intervals",
+  "revisions": {
+    "stofm": "b2f36fa80ad5f1bbe7575ece3a3e4d64f4ce56a6",
+    "flaggems": "4534b88689da2630145c75d7612284f3fecb61cc"
+  },
+  "route": "torch.compile + CUDA fused AdamW",
+  "representative": {
+    "warmup": 20,
+    "samples": 20,
+    "forward_median_ms": 1.3393920063972473,
+    "backward_median_ms": 14.994944095611572,
+    "optimizer_median_ms": 0.49561598896980286,
+    "step_median_ms": 16.87654399871826,
+    "step_p95_ms": 17.22833881378174,
+    "self_hosted_formal_median_ms": 14.494208335876465,
+    "self_hosted_is_faster": true
+  },
+  "production": {
+    "warmup": 10,
+    "samples": 10,
+    "forward_median_ms": 9.786879539489746,
+    "backward_median_ms": 32.9093132019043,
+    "optimizer_median_ms": 0.19968000054359436,
+    "step_median_ms": 42.86822509765625,
+    "step_p95_ms": 43.37341461181641,
+    "self_hosted_formal_median_ms": 71.00569534301758,
+    "self_hosted_is_faster": false
+  },
+  "note": "The formal acceptance baseline remains PyTorch eager + fused AdamW. This file prevents an eager win from being misreported as a production torch.compile win."
+}

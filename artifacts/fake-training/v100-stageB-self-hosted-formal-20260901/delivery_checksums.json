@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "algorithm": "sha256",
+  "measured_library": {
+    "sha256": "83a0e569fe38f3ea5d3365268eb3d403bd9274757814ea26a65bec5c6d07f392",
+    "flaggems_revision": "4534b88689da2630145c75d7612284f3fecb61cc"
+  },
+  "reports": {
+    "docs/flagos_v100_self_hosted_gemm_report.md": "6b833ad03fd8a653d3cf0d28d209f25e9237015513d36d52265c5ccdde5e6dbf"
+  },
+  "files": {
+    "acceptance.json": "f0ceb94741a534ce3b0478adee5c9da9ec50b08893dadfdfcd31c307e1c63f26",
+    "shape_validation.json": "781e5a2663b63671c0325d76b3a31a5d34fb0b3e891ebfafcd71bcac3c735153",
+    "checkpoint_validation.json": "18c78ebc8f552712e076975ca11e2b9252f9a1a2704fbe11413da1828e62b508",
+    "deferred_native_gates.json": "298cf2f684ba564c989d8b0df790b6f508c2b2f75447649b6d2f0cb7ba1d2b79",
+    "ncu_gaussian_forward_final.csv": "a8b6b9032b0d9ae9e519833c99ec0f0c215e7e693bc6f167123d41af7b0a1621",
+    "ncu_gaussian_forward_final.ncu-rep": "60119ae5991ab4de613e8b317a4c707f00126558cc6e115a0d54eb5a16e599bc",
+    "ncu_comparison.json": "acd0108f042a9acd47959f321d20474578ce94545b10e5538eaf134cc6daff21",
+    "optimization_history.json": "7e2ec15ada3798af58288b3bf40f027c1340762215ed80b9c09f07fa7b96b99c",
+    "torch_compile_auxiliary.json": "d79be5a54ea0d7bfe9b9811d1ce350c42d13e763a7b07676372e8360582a1064",
+    "representative/suite.json": "7dd00de38fa9f84069d0d34ed3c273d16e3cddb5621d5e461b8a6ceab5a34435",
+    "production/suite.json": "a773afbe48a661de95c036416b935ba68c8a2c47e0d1738bca0157da037dbf5b"
+  }
+}

@@ -1,0 +1,4408 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "benchmark": "SToFM PHASE 2 V100 FP32 training",
+  "created_at": "2026-09-01T08:18:53.612519+00:00",
+  "material_passport": {
+    "origin_skill": "experiment-agent",
+    "origin_mode": "run",
+    "origin_date": "2026-09-01T08:18:53.612544+00:00",
+    "verification_status": "VERIFIED",
+    "version_label": "stofm_phase2_v100_training_suite_v1",
+    "upstream_dependencies": [
+      "deps/flagos-training.lock.json"
+    ]
+  },
+  "routes": [
+    "torch_scalar",
+    "torch_fused",
+    "flagos_self_hosted_native_fused_v100_tuned"
+  ],
+  "trial_count": 5,
+  "raw_samples_per_route": 250,
+  "protocol": {
+    "independent_process_per_route_and_trial": true,
+    "rotating_route_order": true,
+    "requested_warmup": 50,
+    "effective_warmup": 50,
+    "repetitions_per_trial": 50,
+    "bootstrap_resamples": 20000,
+    "aggregation_reused_existing_results": false
+  },
+  "environment": {
+    "python": "3.11.15",
+    "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.35",
+    "torch": "2.6.0+cu124",
+    "cuda": "12.4",
+    "triton": "3.2.0",
+    "device": "Tesla V100-SXM2-16GB",
+    "compute_capability": [
+      7,
+      0
+    ],
+    "total_memory_bytes": 16928342016,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false
+  },
+  "revisions": {
+    "stofm": "b2f36fa80ad5f1bbe7575ece3a3e4d64f4ce56a6",
+    "flaggems": "4534b88689da2630145c75d7612284f3fecb61cc"
+  },
+  "workload": {
+    "precision": "fp32",
+    "batch_size": 1,
+    "nodes": 384,
+    "input_dim": 32,
+    "embedding_dim": 64,
+    "heads": 8,
+    "gaussian_hidden_dim": 32,
+    "layers": 2,
+    "objective": "MCM + PDR",
+    "data": "deterministic synthetic tensors"
+  },
+  "correctness": {
+    "reference_route": "torch_scalar",
+    "thresholds": {
+      "loss_max_abs": 2e-05,
+      "gradient_max_abs": 0.0002,
+      "parameter_max_abs": 5e-05,
+      "optimizer_state_max_abs": 2e-05
+    },
+    "parameter_threshold_rationale": "AdamW normalizes first-step gradients by sqrt(v)+eps; near-zero gradients can amplify sub-1e-8 gradient differences into parameter differences. The 5e-5 parameter gate remains paired with much tighter independent loss, gradient, and optimizer-state gates.",
+    "hashes_consistent_across_trials": true,
+    "routes": {
+      "torch_scalar": {
+        "display_name": "\u7eaf PyTorch \u539f\u59cb\u7b97\u5b50 + \u5355\u5f20\u91cf AdamW",
+        "loss_abs_errors": {
+          "total": 0.0,
+          "mcm": 0.0,
+          "pdr": 0.0
+        },
+        "gradient_errors": {
+          "tensor_count": 51,
+          "max_abs": 0.0,
+          "max_rel": 0.0,
+          "mean_of_tensor_mean_abs": 0.0,
+          "worst_abs_tensor": "model.embedding_layer.weight",
+          "per_tensor": {
+            "model.embedding_layer.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.token_type_embeddings.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.means.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.stds.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            }
+          }
+        },
+        "updated_parameter_errors": {
+          "tensor_count": 51,
+          "max_abs": 0.0,
+          "max_rel": 0.0,
+          "mean_of_tensor_mean_abs": 0.0,
+          "worst_abs_tensor": "model.embedding_layer.weight",
+          "per_tensor": {
+            "model.embedding_layer.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.token_type_embeddings.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.means.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.stds.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            }
+          }
+        },
+        "optimizer_state_errors": {
+          "tensor_count": 153,
+          "max_abs": 0.0,
+          "max_rel": 0.0,
+          "mean_of_tensor_mean_abs": 0.0,
+          "worst_abs_tensor": "model.embedding_layer.weight.step",
+          "per_tensor": {
+            "model.embedding_layer.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.token_type_embeddings.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.token_type_embeddings.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.token_type_embeddings.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.means.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.means.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.means.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.stds.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.stds.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.stds.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            }
+          }
+        },
+        "passed": true
+      },
+      "torch_fused": {
+        "display_name": "\u7eaf PyTorch \u539f\u59cb\u7b97\u5b50 + CUDA fused AdamW",
+        "loss_abs_errors": {
+          "total": 0.0,
+          "mcm": 0.0,
+          "pdr": 0.0
+        },
+        "gradient_errors": {
+          "tensor_count": 51,
+          "max_abs": 0.0,
+          "max_rel": 0.0,
+          "mean_of_tensor_mean_abs": 0.0,
+          "worst_abs_tensor": "model.embedding_layer.weight",
+          "per_tensor": {
+            "model.embedding_layer.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.token_type_embeddings.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.means.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.stds.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            }
+          }
+        },
+        "updated_parameter_errors": {
+          "tensor_count": 51,
+          "max_abs": 2.384185791015625e-07,
+          "max_rel": 8.753886504564434e-05,
+          "mean_of_tensor_mean_abs": 8.027828445573356e-10,
+          "worst_abs_tensor": "model.gaussian.means.weight",
+          "per_tensor": {
+            "model.embedding_layer.weight": {
+              "max_abs": 7.450580596923828e-09,
+              "max_rel": 3.0401040476135677e-06,
+              "mean_abs": 2.8636870652576363e-10
+            },
+            "model.embedding_layer.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3283087102754507e-07,
+              "mean_abs": 5.638867150992155e-11
+            },
+            "model.token_type_embeddings.weight": {
+              "max_abs": 3.725290298461914e-09,
+              "max_rel": 7.659927518943732e-07,
+              "mean_abs": 2.7631585908238776e-10
+            },
+            "model.gaussian.linear.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.means.weight": {
+              "max_abs": 2.384185791015625e-07,
+              "max_rel": 9.661805933092182e-08,
+              "mean_abs": 1.862645149230957e-08
+            },
+            "model.gaussian.stds.weight": {
+              "max_abs": 1.1920928955078125e-07,
+              "max_rel": 8.585980282305172e-08,
+              "mean_abs": 8.381903171539307e-09
+            },
+            "model.gaussian.proj.0.weight": {
+              "max_abs": 7.450580596923828e-09,
+              "max_rel": 5.0487660701037385e-06,
+              "mean_abs": 2.4727597747187247e-10
+            },
+            "model.gaussian.proj.0.bias": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 1.3505872686891962e-07,
+              "mean_abs": 1.8189894035458565e-11
+            },
+            "model.gaussian.proj.2.weight": {
+              "max_abs": 3.725290298461914e-09,
+              "max_rel": 8.051285362853378e-07,
+              "mean_abs": 2.163460521842353e-10
+            },
+            "model.gaussian.proj.2.bias": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 1.167944176927449e-07,
+              "mean_abs": 7.275957614183426e-11
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight": {
+              "max_abs": 1.4901161193847656e-08,
+              "max_rel": 6.743330231984146e-06,
+              "mean_abs": 1.0761556090699287e-09
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias": {
+              "max_abs": 1.7462298274040222e-10,
+              "max_rel": 1.893762799909382e-07,
+              "mean_abs": 3.433342499192804e-11
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight": {
+              "max_abs": 1.4901161193847656e-08,
+              "max_rel": 3.906918664142722e-06,
+              "mean_abs": 1.1068692629123689e-09
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3283409689156542e-07,
+              "mean_abs": 4.547473508864641e-11
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight": {
+              "max_abs": 1.4901161193847656e-08,
+              "max_rel": 1.6458014897580142e-06,
+              "mean_abs": 1.0548752982231235e-09
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3367756796233152e-07,
+              "mean_abs": 6.548361852765083e-11
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight": {
+              "max_abs": 2.9802322387695312e-08,
+              "max_rel": 1.0432709132146556e-06,
+              "mean_abs": 1.5804157982302058e-09
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias": {
+              "max_abs": 3.4924596548080444e-10,
+              "max_rel": 3.49256964682354e-07,
+              "mean_abs": 6.184563972055912e-11
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.328330452883165e-07,
+              "mean_abs": 5.638867150992155e-11
+            },
+            "model.encoder.layers.0.fc1.weight": {
+              "max_abs": 3.725290298461914e-09,
+              "max_rel": 1.656133827054873e-05,
+              "mean_abs": 2.782110097854229e-10
+            },
+            "model.encoder.layers.0.fc1.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3285844008569256e-07,
+              "mean_abs": 5.093170329928398e-11
+            },
+            "model.encoder.layers.0.fc2.weight": {
+              "max_abs": 7.450580596923828e-09,
+              "max_rel": 8.753886504564434e-05,
+              "mean_abs": 2.743906768465365e-10
+            },
+            "model.encoder.layers.0.fc2.bias": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 1.1646944386711766e-07,
+              "mean_abs": 3.637978807091713e-11
+            },
+            "model.encoder.layers.0.final_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3283507744054077e-07,
+              "mean_abs": 6.002665031701326e-11
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight": {
+              "max_abs": 1.4901161193847656e-08,
+              "max_rel": 6.591251803911291e-06,
+              "mean_abs": 1.1031588975640716e-09
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.396051002051536e-07,
+              "mean_abs": 5.184119800105691e-11
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight": {
+              "max_abs": 1.4901161193847656e-08,
+              "max_rel": 1.5210305264190538e-06,
+              "mean_abs": 1.0466569833056383e-09
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.328351911273785e-07,
+              "mean_abs": 5.638867150992155e-11
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight": {
+              "max_abs": 1.4901161193847656e-08,
+              "max_rel": 5.956955192232272e-06,
+              "mean_abs": 1.0396605798490555e-09
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3284245287413796e-07,
+              "mean_abs": 7.185008144006133e-11
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight": {
+              "max_abs": 2.9802322387695312e-08,
+              "max_rel": 9.50211642702925e-07,
+              "mean_abs": 1.574820274186095e-09
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3284017913738353e-07,
+              "mean_abs": 6.548361852765083e-11
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3283961070319492e-07,
+              "mean_abs": 5.093170329928398e-11
+            },
+            "model.encoder.layers.1.fc1.weight": {
+              "max_abs": 3.725290298461914e-09,
+              "max_rel": 1.0115589248016477e-05,
+              "mean_abs": 2.8364446902351403e-10
+            },
+            "model.encoder.layers.1.fc1.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3286196437766193e-07,
+              "mean_abs": 5.002220859751105e-11
+            },
+            "model.encoder.layers.1.fc2.weight": {
+              "max_abs": 3.725290298461914e-09,
+              "max_rel": 8.821300070849247e-06,
+              "mean_abs": 2.7486241060969974e-10
+            },
+            "model.encoder.layers.1.fc2.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3284914618670882e-07,
+              "mean_abs": 4.9112713895738125e-11
+            },
+            "model.encoder.layers.1.final_layer_norm.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3283280370378634e-07,
+              "mean_abs": 5.820766091346741e-11
+            },
+            "lm_head.0.weight": {
+              "max_abs": 7.450580596923828e-09,
+              "max_rel": 5.925849836785346e-05,
+              "mean_abs": 2.581946600965779e-10
+            },
+            "lm_head.0.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.328315531485714e-07,
+              "mean_abs": 4.18367562815547e-11
+            },
+            "lm_head.2.weight": {
+              "max_abs": 7.450580596923828e-09,
+              "max_rel": 4.474063462112099e-05,
+              "mean_abs": 2.659614750655237e-10
+            },
+            "lm_head.2.bias": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 1.1641905928172491e-07,
+              "mean_abs": 4.18367562815547e-11
+            },
+            "pair_head.0.weight": {
+              "max_abs": 1.862645149230957e-09,
+              "max_rel": 5.687775228579994e-07,
+              "mean_abs": 2.1532287064474076e-10
+            },
+            "pair_head.0.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3313477015562967e-07,
+              "mean_abs": 8.731149137020111e-11
+            },
+            "pair_head.2.weight": {
+              "max_abs": 1.862645149230957e-09,
+              "max_rel": 7.815215496975725e-08,
+              "mean_abs": 2.9103830456733704e-10
+            },
+            "pair_head.2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            }
+          }
+        },
+        "optimizer_state_errors": {
+          "tensor_count": 153,
+          "max_abs": 9.313225746154785e-10,
+          "max_rel": 1.1920407416710077e-07,
+          "mean_of_tensor_mean_abs": 1.1719987468492423e-12,
+          "worst_abs_tensor": "lm_head.2.bias.exp_avg",
+          "per_tensor": {
+            "model.embedding_layer.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.weight.exp_avg": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 1.191602123640223e-07,
+              "mean_abs": 1.0085155800754197e-11
+            },
+            "model.embedding_layer.weight.exp_avg_sq": {
+              "max_abs": 5.684341886080802e-14,
+              "max_rel": 5.6843418860808015e-08,
+              "mean_abs": 2.7435901146170404e-15
+            },
+            "model.embedding_layer.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.bias.exp_avg": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 1.1630483243152412e-07,
+              "mean_abs": 1.786304437700892e-11
+            },
+            "model.embedding_layer.bias.exp_avg_sq": {
+              "max_abs": 5.684341886080802e-14,
+              "max_rel": 5.6843418860808015e-08,
+              "mean_abs": 8.398230028072717e-15
+            },
+            "model.token_type_embeddings.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.token_type_embeddings.weight.exp_avg": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 1.1898553253786304e-07,
+              "mean_abs": 3.0314153964816626e-12
+            },
+            "model.token_type_embeddings.weight.exp_avg_sq": {
+              "max_abs": 5.684341886080802e-14,
+              "max_rel": 5.6843418860808015e-08,
+              "mean_abs": 1.754388722275855e-15
+            },
+            "model.gaussian.linear.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.weight.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.weight.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias.exp_avg_sq": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.means.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.means.weight.exp_avg": {
+              "max_abs": 4.440892098500626e-16,
+              "max_rel": 4.440892098500626e-10,
+              "mean_abs": 1.745565497701662e-17
+            },
+            "model.gaussian.means.weight.exp_avg_sq": {
+              "max_abs": 2.0679515313825692e-25,
+              "max_rel": 2.0679515313825692e-19,
+              "mean_abs": 1.6246195912574128e-26
+            },
+            "model.gaussian.stds.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.stds.weight.exp_avg": {
+              "max_abs": 3.552713678800501e-15,
+              "max_rel": 3.552713678800501e-09,
+              "mean_abs": 1.1839487723541708e-16
+            },
+            "model.gaussian.stds.weight.exp_avg_sq": {
+              "max_abs": 1.3234889800848443e-23,
+              "max_rel": 1.3234889800848443e-17,
+              "mean_abs": 4.526027320909269e-25
+            },
+            "model.gaussian.proj.0.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.weight.exp_avg": {
+              "max_abs": 2.842170943040401e-14,
+              "max_rel": 2.8421709430404007e-08,
+              "mean_abs": 3.1098306438673284e-16
+            },
+            "model.gaussian.proj.0.weight.exp_avg_sq": {
+              "max_abs": 1.6940658945086007e-21,
+              "max_rel": 1.6940658945086007e-15,
+              "mean_abs": 8.022650719503462e-24
+            },
+            "model.gaussian.proj.0.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.bias.exp_avg": {
+              "max_abs": 1.7763568394002505e-15,
+              "max_rel": 1.7763568394002505e-09,
+              "mean_abs": 5.551115123125783e-17
+            },
+            "model.gaussian.proj.0.bias.exp_avg_sq": {
+              "max_abs": 1.6940658945086007e-21,
+              "max_rel": 1.6940658945086007e-15,
+              "mean_abs": 5.297914108817414e-23
+            },
+            "model.gaussian.proj.2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.weight.exp_avg": {
+              "max_abs": 1.4210854715202004e-14,
+              "max_rel": 1.4210854715202004e-08,
+              "mean_abs": 5.118518456304066e-16
+            },
+            "model.gaussian.proj.2.weight.exp_avg_sq": {
+              "max_abs": 4.235164736271502e-22,
+              "max_rel": 4.2351647362715017e-16,
+              "mean_abs": 1.0778446361749871e-23
+            },
+            "model.gaussian.proj.2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.bias.exp_avg": {
+              "max_abs": 5.684341886080802e-14,
+              "max_rel": 5.6843418860808015e-08,
+              "mean_abs": 7.105427357601002e-15
+            },
+            "model.gaussian.proj.2.bias.exp_avg_sq": {
+              "max_abs": 6.776263578034403e-21,
+              "max_rel": 6.776263578034403e-15,
+              "mean_abs": 1.164670302474663e-21
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight.exp_avg": {
+              "max_abs": 5.684341886080802e-14,
+              "max_rel": 5.6843418860808015e-08,
+              "mean_abs": 2.095742470623746e-15
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight.exp_avg_sq": {
+              "max_abs": 3.3881317890172014e-21,
+              "max_rel": 3.3881317890172014e-15,
+              "mean_abs": 1.1850979124133462e-22
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias.exp_avg": {
+              "max_abs": 1.7763568394002505e-15,
+              "max_rel": 1.7763568394002505e-09,
+              "mean_abs": 9.6710833785707e-17
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias.exp_avg_sq": {
+              "max_abs": 3.308722450212111e-24,
+              "max_rel": 3.3087224502121107e-18,
+              "mean_abs": 2.1596181546453823e-25
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight.exp_avg": {
+              "max_abs": 1.4551915228366852e-11,
+              "max_rel": 1.1915123820926965e-07,
+              "mean_abs": 2.5979890981575604e-13
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight.exp_avg_sq": {
+              "max_abs": 4.440892098500626e-16,
+              "max_rel": 4.440892098500626e-10,
+              "mean_abs": 3.1102621757210912e-18
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias.exp_avg": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 1.1801505905850718e-07,
+              "mean_abs": 1.2192913345643319e-11
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias.exp_avg_sq": {
+              "max_abs": 5.684341886080802e-14,
+              "max_rel": 5.6843418860808015e-08,
+              "mean_abs": 5.3340036380855604e-15
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight.exp_avg": {
+              "max_abs": 5.684341886080802e-14,
+              "max_rel": 5.6843418860808015e-08,
+              "mean_abs": 2.3906064980242295e-15
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight.exp_avg_sq": {
+              "max_abs": 6.776263578034403e-21,
+              "max_rel": 6.776263578034403e-15,
+              "mean_abs": 1.4250083103930777e-22
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias.exp_avg": {
+              "max_abs": 4.547473508864641e-13,
+              "max_rel": 1.0033001274223352e-07,
+              "mean_abs": 2.1649348980190553e-14
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias.exp_avg_sq": {
+              "max_abs": 2.168404344971009e-19,
+              "max_rel": 2.1684043449710089e-13,
+              "mean_abs": 2.7029780876395285e-20
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight.exp_avg": {
+              "max_abs": 7.275957614183426e-12,
+              "max_rel": 1.1889719786495334e-07,
+              "mean_abs": 1.6240199289530022e-13
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight.exp_avg_sq": {
+              "max_abs": 1.1102230246251565e-16,
+              "max_rel": 1.1102230246251565e-10,
+              "mean_abs": 1.2632592713478675e-18
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias.exp_avg": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 1.148258661487489e-07,
+              "mean_abs": 1.722355591482483e-11
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias.exp_avg_sq": {
+              "max_abs": 5.684341886080802e-14,
+              "max_rel": 5.6843418860808015e-08,
+              "mean_abs": 5.5347436703212516e-15
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight.exp_avg": {
+              "max_abs": 1.4551915228366852e-11,
+              "max_rel": 1.1127719545811487e-07,
+              "mean_abs": 1.3997691894473974e-12
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 2.220446049250313e-16,
+              "max_rel": 2.220446049250313e-10,
+              "mean_abs": 2.449280470280535e-17
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias.exp_avg": {
+              "max_abs": 2.9103830456733704e-11,
+              "max_rel": 1.0656196991476463e-07,
+              "mean_abs": 1.4637180356658064e-12
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 8.881784197001252e-16,
+              "max_rel": 8.881784197001252e-10,
+              "mean_abs": 7.852503640815717e-17
+            },
+            "model.encoder.layers.0.fc1.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.weight.exp_avg": {
+              "max_abs": 1.8189894035458565e-12,
+              "max_rel": 1.1893430240661473e-07,
+              "mean_abs": 9.108772763832818e-14
+            },
+            "model.encoder.layers.0.fc1.weight.exp_avg_sq": {
+              "max_abs": 6.938893903907228e-18,
+              "max_rel": 6.938893903907228e-12,
+              "mean_abs": 2.4368495276567844e-19
+            },
+            "model.encoder.layers.0.fc1.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.bias.exp_avg": {
+              "max_abs": 1.8189894035458565e-12,
+              "max_rel": 1.1744192107698836e-07,
+              "mean_abs": 1.7053025658242404e-13
+            },
+            "model.encoder.layers.0.fc1.bias.exp_avg_sq": {
+              "max_abs": 1.734723475976807e-18,
+              "max_rel": 1.734723475976807e-12,
+              "mean_abs": 1.7703154033737388e-19
+            },
+            "model.encoder.layers.0.fc2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.weight.exp_avg": {
+              "max_abs": 3.637978807091713e-12,
+              "max_rel": 1.1910191233255318e-07,
+              "mean_abs": 9.284630356209966e-14
+            },
+            "model.encoder.layers.0.fc2.weight.exp_avg_sq": {
+              "max_abs": 6.938893903907228e-18,
+              "max_rel": 6.938893903907228e-12,
+              "mean_abs": 2.351464325913881e-19
+            },
+            "model.encoder.layers.0.fc2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.bias.exp_avg": {
+              "max_abs": 1.4551915228366852e-11,
+              "max_rel": 1.189976543969351e-07,
+              "mean_abs": 8.175682353339653e-13
+            },
+            "model.encoder.layers.0.fc2.bias.exp_avg_sq": {
+              "max_abs": 8.881784197001252e-16,
+              "max_rel": 8.881784197001252e-10,
+              "mean_abs": 6.806080461266734e-17
+            },
+            "model.encoder.layers.0.final_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.weight.exp_avg": {
+              "max_abs": 1.4551915228366852e-11,
+              "max_rel": 1.1509086306205063e-07,
+              "mean_abs": 1.6839862837514374e-12
+            },
+            "model.encoder.layers.0.final_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 2.220446049250313e-16,
+              "max_rel": 2.220446049250313e-10,
+              "mean_abs": 2.9305645909104283e-17
+            },
+            "model.encoder.layers.0.final_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.bias.exp_avg": {
+              "max_abs": 2.9103830456733704e-11,
+              "max_rel": 1.1536741340023582e-07,
+              "mean_abs": 1.8474111129762605e-12
+            },
+            "model.encoder.layers.0.final_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 8.881784197001252e-16,
+              "max_rel": 8.881784197001252e-10,
+              "mean_abs": 5.894676980488047e-17
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight.exp_avg": {
+              "max_abs": 3.637978807091713e-12,
+              "max_rel": 1.1889086692917772e-07,
+              "mean_abs": 1.1157536754322767e-13
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight.exp_avg_sq": {
+              "max_abs": 1.3877787807814457e-17,
+              "max_rel": 1.3877787807814457e-11,
+              "mean_abs": 3.1389544862311415e-19
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias.exp_avg": {
+              "max_abs": 1.4210854715202004e-14,
+              "max_rel": 1.4210854715202004e-08,
+              "mean_abs": 1.2455314557513475e-15
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias.exp_avg_sq": {
+              "max_abs": 1.6940658945086007e-21,
+              "max_rel": 1.6940658945086007e-15,
+              "mean_abs": 7.960361315794125e-23
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight.exp_avg": {
+              "max_abs": 1.4551915228366852e-11,
+              "max_rel": 1.1920407416710077e-07,
+              "mean_abs": 2.862055210883785e-13
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight.exp_avg_sq": {
+              "max_abs": 2.220446049250313e-16,
+              "max_rel": 2.220446049250313e-10,
+              "mean_abs": 2.707377447727392e-18
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias.exp_avg": {
+              "max_abs": 1.4551915228366852e-11,
+              "max_rel": 1.168000665074942e-07,
+              "mean_abs": 8.810729923425242e-13
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias.exp_avg_sq": {
+              "max_abs": 4.440892098500626e-16,
+              "max_rel": 4.440892098500626e-10,
+              "mean_abs": 4.3781438977680276e-17
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight.exp_avg": {
+              "max_abs": 3.637978807091713e-12,
+              "max_rel": 1.1907683727940821e-07,
+              "mean_abs": 1.0346628068202968e-13
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight.exp_avg_sq": {
+              "max_abs": 2.7755575615628914e-17,
+              "max_rel": 2.7755575615628914e-11,
+              "mean_abs": 3.5235746010105755e-19
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias.exp_avg": {
+              "max_abs": 3.637978807091713e-12,
+              "max_rel": 1.1632377550085948e-07,
+              "mean_abs": 2.014083344548112e-13
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias.exp_avg_sq": {
+              "max_abs": 6.938893903907228e-18,
+              "max_rel": 6.938893903907228e-12,
+              "mean_abs": 6.198180135145594e-19
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight.exp_avg": {
+              "max_abs": 3.637978807091713e-12,
+              "max_rel": 1.1916344533347001e-07,
+              "mean_abs": 1.750154383396707e-13
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight.exp_avg_sq": {
+              "max_abs": 5.551115123125783e-17,
+              "max_rel": 5.551115123125783e-11,
+              "mean_abs": 9.529905444217038e-19
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias.exp_avg": {
+              "max_abs": 1.4551915228366852e-11,
+              "max_rel": 1.168576133636634e-07,
+              "mean_abs": 1.3216094885137863e-12
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias.exp_avg_sq": {
+              "max_abs": 2.220446049250313e-16,
+              "max_rel": 2.220446049250313e-10,
+              "mean_abs": 2.8177398023361555e-17
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight.exp_avg": {
+              "max_abs": 1.4551915228366852e-11,
+              "max_rel": 1.1644009845213077e-07,
+              "mean_abs": 1.1812772982011666e-12
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 2.220446049250313e-16,
+              "max_rel": 2.220446049250313e-10,
+              "mean_abs": 2.8026837916987103e-17
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias.exp_avg": {
+              "max_abs": 1.4551915228366852e-11,
+              "max_rel": 1.0716139087207921e-07,
+              "mean_abs": 1.0587086762825493e-12
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 4.440892098500626e-16,
+              "max_rel": 4.440892098500626e-10,
+              "mean_abs": 4.0684686522518554e-17
+            },
+            "model.encoder.layers.1.fc1.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.weight.exp_avg": {
+              "max_abs": 1.8189894035458565e-12,
+              "max_rel": 1.1911876640624541e-07,
+              "mean_abs": 9.665342528067389e-14
+            },
+            "model.encoder.layers.1.fc1.weight.exp_avg_sq": {
+              "max_abs": 6.938893903907228e-18,
+              "max_rel": 6.938893903907228e-12,
+              "mean_abs": 2.135176370517783e-19
+            },
+            "model.encoder.layers.1.fc1.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.bias.exp_avg": {
+              "max_abs": 9.094947017729282e-13,
+              "max_rel": 1.0739690736727425e-07,
+              "mean_abs": 1.0658141036401503e-13
+            },
+            "model.encoder.layers.1.fc1.bias.exp_avg_sq": {
+              "max_abs": 3.469446951953614e-18,
+              "max_rel": 3.469446951953614e-12,
+              "mean_abs": 3.094929349091655e-19
+            },
+            "model.encoder.layers.1.fc2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.weight.exp_avg": {
+              "max_abs": 1.8189894035458565e-12,
+              "max_rel": 1.1897052587528378e-07,
+              "mean_abs": 9.78863799912244e-14
+            },
+            "model.encoder.layers.1.fc2.weight.exp_avg_sq": {
+              "max_abs": 6.938893903907228e-18,
+              "max_rel": 6.938893903907228e-12,
+              "mean_abs": 2.3041793216791114e-19
+            },
+            "model.encoder.layers.1.fc2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.bias.exp_avg": {
+              "max_abs": 1.4551915228366852e-11,
+              "max_rel": 1.1231716001702807e-07,
+              "mean_abs": 1.0800249583553523e-12
+            },
+            "model.encoder.layers.1.fc2.bias.exp_avg_sq": {
+              "max_abs": 4.440892098500626e-16,
+              "max_rel": 4.440892098500626e-10,
+              "mean_abs": 4.0196795544900077e-17
+            },
+            "model.encoder.layers.1.final_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.weight.exp_avg": {
+              "max_abs": 7.275957614183426e-12,
+              "max_rel": 1.0777768011394073e-07,
+              "mean_abs": 5.755396159656812e-13
+            },
+            "model.encoder.layers.1.final_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 2.220446049250313e-16,
+              "max_rel": 2.220446049250313e-10,
+              "mean_abs": 2.789872418371489e-17
+            },
+            "model.encoder.layers.1.final_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.bias.exp_avg": {
+              "max_abs": 1.4551915228366852e-11,
+              "max_rel": 1.1899674490223333e-07,
+              "mean_abs": 1.1888268147686176e-12
+            },
+            "model.encoder.layers.1.final_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 4.440892098500626e-16,
+              "max_rel": 4.440892098500626e-10,
+              "mean_abs": 4.403406655419887e-17
+            },
+            "lm_head.0.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.weight.exp_avg": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 1.191432872360565e-07,
+              "mean_abs": 7.243165268955298e-12
+            },
+            "lm_head.0.weight.exp_avg_sq": {
+              "max_abs": 5.684341886080802e-14,
+              "max_rel": 5.6843418860808015e-08,
+              "mean_abs": 1.2940057748941718e-15
+            },
+            "lm_head.0.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.bias.exp_avg": {
+              "max_abs": 5.820766091346741e-11,
+              "max_rel": 1.1710645253515395e-07,
+              "mean_abs": 3.0127011996228248e-12
+            },
+            "lm_head.0.bias.exp_avg_sq": {
+              "max_abs": 1.4210854715202004e-14,
+              "max_rel": 1.4210854715202004e-08,
+              "mean_abs": 1.1158896750422878e-15
+            },
+            "lm_head.2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.weight.exp_avg": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 1.1920236886453495e-07,
+              "mean_abs": 6.662559393078027e-12
+            },
+            "lm_head.2.weight.exp_avg_sq": {
+              "max_abs": 2.842170943040401e-14,
+              "max_rel": 2.8421709430404007e-08,
+              "mean_abs": 1.1884730929628113e-15
+            },
+            "lm_head.2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.bias.exp_avg": {
+              "max_abs": 9.313225746154785e-10,
+              "max_rel": 1.1486258699733298e-07,
+              "mean_abs": 8.503775461576879e-11
+            },
+            "lm_head.2.bias.exp_avg_sq": {
+              "max_abs": 1.8189894035458565e-12,
+              "max_rel": 1.1368683772161603e-07,
+              "mean_abs": 1.0902422627884212e-13
+            },
+            "pair_head.0.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.weight.exp_avg": {
+              "max_abs": 9.094947017729282e-13,
+              "max_rel": 1.1468696214933516e-07,
+              "mean_abs": 4.451994328746878e-14
+            },
+            "pair_head.0.weight.exp_avg_sq": {
+              "max_abs": 8.673617379884035e-19,
+              "max_rel": 8.673617379884035e-13,
+              "mean_abs": 3.8233942273426045e-20
+            },
+            "pair_head.0.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.bias.exp_avg": {
+              "max_abs": 5.684341886080802e-14,
+              "max_rel": 5.6843418860808015e-08,
+              "mean_abs": 7.105427357601002e-15
+            },
+            "pair_head.0.bias.exp_avg_sq": {
+              "max_abs": 2.168404344971009e-19,
+              "max_rel": 2.1684043449710089e-13,
+              "mean_abs": 4.071052102740981e-20
+            },
+            "pair_head.2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.weight.exp_avg": {
+              "max_abs": 9.094947017729282e-13,
+              "max_rel": 9.70645430697914e-08,
+              "mean_abs": 2.8421709430404007e-13
+            },
+            "pair_head.2.weight.exp_avg_sq": {
+              "max_abs": 1.734723475976807e-18,
+              "max_rel": 1.734723475976807e-12,
+              "mean_abs": 3.1340219048409113e-19
+            },
+            "pair_head.2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.bias.exp_avg": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.bias.exp_avg_sq": {
+              "max_abs": 2.220446049250313e-16,
+              "max_rel": 2.220446049250313e-10,
+              "mean_abs": 2.220446049250313e-16
+            }
+          }
+        },
+        "passed": true
+      },
+      "flagos_self_hosted_native_fused_v100_tuned": {
+        "display_name": "FlagOS Stage B\uff1a\u81ea\u7814 GEMM/BMM + Gaussian \u878d\u5408\u53cd\u5411 + \u591a\u5f20\u91cf AdamW",
+        "loss_abs_errors": {
+          "total": 0.0,
+          "mcm": 0.0,
+          "pdr": 0.0
+        },
+        "gradient_errors": {
+          "tensor_count": 51,
+          "max_abs": 1.862645149230957e-08,
+          "max_rel": 0.0016756871482357383,
+          "mean_of_tensor_mean_abs": 4.3048448186324837e-10,
+          "worst_abs_tensor": "model.embedding_layer.weight",
+          "per_tensor": {
+            "model.embedding_layer.weight": {
+              "max_abs": 1.862645149230957e-08,
+              "max_rel": 0.0016756871482357383,
+              "mean_abs": 2.6348310200319247e-09
+            },
+            "model.embedding_layer.bias": {
+              "max_abs": 1.0244548320770264e-08,
+              "max_rel": 6.944766209926456e-05,
+              "mean_abs": 2.510205376893282e-09
+            },
+            "model.token_type_embeddings.weight": {
+              "max_abs": 8.381903171539307e-09,
+              "max_rel": 4.6691282477695495e-05,
+              "mean_abs": 6.969286814317854e-10
+            },
+            "model.gaussian.linear.weight": {
+              "max_abs": 1.7053025658242404e-13,
+              "max_rel": 1.7053025658242404e-07,
+              "mean_abs": 1.7053025658242404e-13
+            },
+            "model.gaussian.linear.bias": {
+              "max_abs": 1.2789769243681803e-13,
+              "max_rel": 1.2789769243681803e-07,
+              "mean_abs": 1.2789769243681803e-13
+            },
+            "model.gaussian.means.weight": {
+              "max_abs": 4.973799150320701e-14,
+              "max_rel": 4.973799150320701e-08,
+              "mean_abs": 1.2883933557614885e-14
+            },
+            "model.gaussian.stds.weight": {
+              "max_abs": 5.115907697472721e-13,
+              "max_rel": 5.115907697472721e-07,
+              "mean_abs": 4.0992396651597096e-14
+            },
+            "model.gaussian.proj.0.weight": {
+              "max_abs": 6.572520305780927e-12,
+              "max_rel": 6.572520305780927e-06,
+              "mean_abs": 3.1944463892673303e-13
+            },
+            "model.gaussian.proj.0.bias": {
+              "max_abs": 7.617018127348274e-12,
+              "max_rel": 7.617018127348274e-06,
+              "mean_abs": 1.1226575225009583e-12
+            },
+            "model.gaussian.proj.2.weight": {
+              "max_abs": 7.901235221652314e-12,
+              "max_rel": 7.901235221652314e-06,
+              "mean_abs": 5.690795057411435e-13
+            },
+            "model.gaussian.proj.2.bias": {
+              "max_abs": 8.094502845779061e-11,
+              "max_rel": 7.23048287909478e-05,
+              "mean_abs": 4.581579560181126e-11
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight": {
+              "max_abs": 4.547473508864641e-12,
+              "max_rel": 3.836930773104541e-06,
+              "mean_abs": 6.08341014281949e-13
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias": {
+              "max_abs": 4.376943252282217e-12,
+              "max_rel": 4.376943252282217e-06,
+              "mean_abs": 1.5274448372792904e-12
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight": {
+              "max_abs": 9.313225746154785e-10,
+              "max_rel": 4.553157850750722e-05,
+              "mean_abs": 5.941074021631465e-11
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias": {
+              "max_abs": 5.587935447692871e-09,
+              "max_rel": 1.8012815417023376e-05,
+              "mean_abs": 2.08092387765646e-09
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight": {
+              "max_abs": 5.4569682106375694e-12,
+              "max_rel": 3.772981926886132e-06,
+              "mean_abs": 6.800934056368224e-13
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias": {
+              "max_abs": 2.546585164964199e-11,
+              "max_rel": 6.139089236967266e-06,
+              "mean_abs": 4.9968917892329046e-12
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight": {
+              "max_abs": 7.566995918750763e-10,
+              "max_rel": 4.155253918725066e-05,
+              "mean_abs": 4.121106580989853e-11
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias": {
+              "max_abs": 6.28642737865448e-09,
+              "max_rel": 1.8543720216257498e-05,
+              "mean_abs": 2.127308107446879e-09
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight": {
+              "max_abs": 6.984919309616089e-10,
+              "max_rel": 1.0931862561847083e-05,
+              "mean_abs": 2.0486368157435209e-10
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias": {
+              "max_abs": 6.984919309616089e-10,
+              "max_rel": 1.4306521734397393e-05,
+              "mean_abs": 2.2282620193436742e-10
+            },
+            "model.encoder.layers.0.fc1.weight": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 5.74686964682769e-05,
+              "mean_abs": 2.6125651989006293e-11
+            },
+            "model.encoder.layers.0.fc1.bias": {
+              "max_abs": 8.003553375601768e-11,
+              "max_rel": 5.630440227832878e-06,
+              "mean_abs": 1.828937001846498e-11
+            },
+            "model.encoder.layers.0.fc2.weight": {
+              "max_abs": 1.7462298274040222e-10,
+              "max_rel": 7.287326297955588e-05,
+              "mean_abs": 2.5910436990406183e-11
+            },
+            "model.encoder.layers.0.fc2.bias": {
+              "max_abs": 6.984919309616089e-10,
+              "max_rel": 7.435220322804525e-05,
+              "mean_abs": 2.233377927041147e-10
+            },
+            "model.encoder.layers.0.final_layer_norm.weight": {
+              "max_abs": 5.602487362921238e-10,
+              "max_rel": 1.5648418411728926e-05,
+              "mean_abs": 1.872422217275016e-10
+            },
+            "model.encoder.layers.0.final_layer_norm.bias": {
+              "max_abs": 9.313225746154785e-10,
+              "max_rel": 5.8634097513277084e-05,
+              "mean_abs": 2.3374013835564256e-10
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight": {
+              "max_abs": 3.4924596548080444e-10,
+              "max_rel": 9.634959860704839e-05,
+              "mean_abs": 2.973842699871554e-11
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias": {
+              "max_abs": 3.001332515850663e-11,
+              "max_rel": 3.0013325158506632e-05,
+              "mean_abs": 9.194423000735696e-12
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight": {
+              "max_abs": 8.149072527885437e-10,
+              "max_rel": 0.00010373924305895343,
+              "mean_abs": 6.52347481588933e-11
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias": {
+              "max_abs": 4.802132025361061e-10,
+              "max_rel": 5.9526223594730254e-06,
+              "mean_abs": 1.992930265259929e-10
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight": {
+              "max_abs": 3.4924596548080444e-10,
+              "max_rel": 7.582912076031789e-05,
+              "mean_abs": 3.276443699684606e-11
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias": {
+              "max_abs": 1.3096723705530167e-10,
+              "max_rel": 3.183231456205249e-05,
+              "mean_abs": 2.467004378559068e-11
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight": {
+              "max_abs": 5.820766091346741e-10,
+              "max_rel": 6.787104211980477e-05,
+              "mean_abs": 4.714302212494026e-11
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias": {
+              "max_abs": 6.984919309616089e-10,
+              "max_rel": 2.2764320419810247e-06,
+              "mean_abs": 2.098659024341032e-10
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight": {
+              "max_abs": 6.984919309616089e-10,
+              "max_rel": 2.095831951010041e-05,
+              "mean_abs": 2.120259523508139e-10
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias": {
+              "max_abs": 6.984919309616089e-10,
+              "max_rel": 2.195886509070988e-06,
+              "mean_abs": 2.0440893422346562e-10
+            },
+            "model.encoder.layers.1.fc1.weight": {
+              "max_abs": 1.6007106751203537e-10,
+              "max_rel": 7.179324165917933e-05,
+              "mean_abs": 2.4763573136521444e-11
+            },
+            "model.encoder.layers.1.fc1.bias": {
+              "max_abs": 6.002665031701326e-11,
+              "max_rel": 6.0026650317013264e-05,
+              "mean_abs": 2.0612844764400506e-11
+            },
+            "model.encoder.layers.1.fc2.weight": {
+              "max_abs": 2.1827872842550278e-10,
+              "max_rel": 7.153871410991997e-05,
+              "mean_abs": 2.5355429561502163e-11
+            },
+            "model.encoder.layers.1.fc2.bias": {
+              "max_abs": 6.984919309616089e-10,
+              "max_rel": 1.7519757875561481e-06,
+              "mean_abs": 2.1168489183764905e-10
+            },
+            "model.encoder.layers.1.final_layer_norm.weight": {
+              "max_abs": 6.984919309616089e-10,
+              "max_rel": 8.637405699118972e-06,
+              "mean_abs": 2.1475443645613268e-10
+            },
+            "model.encoder.layers.1.final_layer_norm.bias": {
+              "max_abs": 6.984919309616089e-10,
+              "max_rel": 5.592778688878752e-05,
+              "mean_abs": 1.9701928977156058e-10
+            },
+            "lm_head.0.weight": {
+              "max_abs": 9.313225746154785e-09,
+              "max_rel": 0.00018317476497031748,
+              "mean_abs": 1.363914092777918e-09
+            },
+            "lm_head.0.bias": {
+              "max_abs": 4.6566128730773926e-09,
+              "max_rel": 2.5573921448085457e-05,
+              "mean_abs": 9.713403414934874e-10
+            },
+            "lm_head.2.weight": {
+              "max_abs": 1.3271346688270569e-08,
+              "max_rel": 0.0006591515266336501,
+              "mean_abs": 1.2956956618737081e-09
+            },
+            "lm_head.2.bias": {
+              "max_abs": 1.4901161193847656e-08,
+              "max_rel": 5.961820534139406e-06,
+              "mean_abs": 5.144102033227682e-09
+            },
+            "pair_head.0.weight": {
+              "max_abs": 1.950866135302931e-10,
+              "max_rel": 0.00010028792166849598,
+              "mean_abs": 2.2399859744837158e-11
+            },
+            "pair_head.0.bias": {
+              "max_abs": 3.637978807091713e-12,
+              "max_rel": 9.328123269369826e-07,
+              "mean_abs": 1.3642420526593924e-12
+            },
+            "pair_head.2.weight": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 1.7138210068878834e-06,
+              "mean_abs": 7.821654435247183e-11
+            },
+            "pair_head.2.bias": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            }
+          }
+        },
+        "updated_parameter_errors": {
+          "tensor_count": 51,
+          "max_abs": 1.0523945093154907e-06,
+          "max_rel": 0.0018092560349032283,
+          "mean_of_tensor_mean_abs": 5.915305624955754e-09,
+          "worst_abs_tensor": "model.encoder.layers.1.self_attn.k_proj.weight",
+          "per_tensor": {
+            "model.embedding_layer.weight": {
+              "max_abs": 2.523884177207947e-07,
+              "max_rel": 2.2090600396040827e-05,
+              "mean_abs": 5.339448883034947e-10
+            },
+            "model.embedding_layer.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3283364214421454e-07,
+              "mean_abs": 1.255102688446641e-10
+            },
+            "model.token_type_embeddings.weight": {
+              "max_abs": 3.725290298461914e-09,
+              "max_rel": 1.5476855423912639e-06,
+              "mean_abs": 3.5274183574074414e-10
+            },
+            "model.gaussian.linear.weight": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias": {
+              "max_abs": 2.9103830456733704e-10,
+              "max_rel": 3.395770136194187e-07,
+              "mean_abs": 2.9103830456733704e-10
+            },
+            "model.gaussian.means.weight": {
+              "max_abs": 2.384185791015625e-07,
+              "max_rel": 1.120284238709246e-07,
+              "mean_abs": 3.073364496231079e-08
+            },
+            "model.gaussian.stds.weight": {
+              "max_abs": 2.384185791015625e-07,
+              "max_rel": 1.1546916311999667e-07,
+              "mean_abs": 3.5390257835388184e-08
+            },
+            "model.gaussian.proj.0.weight": {
+              "max_abs": 1.043081283569336e-07,
+              "max_rel": 0.0002444149286020547,
+              "mean_abs": 1.6168568706120823e-09
+            },
+            "model.gaussian.proj.0.bias": {
+              "max_abs": 2.3865140974521637e-09,
+              "max_rel": 2.5366714453411987e-06,
+              "mean_abs": 3.4378899727016687e-10
+            },
+            "model.gaussian.proj.2.weight": {
+              "max_abs": 3.5390257835388184e-08,
+              "max_rel": 3.566179657354951e-06,
+              "mean_abs": 6.697007393086096e-10
+            },
+            "model.gaussian.proj.2.bias": {
+              "max_abs": 5.805632099509239e-07,
+              "max_rel": 0.0008473424823023379,
+              "mean_abs": 7.45421857573092e-08
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight": {
+              "max_abs": 8.754432201385498e-08,
+              "max_rel": 7.901085336925462e-05,
+              "mean_abs": 2.0465176220341164e-09
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias": {
+              "max_abs": 1.6298145055770874e-07,
+              "max_rel": 0.0018092560349032283,
+              "mean_abs": 2.3640552626602584e-08
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight": {
+              "max_abs": 5.662441253662109e-07,
+              "max_rel": 4.3624186218949035e-06,
+              "mean_abs": 2.133279330962523e-09
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3284158601200033e-07,
+              "mean_abs": 1.291482476517558e-10
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight": {
+              "max_abs": 1.137887011282146e-07,
+              "max_rel": 0.0012490893714129925,
+              "mean_abs": 2.149057820588496e-09
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.351905266095855e-07,
+              "mean_abs": 1.291482476517558e-10
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight": {
+              "max_abs": 7.82310962677002e-08,
+              "max_rel": 4.668073415814433e-06,
+              "mean_abs": 2.640018870181393e-09
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3283217842617887e-07,
+              "mean_abs": 1.1459633242338896e-10
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight": {
+              "max_abs": 1.1920928955078125e-07,
+              "max_rel": 1.1909139630006393e-07,
+              "mean_abs": 2.421438694000244e-08
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias": {
+              "max_abs": 3.4924596548080444e-10,
+              "max_rel": 3.492483529043966e-07,
+              "mean_abs": 1.1641532182693481e-10
+            },
+            "model.encoder.layers.0.fc1.weight": {
+              "max_abs": 5.21540641784668e-08,
+              "max_rel": 1.2849426639149897e-05,
+              "mean_abs": 4.5304587859007484e-10
+            },
+            "model.encoder.layers.0.fc1.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3310691688038787e-07,
+              "mean_abs": 1.000444171950221e-10
+            },
+            "model.encoder.layers.0.fc2.weight": {
+              "max_abs": 6.123445928096771e-07,
+              "max_rel": 0.00022069457918405533,
+              "mean_abs": 6.658525397718051e-10
+            },
+            "model.encoder.layers.0.fc2.bias": {
+              "max_abs": 3.4924596548080444e-10,
+              "max_rel": 3.503612333588535e-07,
+              "mean_abs": 1.1641532182693481e-10
+            },
+            "model.encoder.layers.0.final_layer_norm.weight": {
+              "max_abs": 1.1920928955078125e-07,
+              "max_rel": 1.1909139630006393e-07,
+              "mean_abs": 2.421438694000244e-08
+            },
+            "model.encoder.layers.0.final_layer_norm.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.328513630800444e-07,
+              "mean_abs": 1.2187229003757238e-10
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight": {
+              "max_abs": 1.0523945093154907e-06,
+              "max_rel": 5.712393613066524e-05,
+              "mean_abs": 2.3699584517089534e-09
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias": {
+              "max_abs": 2.739834599196911e-07,
+              "max_rel": 0.00047196660307236016,
+              "mean_abs": 1.296757545787841e-08
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight": {
+              "max_abs": 1.4901161193847656e-08,
+              "max_rel": 4.816596629098058e-06,
+              "mean_abs": 1.8404486823442312e-09
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3286153805202048e-07,
+              "mean_abs": 1.3096723705530167e-10
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight": {
+              "max_abs": 1.1920928955078125e-07,
+              "max_rel": 4.0520662878407165e-05,
+              "mean_abs": 1.902515034402086e-09
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias": {
+              "max_abs": 1.8975697457790375e-08,
+              "max_rel": 2.0571158529492095e-05,
+              "mean_abs": 4.092726157978177e-10
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight": {
+              "max_abs": 1.9371509552001953e-07,
+              "max_rel": 4.089074082003208e-06,
+              "mean_abs": 2.68800981473305e-09
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3289817363547627e-07,
+              "mean_abs": 1.1823431123048067e-10
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight": {
+              "max_abs": 1.1920928955078125e-07,
+              "max_rel": 1.1909148156519223e-07,
+              "mean_abs": 2.2351741790771484e-08
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3288384909392335e-07,
+              "mean_abs": 1.1823431123048067e-10
+            },
+            "model.encoder.layers.1.fc1.weight": {
+              "max_abs": 3.241002559661865e-07,
+              "max_rel": 7.394115527858958e-05,
+              "mean_abs": 6.120597362269109e-10
+            },
+            "model.encoder.layers.1.fc1.bias": {
+              "max_abs": 2.2177118808031082e-08,
+              "max_rel": 2.3608454284840263e-05,
+              "mean_abs": 4.774847184307873e-10
+            },
+            "model.encoder.layers.1.fc2.weight": {
+              "max_abs": 2.123415470123291e-07,
+              "max_rel": 4.159058153163642e-05,
+              "mean_abs": 5.064669794663246e-10
+            },
+            "model.encoder.layers.1.fc2.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.328464034917488e-07,
+              "mean_abs": 1.0732037480920553e-10
+            },
+            "model.encoder.layers.1.final_layer_norm.weight": {
+              "max_abs": 1.1920928955078125e-07,
+              "max_rel": 1.1909143893262808e-07,
+              "mean_abs": 2.514570951461792e-08
+            },
+            "model.encoder.layers.1.final_layer_norm.bias": {
+              "max_abs": 3.4924596548080444e-10,
+              "max_rel": 3.5058823755207413e-07,
+              "mean_abs": 1.2005330063402653e-10
+            },
+            "lm_head.0.weight": {
+              "max_abs": 7.450580596923828e-09,
+              "max_rel": 0.00012978252198081464,
+              "mean_abs": 3.812520577017864e-10
+            },
+            "lm_head.0.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3283773487037251e-07,
+              "mean_abs": 1.3642420526593924e-10
+            },
+            "lm_head.2.weight": {
+              "max_abs": 7.450580596923828e-09,
+              "max_rel": 9.401353599969298e-05,
+              "mean_abs": 3.927722591612337e-10
+            },
+            "lm_head.2.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.3283104155780165e-07,
+              "mean_abs": 1.0550138540565968e-10
+            },
+            "pair_head.0.weight": {
+              "max_abs": 3.725290298461914e-09,
+              "max_rel": 9.750472145242384e-07,
+              "mean_abs": 3.2650859793648124e-10
+            },
+            "pair_head.0.bias": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 2.328917645399997e-07,
+              "mean_abs": 1.3096723705530167e-10
+            },
+            "pair_head.2.weight": {
+              "max_abs": 1.862645149230957e-09,
+              "max_rel": 1.0799367089475709e-07,
+              "mean_abs": 6.402842700481415e-10
+            },
+            "pair_head.2.bias": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 1.1641616737279037e-07,
+              "mean_abs": 1.1641532182693481e-10
+            }
+          }
+        },
+        "optimizer_state_errors": {
+          "tensor_count": 153,
+          "max_abs": 2.7939677238464355e-09,
+          "max_rel": 0.0003177547187078744,
+          "mean_of_tensor_mean_abs": 2.087909861508985e-11,
+          "worst_abs_tensor": "lm_head.2.bias.exp_avg",
+          "per_tensor": {
+            "model.embedding_layer.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.weight.exp_avg": {
+              "max_abs": 2.2118911147117615e-09,
+              "max_rel": 0.0002737579052336514,
+              "mean_abs": 2.9297406167749784e-10
+            },
+            "model.embedding_layer.weight.exp_avg_sq": {
+              "max_abs": 1.0459189070388675e-11,
+              "max_rel": 1.0459189070388675e-05,
+              "mean_abs": 7.666758937777129e-13
+            },
+            "model.embedding_layer.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.embedding_layer.bias.exp_avg": {
+              "max_abs": 1.280568540096283e-09,
+              "max_rel": 6.962850602576509e-05,
+              "mean_abs": 3.907985046680551e-10
+            },
+            "model.embedding_layer.bias.exp_avg_sq": {
+              "max_abs": 1.5234036254696548e-11,
+              "max_rel": 1.3165325071895495e-05,
+              "mean_abs": 2.4381748790075486e-12
+            },
+            "model.token_type_embeddings.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.token_type_embeddings.weight.exp_avg": {
+              "max_abs": 1.3969838619232178e-09,
+              "max_rel": 4.6870613005012274e-05,
+              "mean_abs": 1.0115520227005348e-10
+            },
+            "model.token_type_embeddings.weight.exp_avg_sq": {
+              "max_abs": 1.4779288903810084e-11,
+              "max_rel": 1.2822216376662254e-05,
+              "mean_abs": 6.066603382842706e-13
+            },
+            "model.gaussian.linear.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.weight.exp_avg": {
+              "max_abs": 1.8207657603852567e-14,
+              "max_rel": 1.8207657603852567e-08,
+              "mean_abs": 1.8207657603852567e-14
+            },
+            "model.gaussian.linear.weight.exp_avg_sq": {
+              "max_abs": 1.0546552810051103e-23,
+              "max_rel": 1.0546552810051103e-17,
+              "mean_abs": 1.0546552810051103e-23
+            },
+            "model.gaussian.linear.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.linear.bias.exp_avg": {
+              "max_abs": 1.4210854715202004e-14,
+              "max_rel": 1.4210854715202004e-08,
+              "mean_abs": 1.4210854715202004e-14
+            },
+            "model.gaussian.linear.bias.exp_avg_sq": {
+              "max_abs": 3.101927297073854e-23,
+              "max_rel": 3.101927297073854e-17,
+              "mean_abs": 3.101927297073854e-23
+            },
+            "model.gaussian.means.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.means.weight.exp_avg": {
+              "max_abs": 5.773159728050814e-15,
+              "max_rel": 5.773159728050814e-09,
+              "mean_abs": 1.400586765976878e-15
+            },
+            "model.gaussian.means.weight.exp_avg_sq": {
+              "max_abs": 2.957170689877074e-23,
+              "max_rel": 2.957170689877074e-17,
+              "mean_abs": 5.342013405571532e-24
+            },
+            "model.gaussian.stds.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.stds.weight.exp_avg": {
+              "max_abs": 4.618527782440651e-14,
+              "max_rel": 4.618527782440651e-08,
+              "mean_abs": 4.2548510525151125e-15
+            },
+            "model.gaussian.stds.weight.exp_avg_sq": {
+              "max_abs": 2.0778776987332055e-21,
+              "max_rel": 2.0778776987332055e-15,
+              "mean_abs": 9.53049996412644e-23
+            },
+            "model.gaussian.proj.0.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.weight.exp_avg": {
+              "max_abs": 6.821210263296962e-13,
+              "max_rel": 6.821210263296962e-07,
+              "mean_abs": 3.2541088150917635e-14
+            },
+            "model.gaussian.proj.0.weight.exp_avg_sq": {
+              "max_abs": 2.337810934421869e-19,
+              "max_rel": 2.337810934421869e-13,
+              "mean_abs": 2.5376115969343938e-21
+            },
+            "model.gaussian.proj.0.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.0.bias.exp_avg": {
+              "max_abs": 7.567280135845067e-13,
+              "max_rel": 7.567280135845067e-07,
+              "mean_abs": 1.2026490914252008e-13
+            },
+            "model.gaussian.proj.0.bias.exp_avg_sq": {
+              "max_abs": 5.183841637196318e-19,
+              "max_rel": 5.183841637196318e-13,
+              "mean_abs": 3.1118602498904525e-20
+            },
+            "model.gaussian.proj.2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.weight.exp_avg": {
+              "max_abs": 7.851497230149107e-13,
+              "max_rel": 7.851497230149107e-07,
+              "mean_abs": 5.806889257636838e-14
+            },
+            "model.gaussian.proj.2.weight.exp_avg_sq": {
+              "max_abs": 7.199780051661553e-20,
+              "max_rel": 7.199780051661553e-14,
+              "mean_abs": 2.2402751037933507e-21
+            },
+            "model.gaussian.proj.2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.gaussian.proj.2.bias.exp_avg": {
+              "max_abs": 7.986500349943526e-12,
+              "max_rel": 7.986500349943526e-06,
+              "mean_abs": 4.611366843931819e-12
+            },
+            "model.gaussian.proj.2.bias.exp_avg_sq": {
+              "max_abs": 8.690558038829121e-19,
+              "max_rel": 8.690558038829121e-13,
+              "mean_abs": 2.992300533504318e-19
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight.exp_avg": {
+              "max_abs": 5.684341886080801e-13,
+              "max_rel": 5.684341886080801e-07,
+              "mean_abs": 6.651677228767736e-14
+            },
+            "model.encoder.layers.0.self_attn.k_proj.weight.exp_avg_sq": {
+              "max_abs": 7.047314121155779e-19,
+              "max_rel": 7.047314121155779e-13,
+              "mean_abs": 3.2027903405473315e-20
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias.exp_avg": {
+              "max_abs": 4.3876013933186186e-13,
+              "max_rel": 4.3876013933186186e-07,
+              "mean_abs": 1.527355444810169e-13
+            },
+            "model.encoder.layers.0.self_attn.k_proj.bias.exp_avg_sq": {
+              "max_abs": 1.5021599923962983e-21,
+              "max_rel": 1.5021599923962983e-15,
+              "mean_abs": 1.5736114033637152e-22
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight.exp_avg": {
+              "max_abs": 1.3096723705530167e-10,
+              "max_rel": 1.8133050616597757e-05,
+              "mean_abs": 7.086963828284443e-12
+            },
+            "model.encoder.layers.0.self_attn.v_proj.weight.exp_avg_sq": {
+              "max_abs": 6.17284001691587e-14,
+              "max_rel": 6.17284001691587e-08,
+              "mean_abs": 8.272835799956783e-16
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias.exp_avg": {
+              "max_abs": 1.1641532182693481e-09,
+              "max_rel": 1.8251621440867893e-05,
+              "mean_abs": 3.241495960537577e-10
+            },
+            "model.encoder.layers.0.self_attn.v_proj.bias.exp_avg_sq": {
+              "max_abs": 1.5347723092418164e-11,
+              "max_rel": 1.2588679965119809e-05,
+              "mean_abs": 1.6980687689294172e-12
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight.exp_avg": {
+              "max_abs": 6.821210263296962e-13,
+              "max_rel": 6.821210263296962e-07,
+              "mean_abs": 7.330151297144788e-14
+            },
+            "model.encoder.layers.0.self_attn.q_proj.weight.exp_avg_sq": {
+              "max_abs": 1.2332799712022613e-18,
+              "max_rel": 1.2332799712022613e-12,
+              "mean_abs": 4.016608431915933e-20
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias.exp_avg": {
+              "max_abs": 2.9558577807620168e-12,
+              "max_rel": 1.4529282452713232e-06,
+              "mean_abs": 6.582512313002553e-13
+            },
+            "model.encoder.layers.0.self_attn.q_proj.bias.exp_avg_sq": {
+              "max_abs": 4.0115480381963664e-17,
+              "max_rel": 4.0115480381963664e-11,
+              "mean_abs": 5.538848530949989e-18
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight.exp_avg": {
+              "max_abs": 7.275957614183426e-11,
+              "max_rel": 2.006572685786523e-05,
+              "mean_abs": 4.548138775317678e-12
+            },
+            "model.encoder.layers.0.self_attn.out_proj.weight.exp_avg_sq": {
+              "max_abs": 1.8096635301390052e-14,
+              "max_rel": 1.809663530139005e-08,
+              "mean_abs": 3.2402562476899536e-16
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias.exp_avg": {
+              "max_abs": 9.313225746154785e-10,
+              "max_rel": 1.8817188902175985e-05,
+              "mean_abs": 2.9743318918917794e-10
+            },
+            "model.encoder.layers.0.self_attn.out_proj.bias.exp_avg_sq": {
+              "max_abs": 1.028865881380625e-11,
+              "max_rel": 1.028865881380625e-05,
+              "mean_abs": 1.489121434668228e-12
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight.exp_avg": {
+              "max_abs": 8.731149137020111e-11,
+              "max_rel": 1.1147622899443377e-05,
+              "mean_abs": 2.4073187887552194e-11
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 3.9968028886505635e-14,
+              "max_rel": 3.9968028886505635e-08,
+              "mean_abs": 8.725116983077097e-15
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias.exp_avg": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 1.4476837350230198e-05,
+              "mean_abs": 3.108446833266498e-11
+            },
+            "model.encoder.layers.0.self_attn_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 1.2878587085651816e-13,
+              "max_rel": 1.2878587085651816e-07,
+              "mean_abs": 1.800632126042201e-14
+            },
+            "model.encoder.layers.0.fc1.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.weight.exp_avg": {
+              "max_abs": 2.546585164964199e-11,
+              "max_rel": 1.1084466677857563e-05,
+              "mean_abs": 2.7908231281514873e-12
+            },
+            "model.encoder.layers.0.fc1.weight.exp_avg_sq": {
+              "max_abs": 1.3461454173580023e-15,
+              "max_rel": 1.3461454173580023e-09,
+              "mean_abs": 6.460218380057082e-17
+            },
+            "model.encoder.layers.0.fc1.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc1.bias.exp_avg": {
+              "max_abs": 1.000444171950221e-11,
+              "max_rel": 1.8758328224066645e-06,
+              "mean_abs": 2.083888617221419e-12
+            },
+            "model.encoder.layers.0.fc1.bias.exp_avg_sq": {
+              "max_abs": 8.881784197001252e-16,
+              "max_rel": 8.881784197001252e-10,
+              "mean_abs": 7.740737643425512e-17
+            },
+            "model.encoder.layers.0.fc2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.weight.exp_avg": {
+              "max_abs": 2.3646862246096134e-11,
+              "max_rel": 1.0942358130705543e-05,
+              "mean_abs": 2.8610351934799105e-12
+            },
+            "model.encoder.layers.0.fc2.weight.exp_avg_sq": {
+              "max_abs": 1.7763568394002505e-15,
+              "max_rel": 1.7763568394002505e-09,
+              "mean_abs": 6.468029612017543e-17
+            },
+            "model.encoder.layers.0.fc2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.fc2.bias.exp_avg": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 2.333422344236169e-05,
+              "mean_abs": 3.2303493213703405e-11
+            },
+            "model.encoder.layers.0.fc2.bias.exp_avg_sq": {
+              "max_abs": 1.2878587085651816e-13,
+              "max_rel": 1.2878587085651816e-07,
+              "mean_abs": 1.7887938241647854e-14
+            },
+            "model.encoder.layers.0.final_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.weight.exp_avg": {
+              "max_abs": 7.275957614183426e-11,
+              "max_rel": 1.5877049008850008e-05,
+              "mean_abs": 1.9952040020143613e-11
+            },
+            "model.encoder.layers.0.final_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 3.7969627442180354e-14,
+              "max_rel": 3.7969627442180354e-08,
+              "mean_abs": 8.743553502207034e-15
+            },
+            "model.encoder.layers.0.final_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.0.final_layer_norm.bias.exp_avg": {
+              "max_abs": 1.4551915228366852e-10,
+              "max_rel": 3.7687186704715714e-05,
+              "mean_abs": 3.2733815658048115e-11
+            },
+            "model.encoder.layers.0.final_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 1.3500311979441904e-13,
+              "max_rel": 1.3500311979441904e-07,
+              "mean_abs": 1.8120023575129637e-14
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight.exp_avg": {
+              "max_abs": 4.3655745685100555e-11,
+              "max_rel": 1.1937117960769683e-05,
+              "mean_abs": 3.180032409275113e-12
+            },
+            "model.encoder.layers.1.self_attn.k_proj.weight.exp_avg_sq": {
+              "max_abs": 2.4702462297909733e-15,
+              "max_rel": 2.4702462297909733e-09,
+              "mean_abs": 8.562719591264766e-17
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias.exp_avg": {
+              "max_abs": 3.0198066269804258e-12,
+              "max_rel": 3.019806626980426e-06,
+              "mean_abs": 9.1953181180493e-13
+            },
+            "model.encoder.layers.1.self_attn.k_proj.bias.exp_avg_sq": {
+              "max_abs": 2.862971361719535e-19,
+              "max_rel": 2.862971361719535e-13,
+              "mean_abs": 1.4102314688906736e-20
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight.exp_avg": {
+              "max_abs": 1.0913936421275139e-10,
+              "max_rel": 1.978150976356119e-05,
+              "mean_abs": 7.23050092021893e-12
+            },
+            "model.encoder.layers.1.self_attn.v_proj.weight.exp_avg_sq": {
+              "max_abs": 2.708944180085382e-14,
+              "max_rel": 2.708944180085382e-08,
+              "mean_abs": 7.503124255292591e-16
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias.exp_avg": {
+              "max_abs": 7.275957614183426e-11,
+              "max_rel": 6.152950845716987e-06,
+              "mean_abs": 2.6759039428725373e-11
+            },
+            "model.encoder.layers.1.self_attn.v_proj.bias.exp_avg_sq": {
+              "max_abs": 9.14823772291129e-14,
+              "max_rel": 9.14823772291129e-08,
+              "mean_abs": 1.3542887921129051e-14
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight.exp_avg": {
+              "max_abs": 4.3655745685100555e-11,
+              "max_rel": 1.5006662579253316e-05,
+              "mean_abs": 3.504833576140065e-12
+            },
+            "model.encoder.layers.1.self_attn.q_proj.weight.exp_avg_sq": {
+              "max_abs": 5.134781488891349e-15,
+              "max_rel": 5.134781488891349e-09,
+              "mean_abs": 9.338257663814883e-17
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias.exp_avg": {
+              "max_abs": 9.094947017729282e-12,
+              "max_rel": 3.5522948564903345e-06,
+              "mean_abs": 2.7777363742487182e-12
+            },
+            "model.encoder.layers.1.self_attn.q_proj.bias.exp_avg_sq": {
+              "max_abs": 1.4918621893400541e-15,
+              "max_rel": 1.491862189340054e-09,
+              "mean_abs": 1.5609202561341052e-16
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight.exp_avg": {
+              "max_abs": 6.912159733474255e-11,
+              "max_rel": 1.6997952116071247e-05,
+              "mean_abs": 5.053938604421271e-12
+            },
+            "model.encoder.layers.1.self_attn.out_proj.weight.exp_avg_sq": {
+              "max_abs": 8.326672684688674e-15,
+              "max_rel": 8.326672684688674e-09,
+              "mean_abs": 2.4816622751562707e-16
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias.exp_avg": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 2.2692058792017633e-06,
+              "mean_abs": 2.55298004958604e-11
+            },
+            "model.encoder.layers.1.self_attn.out_proj.bias.exp_avg_sq": {
+              "max_abs": 6.128431095930864e-14,
+              "max_rel": 6.128431095930864e-08,
+              "mean_abs": 1.0530643943114891e-14
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight.exp_avg": {
+              "max_abs": 7.275957614183426e-11,
+              "max_rel": 2.1183457647566684e-05,
+              "mean_abs": 2.276578925375361e-11
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 3.597122599785507e-14,
+              "max_rel": 3.597122599785507e-08,
+              "mean_abs": 8.238075579504716e-15
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias.exp_avg": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 2.421933686491684e-06,
+              "mean_abs": 2.4485302674293052e-11
+            },
+            "model.encoder.layers.1.self_attn_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 6.17284001691587e-14,
+              "max_rel": 6.17284001691587e-08,
+              "mean_abs": 1.0632276038324145e-14
+            },
+            "model.encoder.layers.1.fc1.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.weight.exp_avg": {
+              "max_abs": 1.9099388737231493e-11,
+              "max_rel": 9.777068044058979e-06,
+              "mean_abs": 2.6785509574245303e-12
+            },
+            "model.encoder.layers.1.fc1.weight.exp_avg_sq": {
+              "max_abs": 1.0269562977782698e-15,
+              "max_rel": 1.0269562977782698e-09,
+              "mean_abs": 5.751029457056579e-17
+            },
+            "model.encoder.layers.1.fc1.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc1.bias.exp_avg": {
+              "max_abs": 7.275957614183426e-12,
+              "max_rel": 6.0005336308677215e-06,
+              "mean_abs": 2.26135776770775e-12
+            },
+            "model.encoder.layers.1.fc1.bias.exp_avg_sq": {
+              "max_abs": 5.238864897449957e-16,
+              "max_rel": 5.238864897449957e-10,
+              "mean_abs": 6.076828768817124e-17
+            },
+            "model.encoder.layers.1.fc2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.weight.exp_avg": {
+              "max_abs": 2.1827872842550278e-11,
+              "max_rel": 1.0459189070388675e-05,
+              "mean_abs": 2.7008666570599305e-12
+            },
+            "model.encoder.layers.1.fc2.weight.exp_avg_sq": {
+              "max_abs": 1.366962099069724e-15,
+              "max_rel": 1.366962099069724e-09,
+              "mean_abs": 6.240614500569564e-17
+            },
+            "model.encoder.layers.1.fc2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.fc2.bias.exp_avg": {
+              "max_abs": 1.3096723705530167e-10,
+              "max_rel": 1.9372807855688734e-06,
+              "mean_abs": 2.3788970793248154e-11
+            },
+            "model.encoder.layers.1.fc2.bias.exp_avg_sq": {
+              "max_abs": 6.306066779870889e-14,
+              "max_rel": 6.306066779870889e-08,
+              "mean_abs": 1.0629142016419305e-14
+            },
+            "model.encoder.layers.1.final_layer_norm.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.weight.exp_avg": {
+              "max_abs": 1.0186340659856796e-10,
+              "max_rel": 8.35061746329302e-06,
+              "mean_abs": 2.2250645770327537e-11
+            },
+            "model.encoder.layers.1.final_layer_norm.weight.exp_avg_sq": {
+              "max_abs": 3.597122599785507e-14,
+              "max_rel": 3.597122599785507e-08,
+              "mean_abs": 8.008475440690176e-15
+            },
+            "model.encoder.layers.1.final_layer_norm.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "model.encoder.layers.1.final_layer_norm.bias.exp_avg": {
+              "max_abs": 1.1641532182693481e-10,
+              "max_rel": 3.93182817788329e-05,
+              "mean_abs": 2.4708235457637784e-11
+            },
+            "model.encoder.layers.1.final_layer_norm.bias.exp_avg_sq": {
+              "max_abs": 5.10702591327572e-14,
+              "max_rel": 5.10702591327572e-08,
+              "mean_abs": 1.1271967178551855e-14
+            },
+            "lm_head.0.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.weight.exp_avg": {
+              "max_abs": 1.1641532182693481e-09,
+              "max_rel": 0.00011740095942514017,
+              "mean_abs": 1.5994705560018474e-10
+            },
+            "lm_head.0.weight.exp_avg_sq": {
+              "max_abs": 7.617018127348274e-12,
+              "max_rel": 7.617018127348274e-06,
+              "mean_abs": 3.5169041073465634e-13
+            },
+            "lm_head.0.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.0.bias.exp_avg": {
+              "max_abs": 4.656612873077393e-10,
+              "max_rel": 2.5751516659511253e-05,
+              "mean_abs": 1.3700685030926252e-10
+            },
+            "lm_head.0.bias.exp_avg_sq": {
+              "max_abs": 3.183231456205249e-12,
+              "max_rel": 3.183231456205249e-06,
+              "mean_abs": 3.991442322059252e-13
+            },
+            "lm_head.2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.weight.exp_avg": {
+              "max_abs": 1.3969838619232178e-09,
+              "max_rel": 0.0003177547187078744,
+              "mean_abs": 1.5098995664875048e-10
+            },
+            "lm_head.2.weight.exp_avg_sq": {
+              "max_abs": 5.286437954055145e-12,
+              "max_rel": 5.286437954055145e-06,
+              "mean_abs": 3.187402869853778e-13
+            },
+            "lm_head.2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "lm_head.2.bias.exp_avg": {
+              "max_abs": 2.7939677238464355e-09,
+              "max_rel": 5.705648618459236e-06,
+              "mean_abs": 8.986376087705139e-10
+            },
+            "lm_head.2.bias.exp_avg_sq": {
+              "max_abs": 2.3283064365386963e-10,
+              "max_rel": 1.3444941941997968e-05,
+              "mean_abs": 2.6947029677093504e-11
+            },
+            "pair_head.0.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.weight.exp_avg": {
+              "max_abs": 1.9554136088117957e-11,
+              "max_rel": 1.9554136088117957e-05,
+              "mean_abs": 2.3019364192577996e-12
+            },
+            "pair_head.0.weight.exp_avg_sq": {
+              "max_abs": 1.4051260155412137e-16,
+              "max_rel": 1.4051260155412137e-10,
+              "mean_abs": 1.1183845014005845e-17
+            },
+            "pair_head.0.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.0.bias.exp_avg": {
+              "max_abs": 1.8189894035458565e-12,
+              "max_rel": 2.842170943040401e-07,
+              "mean_abs": 7.069900220812997e-13
+            },
+            "pair_head.0.bias.exp_avg_sq": {
+              "max_abs": 1.1275702593849246e-16,
+              "max_rel": 1.1275702593849246e-10,
+              "mean_abs": 2.7285737027698794e-17
+            },
+            "pair_head.2.weight.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.weight.exp_avg": {
+              "max_abs": 2.091837814077735e-11,
+              "max_rel": 1.865531999101222e-06,
+              "mean_abs": 8.185452315956354e-12
+            },
+            "pair_head.2.weight.exp_avg_sq": {
+              "max_abs": 3.0357660829594124e-16,
+              "max_rel": 3.0357660829594124e-10,
+              "mean_abs": 9.527765403895272e-17
+            },
+            "pair_head.2.bias.step": {
+              "max_abs": 0.0,
+              "max_rel": 0.0,
+              "mean_abs": 0.0
+            },
+            "pair_head.2.bias.exp_avg": {
+              "max_abs": 2.9103830456733704e-11,
+              "max_rel": 2.09683634011526e-07,
+              "mean_abs": 2.9103830456733704e-11
+            },
+            "pair_head.2.bias.exp_avg_sq": {
+              "max_abs": 2.5091040356528538e-14,
+              "max_rel": 2.5091040356528538e-08,
+              "mean_abs": 2.5091040356528538e-14
+            }
+          }
+        },
+        "passed": true
+      }
+    },
+    "passed": true
+  },
+  "aggregate": {
+    "routes": {
+      "torch_scalar": {
+        "display_name": "\u7eaf PyTorch \u539f\u59cb\u7b97\u5b50 + \u5355\u5f20\u91cf AdamW",
+        "metrics": {
+          "forward_ms": {
+            "mean_ms": 2.4199372882843018,
+            "median_ms": 2.439679980278015,
+            "std_ms": 0.15659429764866178,
+            "p90_ms": 2.6439680814743043,
+            "p95_ms": 2.6901503801345825,
+            "min_ms": 2.230272054672241,
+            "max_ms": 3.260416030883789,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              2.4509440660476685,
+              2.4791040420532227,
+              2.257920026779175,
+              2.2686721086502075,
+              2.3239680528640747
+            ],
+            "median_of_trial_medians_ms": 2.3239680528640747,
+            "trial_median_min_ms": 2.257920026779175,
+            "trial_median_max_ms": 2.4791040420532227,
+            "trial_median_cv_percent": 3.910290632082477
+          },
+          "backward_ms": {
+            "mean_ms": 13.838807029724121,
+            "median_ms": 13.982207775115967,
+            "std_ms": 0.9581893802147419,
+            "p90_ms": 14.668902492523193,
+            "p95_ms": 14.971750068664551,
+            "min_ms": 9.756671905517578,
+            "max_ms": 17.077247619628906,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              13.097471714019775,
+              14.016512393951416,
+              13.620223999023438,
+              14.124032020568848,
+              14.578176021575928
+            ],
+            "median_of_trial_medians_ms": 14.016512393951416,
+            "trial_median_min_ms": 13.097471714019775,
+            "trial_median_max_ms": 14.578176021575928,
+            "trial_median_cv_percent": 3.5935052707998385
+          },
+          "optimizer_ms": {
+            "mean_ms": 9.642713087081908,
+            "median_ms": 9.394176006317139,
+            "std_ms": 1.8199532482020915,
+            "p90_ms": 11.670015907287597,
+            "p95_ms": 11.98745641708374,
+            "min_ms": 7.02566385269165,
+            "max_ms": 15.984640121459961,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              10.894848346710205,
+              11.1528959274292,
+              7.599616050720215,
+              7.266304016113281,
+              8.683008193969727
+            ],
+            "median_of_trial_medians_ms": 8.683008193969727,
+            "trial_median_min_ms": 7.266304016113281,
+            "trial_median_max_ms": 11.1528959274292,
+            "trial_median_cv_percent": 17.831656733381703
+          },
+          "step_ms": {
+            "mean_ms": 25.901457412719726,
+            "median_ms": 26.168831825256348,
+            "std_ms": 2.211361630817947,
+            "p90_ms": 28.53509101867676,
+            "p95_ms": 28.969830417633055,
+            "min_ms": 20.525056838989258,
+            "max_ms": 35.10067367553711,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              26.438655853271484,
+              27.656192779541016,
+              23.45471954345703,
+              23.62777614593506,
+              25.56825542449951
+            ],
+            "median_of_trial_medians_ms": 25.56825542449951,
+            "trial_median_min_ms": 23.45471954345703,
+            "trial_median_max_ms": 27.656192779541016,
+            "trial_median_cv_percent": 6.387702769849982
+          }
+        },
+        "memory": {
+          "allocated_before_samples_bytes": 18630144,
+          "peak_allocated_bytes": 176339968,
+          "peak_reserved_bytes": 222298112
+        },
+        "throughput": {
+          "nodes_per_second": 15018.623430680025,
+          "pairs_per_second": 5767151.39738113
+        }
+      },
+      "torch_fused": {
+        "display_name": "\u7eaf PyTorch \u539f\u59cb\u7b97\u5b50 + CUDA fused AdamW",
+        "metrics": {
+          "forward_ms": {
+            "mean_ms": 2.396246015548706,
+            "median_ms": 2.281983971595764,
+            "std_ms": 0.20797186726054698,
+            "p90_ms": 2.6849279403686523,
+            "p95_ms": 2.695731222629547,
+            "min_ms": 2.2026240825653076,
+            "max_ms": 3.264512062072754,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              2.2405120134353638,
+              2.2507519721984863,
+              2.276863932609558,
+              2.3255040645599365,
+              2.31987202167511
+            ],
+            "median_of_trial_medians_ms": 2.276863932609558,
+            "trial_median_min_ms": 2.2405120134353638,
+            "trial_median_max_ms": 2.3255040645599365,
+            "trial_median_cv_percent": 1.523667452268254
+          },
+          "backward_ms": {
+            "mean_ms": 13.716000782012939,
+            "median_ms": 13.795328140258789,
+            "std_ms": 1.0312940483125261,
+            "p90_ms": 14.478541088104247,
+            "p95_ms": 14.805708503723144,
+            "min_ms": 8.953856468200684,
+            "max_ms": 16.356351852416992,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              13.355008125305176,
+              14.192639827728271,
+              13.795328140258789,
+              13.601279735565186,
+              13.691391944885254
+            ],
+            "median_of_trial_medians_ms": 13.691391944885254,
+            "trial_median_min_ms": 13.355008125305176,
+            "trial_median_max_ms": 14.192639827728271,
+            "trial_median_cv_percent": 2.000192104869013
+          },
+          "optimizer_ms": {
+            "mean_ms": 0.6356541422605515,
+            "median_ms": 0.5478399991989136,
+            "std_ms": 0.6072796207520006,
+            "p90_ms": 0.6935551762580872,
+            "p95_ms": 0.7542272210121155,
+            "min_ms": 0.4034560024738312,
+            "max_ms": 5.044223785400391,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              0.5719040036201477,
+              0.5114879906177521,
+              0.5550079941749573,
+              0.5155839920043945,
+              0.5877760052680969
+            ],
+            "median_of_trial_medians_ms": 0.5550079941749573,
+            "trial_median_min_ms": 0.5114879906177521,
+            "trial_median_max_ms": 0.5877760052680969,
+            "trial_median_cv_percent": 5.522938052119701
+          },
+          "step_ms": {
+            "mean_ms": 16.747900943756104,
+            "median_ms": 16.623615264892578,
+            "std_ms": 1.4510898036600006,
+            "p90_ms": 17.858559989929198,
+            "p95_ms": 18.192486095428468,
+            "min_ms": 11.643903732299805,
+            "max_ms": 24.3056640625,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              16.12595272064209,
+              16.93235206604004,
+              16.60364818572998,
+              16.39423942565918,
+              16.521727561950684
+            ],
+            "median_of_trial_medians_ms": 16.521727561950684,
+            "trial_median_min_ms": 16.12595272064209,
+            "trial_median_max_ms": 16.93235206604004,
+            "trial_median_cv_percent": 1.597447976529229
+          }
+        },
+        "memory": {
+          "allocated_before_samples_bytes": 18630144,
+          "peak_allocated_bytes": 176366080,
+          "peak_reserved_bytes": 222298112
+        },
+        "throughput": {
+          "nodes_per_second": 23242.121537238443,
+          "pairs_per_second": 8924974.670299564
+        }
+      },
+      "flagos_self_hosted_native_fused_v100_tuned": {
+        "display_name": "FlagOS Stage B\uff1a\u81ea\u7814 GEMM/BMM + Gaussian \u878d\u5408\u53cd\u5411 + \u591a\u5f20\u91cf AdamW",
+        "metrics": {
+          "forward_ms": {
+            "mean_ms": 1.7586544647216797,
+            "median_ms": 1.6962560415267944,
+            "std_ms": 0.1475388807943564,
+            "p90_ms": 1.9306496262550354,
+            "p95_ms": 2.0616191625595093,
+            "min_ms": 1.6158720254898071,
+            "max_ms": 2.6562559604644775,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              1.6424959897994995,
+              1.661952018737793,
+              1.6988160014152527,
+              1.7244160175323486,
+              1.8350080251693726
+            ],
+            "median_of_trial_medians_ms": 1.6988160014152527,
+            "trial_median_min_ms": 1.6424959897994995,
+            "trial_median_max_ms": 1.8350080251693726,
+            "trial_median_cv_percent": 3.9425453245555846
+          },
+          "backward_ms": {
+            "mean_ms": 12.729081874847411,
+            "median_ms": 12.167168140411377,
+            "std_ms": 1.4893269742266229,
+            "p90_ms": 15.471820640563966,
+            "p95_ms": 15.517235469818115,
+            "min_ms": 8.8340482711792,
+            "max_ms": 16.572416305541992,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              11.828223705291748,
+              15.472640037536621,
+              12.02790355682373,
+              12.257280349731445,
+              12.163583755493164
+            ],
+            "median_of_trial_medians_ms": 12.163583755493164,
+            "trial_median_min_ms": 11.828223705291748,
+            "trial_median_max_ms": 15.472640037536621,
+            "trial_median_cv_percent": 10.737153830205436
+          },
+          "optimizer_ms": {
+            "mean_ms": 0.6452756483145058,
+            "median_ms": 0.5263360142707825,
+            "std_ms": 0.712022543233833,
+            "p90_ms": 0.7220224142074585,
+            "p95_ms": 0.8568319946527481,
+            "min_ms": 0.009216000325977802,
+            "max_ms": 6.716415882110596,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              0.5125119984149933,
+              0.48742398619651794,
+              0.5570559799671173,
+              0.6056959927082062,
+              0.4986879974603653
+            ],
+            "median_of_trial_medians_ms": 0.5125119984149933,
+            "trial_median_min_ms": 0.48742398619651794,
+            "trial_median_max_ms": 0.6056959927082062,
+            "trial_median_cv_percent": 8.204261154726272
+          },
+          "step_ms": {
+            "mean_ms": 15.133011932373046,
+            "median_ms": 14.494208335876465,
+            "std_ms": 1.8114434973326197,
+            "p90_ms": 17.64945888519287,
+            "p95_ms": 17.8011643409729,
+            "min_ms": 10.811391830444336,
+            "max_ms": 24.49407958984375,
+            "raw_sample_count": 250,
+            "trial_medians_ms": [
+              13.987839698791504,
+              17.622015953063965,
+              14.310400009155273,
+              14.59558391571045,
+              14.506495952606201
+            ],
+            "median_of_trial_medians_ms": 14.506495952606201,
+            "trial_median_min_ms": 13.987839698791504,
+            "trial_median_max_ms": 17.622015953063965,
+            "trial_median_cv_percent": 8.83264388869273
+          }
+        },
+        "memory": {
+          "allocated_before_samples_bytes": 1590784,
+          "peak_allocated_bytes": 113460736,
+          "peak_reserved_bytes": 146800640
+        },
+        "throughput": {
+          "nodes_per_second": 26470.899744125425,
+          "pairs_per_second": 10164825.501744162
+        }
+      }
+    },
+    "comparisons": {
+      "v100_self_hosted_vs_torch_fused": {
+        "baseline": "torch_fused",
+        "candidate": "flagos_self_hosted_native_fused_v100_tuned",
+        "metrics": {
+          "forward_ms": {
+            "speedup": 1.3453063191696921,
+            "latency_reduction_percent": 25.66748659761081,
+            "bootstrap_95_ci": {
+              "lower": 1.2499982670339767,
+              "upper": 1.3692307075099845
+            },
+            "method": "paired hierarchical bootstrap over trial blocks and independent CUDA-event samples",
+            "resamples": 20000
+          },
+          "backward_ms": {
+            "speedup": 1.1338158543597117,
+            "latency_reduction_percent": 11.80225641096544,
+            "bootstrap_95_ci": {
+              "lower": 0.9160472168425248,
+              "upper": 1.156047452474564
+            },
+            "method": "paired hierarchical bootstrap over trial blocks and independent CUDA-event samples",
+            "resamples": 20000
+          },
+          "optimizer_ms": {
+            "speedup": 1.0408560013852064,
+            "latency_reduction_percent": 3.9252308994552454,
+            "bootstrap_95_ci": {
+              "lower": 0.9149722695899178,
+              "upper": 1.157371483841104
+            },
+            "method": "paired hierarchical bootstrap over trial blocks and independent CUDA-event samples",
+            "resamples": 20000
+          },
+          "step_ms": {
+            "speedup": 1.1469143315503025,
+            "latency_reduction_percent": 12.809529666589492,
+            "bootstrap_95_ci": {
+              "lower": 0.9603660542385085,
+              "upper": 1.1641755653967978
+            },
+            "method": "paired hierarchical bootstrap over trial blocks and independent CUDA-event samples",
+            "resamples": 20000
+          }
+        }
+      },
+      "torch_fused_vs_torch_scalar": {
+        "baseline": "torch_scalar",
+        "candidate": "torch_fused",
+        "metrics": {
+          "forward_ms": {
+            "speedup": 1.0691047836641798,
+            "latency_reduction_percent": 6.463798939083832,
+            "bootstrap_95_ci": {
+              "lower": 0.993088018961187,
+              "upper": 1.0927613150833806
+            },
+            "method": "paired hierarchical bootstrap over trial blocks and independent CUDA-event samples",
+            "resamples": 20000
+          },
+          "backward_ms": {
+            "speedup": 1.0135465885955846,
+            "latency_reduction_percent": 1.3365531242481299,
+            "bootstrap_95_ci": {
+              "lower": 0.972484503863118,
+              "upper": 1.0584642275198577
+            },
+            "method": "paired hierarchical bootstrap over trial blocks and independent CUDA-event samples",
+            "resamples": 20000
+          },
+          "optimizer_ms": {
+            "speedup": 17.147663588007262,
+            "latency_reduction_percent": 94.16830173470758,
+            "bootstrap_95_ci": {
+              "lower": 14.163168745239386,
+              "upper": 21.184354904616963
+            },
+            "method": "paired hierarchical bootstrap over trial blocks and independent CUDA-event samples",
+            "resamples": 20000
+          },
+          "step_ms": {
+            "speedup": 1.5741961906759427,
+            "latency_reduction_percent": 36.47551646211195,
+            "bootstrap_95_ci": {
+              "lower": 1.4274480810836294,
+              "upper": 1.6320486998354309
+            },
+            "method": "paired hierarchical bootstrap over trial blocks and independent CUDA-event samples",
+            "resamples": 20000
+          }
+        }
+      }
+    }
+  },
+  "profile_routes": [
+    "flagos_self_hosted_native_fused_v100_tuned",
+    "torch_fused"
+  ],
+  "evidence_file_count": 38
+}
