@@ -39,6 +39,7 @@ from model.flagos_runtime import (
     STOFM_TRAINING_ALLOWLIST,
     STOFM_TRAINING_METADATA_OPS,
     flagos_training_scope,
+    prepare_flagos_vendor_training_fusion,
 )
 from model.flagos_optimizer import FlagOSFusedAdamW
 from model.se2transformer import SToFMForMaskedLM
@@ -341,6 +342,7 @@ def _config(args: argparse.Namespace) -> SToFMConfig:
         flagos_backend="nvidia" if args.device.startswith("cuda") else "torch",
         flagos_attention_backend="nvidia" if args.device.startswith("cuda") else "torch",
         flagos_training_implementation=args.training_implementation,
+        flagos_gemm_backend=args.gemm_backend,
     )
 
 
@@ -454,6 +456,18 @@ def _parse_args() -> argparse.Namespace:
         choices=("scalar", "flagos_fused"),
         default="scalar",
     )
+    parser.add_argument(
+        "--gemm-backend",
+        choices=("triton", "vendor"),
+        default="triton",
+        help="FlagOS-owned GEMM dispatcher; vendor calls the C++/CUDA cuBLAS ABI",
+    )
+    parser.add_argument(
+        "--dispatch-surface",
+        choices=("full", "v100_tuned"),
+        default="full",
+        help="full FlagOS registrar or the V100 measured tuned surface",
+    )
     parser.add_argument("--seed", type=int, default=20260830)
     parser.add_argument("--strict", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--profile", action=argparse.BooleanOptionalAction, default=True)
@@ -535,11 +549,15 @@ def main() -> None:
 
     flaggems_log_path = output_dir / "flaggems_ops.log"
     training_mode = "optimized" if device.type == "cuda" else "torch"
+    preparation_ms = prepare_flagos_vendor_training_fusion(model, batch)
+    training_include = () if args.dispatch_surface == "v100_tuned" else None
     with flagos_training_scope(
         mode=training_mode,
         strict=args.strict,
         record=args.profile,
         record_path=str(flaggems_log_path) if args.profile else None,
+        gemm_backend=args.gemm_backend,
+        include=training_include,
     ) as runtime:
         dispatch_record = asdict(runtime)
         for step in range(start_step, start_step + args.steps):
@@ -738,7 +756,11 @@ def main() -> None:
         "run_id": dt.datetime.now(dt.timezone.utc).strftime("fake-training-%Y%m%dT%H%M%SZ"),
         "mode": "flagos_training",
         "flagos_route": (
-            "FlagGems ATen training" if training_mode == "optimized" else "Torch reference"
+            (
+                f"FlagGems ATen training + {args.gemm_backend} GEMM"
+                if training_mode == "optimized"
+                else "Torch reference"
+            )
         ),
         "material_passport": {
             "origin_skill": "experiment-agent",
@@ -759,6 +781,11 @@ def main() -> None:
         "environment": _environment(device),
         "config": vars(args),
         "runtime_dispatch": dispatch_record,
+        "preparation": {
+            "gaussian_backward_fusion_ms": preparation_ms,
+            "gaussian_backward_fusion_ready": preparation_ms is not None,
+        },
+        "dispatch_surface": args.dispatch_surface,
         "steps": losses,
         "initial_parameter_sha256": initial_parameter_sha256,
         "final_parameter_sha256": final_parameter_sha256,

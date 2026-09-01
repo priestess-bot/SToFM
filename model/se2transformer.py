@@ -42,8 +42,11 @@ class GaussianModule(nn.Module):
         self.flagos_mode = getattr(config, "flagos_mode", "torch")
         self.flagos_backend = getattr(config, "flagos_backend", "torch")
         self.flagos_training_implementation = getattr(
-            config, "flagos_training_implementation", "reference"
+            config,
+            "flagos_gaussian_training_implementation",
+            getattr(config, "flagos_training_implementation", "reference"),
         )
+        self.flagos_gemm_backend = getattr(config, "flagos_gemm_backend", "triton")
         self.last_flagos_dispatch = None
 
     def _forward_torch(self, x: torch.Tensor) -> torch.Tensor:
@@ -128,8 +131,11 @@ class MultiheadAttention(nn.Module):
         self.flagos_mode = getattr(config, "flagos_mode", "torch")
         self.flagos_backend = getattr(config, "flagos_attention_backend", "torch")
         self.flagos_training_implementation = getattr(
-            config, "flagos_training_implementation", "reference"
+            config,
+            "flagos_attention_training_implementation",
+            getattr(config, "flagos_training_implementation", "reference"),
         )
+        self.flagos_gemm_backend = getattr(config, "flagos_gemm_backend", "triton")
         self.last_flagos_dispatch = None
 
     def reset_parameters(self):
@@ -180,11 +186,29 @@ class MultiheadAttention(nn.Module):
                         "The batch shape does not match the key or value shapes provided to the attention."
                     )
 
-        q = self.q_proj(query) # [n_node, bs, dim]
-        k = self.k_proj(query)
-        v = self.v_proj(query)
+        if self.flagos_gemm_backend == "vendor" and query.device.type == "cuda":
+            # Keep the public parameter layout/checkpoint names unchanged, but
+            # concatenate the three projection matrices for one Vendor GEMM.
+            # Gradients through cat/chunk are exact, while the fused launch is
+            # material for the many small V100 attention projections.
+            qkv_weight = torch.cat(
+                (self.q_proj.weight, self.k_proj.weight, self.v_proj.weight), dim=0
+            )
+            qkv_bias = None
+            if self.q_proj.bias is not None:
+                qkv_bias = torch.cat(
+                    (self.q_proj.bias, self.k_proj.bias, self.v_proj.bias), dim=0
+                )
+            qkv = F.linear(query, qkv_weight, qkv_bias)
+            q, k, v = qkv.chunk(3, dim=-1)
+        else:
+            q = self.q_proj(query) # [n_node, bs, dim]
+            k = self.k_proj(query)
+            v = self.v_proj(query)
 
-        q *= self.scaling
+        # ``chunk`` returns views in the fused QKV path; an out-of-place scale
+        # keeps autograd's view contract valid for both fused and legacy paths.
+        q = q * self.scaling
 
         # n_node, bs, dim(head_dim * num_head) -> n_node, bs * num_heads, head_dim 
         # -> bs * num_heads, n_node, head_dim
@@ -204,12 +228,18 @@ class MultiheadAttention(nn.Module):
         from .flagos_runtime import current_flagos_training_dispatch
 
         training_dispatch = current_flagos_training_dispatch()
+        vendor_reference_attention = (
+            self.flagos_gemm_backend == "vendor"
+            and self.flagos_training_implementation == "reference"
+            and training_dispatch is not None
+        )
         if (
             self.flagos_mode == "optimized"
             and self.flagos_backend != "torch"
             and attn_bias is not None
             and not before_softmax
             and (not torch.is_grad_enabled() or training_dispatch is not None)
+            and not vendor_reference_attention
         ):
             from .flagos_backend import pair_attention
 
@@ -530,6 +560,7 @@ class SToFMModel(SToFMPreTrainedModel):
         from .flagos_runtime import validate_flagos_mode
 
         self.flagos_mode = validate_flagos_mode(getattr(config, "flagos_mode", "torch"))
+        self.flagos_gemm_backend = getattr(config, "flagos_gemm_backend", "triton")
         self.flagos_aten_dispatch = bool(getattr(config, "flagos_aten_dispatch", True))
         self.last_flagos_runtime_dispatch = None
         self.post_init()
@@ -576,6 +607,7 @@ class SToFMModel(SToFMPreTrainedModel):
                     reason="No FlagOS training scope is active",
                     phase="training",
                     strict=False,
+                    gemm_backend=self.flagos_gemm_backend,
                 )
             self.last_flagos_runtime_dispatch = training_dispatch
             return self._forward_impl(
@@ -634,6 +666,7 @@ class SToFMModel(SToFMPreTrainedModel):
 class SToFMForMaskedLM(SToFMPreTrainedModel):
     def __init__(self, config: SToFMConfig):
         super().__init__(config)
+        self.flagos_gemm_backend = getattr(config, "flagos_gemm_backend", "triton")
         self.model = SToFMModel(config)
         self.lm_head = nn.Sequential( 
                     nn.Linear(config.hidden_size, config.hidden_size), 

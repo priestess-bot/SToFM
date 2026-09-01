@@ -6,12 +6,12 @@ steady-state inference and it does not leave ATen overrides installed after an
 extraction job returns.
 """
 
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
 import os
 from threading import RLock
-from typing import Iterator, Optional, Tuple
+from typing import Any, Iterator, Mapping, Optional, Tuple
 
 import torch
 
@@ -21,6 +21,8 @@ FLAGOS_MODES = ("torch", "stock", "optimized")
 # branch. Keep this intentionally narrow until a trace demonstrates that an
 # additional FlagGems implementation is both exercised and correct.
 STOFM_ATEN_ALLOWLIST = ("addmm", "baddbmm", "bmm", "softmax")
+STOFM_GEMM_ATEN_OPS = ("mm", "addmm", "bmm", "baddbmm")
+STOFM_GEMM_BACKENDS = ("triton", "vendor")
 
 # These are function names from FlagGems' operator manifest (not necessarily
 # the ATen schema spelling).  Keep the list explicit: registering all 700+
@@ -164,6 +166,8 @@ class FlagOSRuntimeDispatch:
     vendor_hint: Optional[str] = None
     phase: str = "inference"
     strict: bool = False
+    gemm_backend: str = "triton"
+    vendor_gemm_library: Optional[str] = None
 
 
 _ACTIVE_SCOPE: ContextVar[Optional[FlagOSRuntimeDispatch]] = ContextVar(
@@ -178,6 +182,124 @@ def validate_flagos_mode(mode: str) -> str:
         choices = ", ".join(FLAGOS_MODES)
         raise ValueError(f"flagos_mode must be one of: {choices}")
     return normalized
+
+
+def validate_flagos_gemm_backend(backend: str) -> str:
+    normalized = backend.lower()
+    if normalized not in STOFM_GEMM_BACKENDS:
+        choices = ", ".join(STOFM_GEMM_BACKENDS)
+        raise ValueError(f"flagos_gemm_backend must be one of: {choices}")
+    return normalized
+
+
+def prepare_flagos_vendor_training_fusion(
+    model: torch.nn.Module, batch: Mapping[str, torch.Tensor]
+) -> Optional[float]:
+    """Precompile the NVIDIA Gaussian backward while only Vendor dispatch is active.
+
+    The broad FlagGems ATen registrar is intentionally not entered here.  This
+    helper is a boundary for benchmark/train drivers: it returns the one-time
+    preparation cost in milliseconds and leaves the compiled callable cached in
+    FlagGems' NVIDIA backend for the subsequent full training scope.
+    """
+    dispatch = getattr(
+        model,
+        "flagos_gemm_backend",
+        getattr(getattr(model, "model", None), "flagos_gemm_backend", "triton"),
+    )
+    distances = batch.get("attn_bias")
+    gaussian = getattr(getattr(model, "model", None), "gaussian", None)
+    encoder = getattr(getattr(model, "model", None), "encoder", None)
+    attention = (
+        encoder.layers[0].self_attn
+        if encoder is not None and len(encoder.layers) > 0
+        else None
+    )
+    gaussian_native = (
+        gaussian is not None
+        and getattr(gaussian, "flagos_training_implementation", "reference") == "native"
+    )
+    pair_native = (
+        attention is not None
+        and getattr(attention, "flagos_training_implementation", "reference") == "native"
+    )
+    if dispatch != "vendor" or not (gaussian_native or pair_native):
+        return None
+    if distances is None or gaussian is None or distances.device.type != "cuda":
+        return None
+    if distances.dtype != torch.float32:
+        return None
+    from flag_gems.experimental_ops.stofm_backends import nvidia
+    from flag_gems.experimental_ops.vendor_gemm import vendor_gemm_scope
+
+    batch_size, nodes, _ = distances.shape
+    grad_output = torch.empty(
+        (batch_size, gaussian.num_heads, nodes, nodes),
+        device=distances.device,
+        dtype=distances.dtype,
+    )
+    args = (
+        grad_output,
+        distances,
+        gaussian.linear.weight,
+        gaussian.linear.bias,
+        gaussian.means.weight,
+        gaussian.stds.weight,
+        gaussian.proj[0].weight,
+        gaussian.proj[0].bias,
+        gaussian.proj[2].weight,
+        distances.eq(0.0),
+    )
+    query_nodes = nodes
+    head_dim = gaussian.num_heads and model.config.embedding_dim // gaussian.num_heads
+    pair_args = None
+    if pair_native:
+        pair_query = torch.empty(
+            (batch_size, gaussian.num_heads, query_nodes, head_dim),
+            device=distances.device,
+            dtype=distances.dtype,
+        )
+        pair_key = torch.empty_like(pair_query)
+        pair_value = torch.empty_like(pair_query)
+        pair_probabilities = torch.empty(
+            (batch_size, gaussian.num_heads, query_nodes, nodes),
+            device=distances.device,
+            dtype=distances.dtype,
+        )
+        pair_grad_context = torch.empty_like(pair_query)
+        pair_grad_bias = torch.empty_like(pair_probabilities)
+        pair_padding = batch.get("token_types")
+        pair_padding = (
+            pair_padding.eq(getattr(model.config, "pad_type_id", 3))
+            if pair_padding is not None
+            else None
+        )
+        pair_args = (
+            pair_grad_context,
+            pair_grad_bias,
+            None,
+            pair_query,
+            pair_key,
+            pair_value,
+            pair_probabilities,
+            pair_padding,
+            head_dim**-0.5,
+            True,
+            False,
+            pair_padding is not None,
+        )
+    with torch.no_grad(), vendor_gemm_scope(required=True):
+        gaussian_ms = (
+            nvidia.prepare_gaussian_pair_bias_training_backward(*args)
+            if gaussian_native
+            else 0.0
+        )
+        pair_ms = (
+            nvidia.prepare_pair_attention_training_backward(*pair_args)
+            if pair_args is not None
+            else 0.0
+        )
+    return float(gaussian_ms + pair_ms)
 
 
 def current_flagos_runtime_dispatch() -> Optional[FlagOSRuntimeDispatch]:
@@ -326,6 +448,7 @@ def flagos_training_scope(
     include: Optional[Tuple[str, ...]] = None,
     record: bool = False,
     record_path: Optional[str] = None,
+    gemm_backend: str = "triton",
 ) -> Iterator[FlagOSRuntimeDispatch]:
     """Keep a curated FlagGems registration alive for a complete train step.
 
@@ -335,7 +458,10 @@ def flagos_training_scope(
     a nested scope that would disappear before autograd runs.
     """
     normalized = validate_flagos_mode(mode)
-    requested = tuple(include or STOFM_TRAINING_ALLOWLIST)
+    gemm_backend = validate_flagos_gemm_backend(gemm_backend)
+    requested = (
+        tuple(STOFM_TRAINING_ALLOWLIST) if include is None else tuple(include)
+    )
     if normalized == "torch":
         yield FlagOSRuntimeDispatch(
             mode=normalized,
@@ -344,6 +470,7 @@ def flagos_training_scope(
             reason="Torch baseline mode",
             phase="training",
             strict=strict,
+            gemm_backend=gemm_backend,
         )
         return
     if not enabled:
@@ -354,6 +481,7 @@ def flagos_training_scope(
             reason="FlagOS training dispatch is disabled",
             phase="training",
             strict=strict,
+            gemm_backend=gemm_backend,
         )
         return
 
@@ -395,16 +523,36 @@ def flagos_training_scope(
                 )
                 return
 
+            # Vendor GEMM is a separate FlagOS dispatcher. Remove its ATen
+            # names from the Python Triton registrar so the two scopes never
+            # override each other; the strict record adds them back as owned
+            # FlagOS implementations below.
+            requested_flaggems = tuple(
+                name for name in requested
+                if not (gemm_backend == "vendor" and name in STOFM_GEMM_ATEN_OPS)
+            )
             # ``use_gems`` accepts manifest function names such as
             # ``layer_norm`` and ``vector_norm``; it expands them to the
             # corresponding native_layer_norm/linalg_vector_norm schemas.
-            with flag_gems.use_gems(
-                include=requested,
-                record=record,
-                path=record_path,
-            ):
-                registered = _registered_aten_ops(flag_gems)
-                missing = sorted(set(requested) - set(registered))
+            with ExitStack() as stack:
+                vendor_dispatch = None
+                if gemm_backend == "vendor":
+                    from flag_gems.experimental_ops.vendor_gemm import vendor_gemm_scope
+
+                    vendor_dispatch = stack.enter_context(vendor_gemm_scope(required=True))
+                if requested_flaggems:
+                    stack.enter_context(
+                        flag_gems.use_gems(
+                            include=requested_flaggems,
+                            record=record,
+                            path=record_path,
+                        )
+                    )
+                registered = set(_registered_aten_ops(flag_gems))
+                if vendor_dispatch is not None:
+                    registered.update(STOFM_GEMM_ATEN_OPS)
+                registered = tuple(sorted(registered))
+                missing = sorted(set(requested_flaggems) - set(registered))
                 if strict and missing:
                     raise RuntimeError(
                         "FlagOS training requested operators that FlagGems did not "
@@ -418,6 +566,10 @@ def flagos_training_scope(
                     vendor_hint=vendor_hint,
                     phase="training",
                     strict=strict,
+                    gemm_backend=gemm_backend,
+                    vendor_gemm_library=(
+                        vendor_dispatch.loaded_library if vendor_dispatch is not None else None
+                    ),
                 )
                 token = _ACTIVE_SCOPE.set(record)
                 try:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import defaultdict
 from typing import Iterable, Optional
 
 import torch
@@ -53,10 +54,16 @@ class FlagOSFusedAdamW(torch.optim.Optimizer):
         from .flagos_runtime import current_flagos_training_dispatch
 
         dispatch = current_flagos_training_dispatch()
-        if dispatch is None or "_fused_adamw_" not in dispatch.registered_aten_ops:
+        if dispatch is None:
             raise RuntimeError(
                 "FlagOSFusedAdamW.step() requires an active FlagOS training scope "
-                "with '_fused_adamw_' registered"
+                "with a registered FlagOS optimizer implementation"
+            )
+        vendor_backend = getattr(dispatch, "gemm_backend", "triton") == "vendor"
+        if not vendor_backend and "_fused_adamw_" not in dispatch.registered_aten_ops:
+            raise RuntimeError(
+                "FlagOSFusedAdamW.step() requires '_fused_adamw_' in the active "
+                "FlagOS training scope"
             )
 
         with torch.profiler.record_function("Optimizer.step#FlagOSFusedAdamW.step"):
@@ -66,6 +73,7 @@ class FlagOSFusedAdamW(torch.optim.Optimizer):
                 exp_avgs = []
                 exp_avg_sqs = []
                 state_steps = []
+                host_steps = []
                 for parameter in group["params"]:
                     gradient = parameter.grad
                     if gradient is None:
@@ -79,7 +87,9 @@ class FlagOSFusedAdamW(torch.optim.Optimizer):
                     state = self.state[parameter]
                     if not state:
                         state["step"] = torch.zeros(
-                            (), dtype=torch.float32, device=parameter.device
+                            (),
+                            dtype=torch.float32,
+                            device=parameter.device,
                         )
                         state["exp_avg"] = torch.zeros_like(
                             parameter, memory_format=torch.preserve_format
@@ -87,29 +97,65 @@ class FlagOSFusedAdamW(torch.optim.Optimizer):
                         state["exp_avg_sq"] = torch.zeros_like(
                             parameter, memory_format=torch.preserve_format
                         )
-                    state["step"].add_(1.0)
+                    if vendor_backend:
+                        # Keep a host mirror so grouped tensors with missing
+                        # gradients preserve AdamW's per-parameter step without
+                        # launching one CUDA scalar update per parameter.
+                        if "_flagos_host_step" not in state:
+                            state["_flagos_host_step"] = int(state["step"].item())
+                        state["_flagos_host_step"] += 1
+                        host_step = int(state["_flagos_host_step"])
+                    else:
+                        state["step"].add_(1.0)
+                        host_step = None
                     params.append(parameter)
                     grads.append(gradient)
                     exp_avgs.append(state["exp_avg"])
                     exp_avg_sqs.append(state["exp_avg_sq"])
                     state_steps.append(state["step"])
+                    host_steps.append(host_step)
 
                 if not params:
                     continue
                 beta1, beta2 = group["betas"]
-                torch.ops.aten._fused_adamw_(
-                    params,
-                    grads,
-                    exp_avgs,
-                    exp_avg_sqs,
-                    [],
-                    state_steps,
-                    lr=group["lr"],
-                    beta1=beta1,
-                    beta2=beta2,
-                    weight_decay=group["weight_decay"],
-                    eps=group["eps"],
-                    amsgrad=False,
-                    maximize=group["maximize"],
-                )
+                if vendor_backend:
+                    from flag_gems.experimental_ops.vendor_gemm import vendor_adamw_multi
+
+                    # Usually all SToFM parameters have gradients and this is
+                    # one launch.  Grouping keeps the adapter correct for a
+                    # partially frozen model as well.
+                    grouped = defaultdict(list)
+                    for index, host_step in enumerate(host_steps):
+                        grouped[host_step].append(index)
+                    for host_step, indices in grouped.items():
+                        vendor_adamw_multi(
+                            [params[index] for index in indices],
+                            [grads[index] for index in indices],
+                            [exp_avgs[index] for index in indices],
+                            [exp_avg_sqs[index] for index in indices],
+                            [state_steps[index] for index in indices],
+                            lr=group["lr"],
+                            beta1=beta1,
+                            beta2=beta2,
+                            weight_decay=group["weight_decay"],
+                            eps=group["eps"],
+                            step=float(host_step),
+                            maximize=group["maximize"],
+                        )
+                else:
+                    torch.ops.aten._fused_adamw_(
+                        params,
+                        grads,
+                        exp_avgs,
+                        exp_avg_sqs,
+                        [],
+                        state_steps,
+                        lr=group["lr"],
+                        beta1=beta1,
+                        beta2=beta2,
+                        weight_decay=group["weight_decay"],
+                        eps=group["eps"],
+                        amsgrad=False,
+                        maximize=group["maximize"],
+                    )
         return loss

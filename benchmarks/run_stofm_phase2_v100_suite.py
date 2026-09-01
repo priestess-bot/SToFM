@@ -29,6 +29,8 @@ PRIMARY_PROFILE_ROUTES = {
     "torch_fused",
     "flagos_reference_scalar",
     "flagos_native_scalar",
+    "flagos_vendor_native_scalar",
+    "flagos_vendor_native_fused_v100_tuned",
 }
 
 
@@ -139,6 +141,31 @@ def _aggregate(
 
     comparisons = (
         ("optimized_flagos_vs_torch_fused", "torch_fused", "flagos_native_scalar"),
+        (
+            "vendor_gemm_flagos_vs_torch_fused",
+            "torch_fused",
+            "flagos_vendor_native_scalar",
+        ),
+        (
+            "vendor_gemm_delta_on_native_flagos",
+            "flagos_native_scalar",
+            "flagos_vendor_native_scalar",
+        ),
+        (
+            "vendor_gemm_delta_on_reference_flagos",
+            "flagos_reference_scalar",
+            "flagos_vendor_reference_scalar",
+        ),
+        (
+            "v100_tuned_vendor_vs_torch_fused",
+            "torch_fused",
+            "flagos_vendor_native_fused_v100_tuned",
+        ),
+        (
+            "v100_tuned_dispatch_gain_vs_full_registrar",
+            "flagos_vendor_native_fused",
+            "flagos_vendor_native_fused_v100_tuned",
+        ),
         (
             "optimized_flagos_vs_initial_flagos",
             "flagos_reference_scalar",

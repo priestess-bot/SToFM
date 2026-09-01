@@ -135,3 +135,50 @@ FlagGems `a4bb672191bcdccdbc974f640a5e799fdd2ee9ae`。
 - [x] Playwright 验收桌面/移动端：6/6 KaTeX、6 路性能图、逐算子图、trace 图，
   无横向溢出、外部资源请求或控制台错误。
 - [x] 锁定两个 fork 的提交 SHA、正式实验目录、checksum、phase manifest 和最终结论。
+
+## 8. PHASE A：FlagOS 自有 Vendor GEMM（r5）
+
+目标：在不调用 Torch/ATen 原生 GEMM 的前提下，由 FlagOS C++/CUDA 后端直接调用
+cuBLAS/cuBLASLt（CUTLASS 可选），并在 V100 生产形状及代表矩阵上稳定超过
+PyTorch eager + fused AdamW。
+
+### 8.1 基础设施
+
+- [-] 建立 `r5/v100-vendor-gemm` 双 fork 分支并锁定基线版本。
+- [ ] 建立 CMake 3.25+、CUDA 12.4、SM70 的隔离构建环境。
+- [ ] 新增 FlagOS Vendor GEMM/BMM C++ ABI、CPU/meta reference 和 CUDA 实现。
+- [ ] 链接 cuBLAS/cuBLASLt，验证当前 stream、handle、workspace 和错误传播。
+- [ ] 增加算法选择缓存，禁止首次 heuristic/search 进入正式计时区。
+
+### 8.2 严格 dispatch
+
+- [ ] 增加 `flagos_gemm_backend=vendor` 配置和作用域 provenance。
+- [ ] 接管 `mm/addmm/bmm/baddbmm` 及 out 变体，运行时不得调用 Torch native GEMM。
+- [ ] 将 SToFM Gaussian、Pair、QKV、FFN、head 的所有 GEMM 统一接入 Vendor ABI。
+- [ ] strict profile 证明 native GEMM、partial fallback、unmapped compute 均为 0。
+
+### 8.3 训练反向融合
+
+- [ ] Gaussian backward 改为 Vendor GEMM + FlagOS fused derivative/reduction kernel。
+- [ ] Gaussian 实现 save/recompute/auto 三种 workspace 策略并按显存预算选择。
+- [ ] Pair backward 改为 Vendor BMM + fused softmax/pair-mask backward。
+- [ ] 消除重复 clone、transpose、contiguous 和不必要的 pair probability 写回。
+- [ ] 保持一阶梯度语义；二阶梯度不支持时显式 fail-closed。
+
+### 8.4 验收
+
+- [ ] Vendor GEMM/BMM 单算子 correctness、stream、layout、stride、dtype 测试。
+- [ ] 完整模型 loss、梯度、参数、optimizer state 和 checkpoint resume 测试。
+- [ ] 生产形状 + 代表矩阵：5 trial × 50 CUDA event samples，10,000 bootstrap。
+- [ ] aggregate median speedup >= 1.05x，bootstrap 95% 下界 > 1.0x。
+- [ ] 每个形状 median 不慢于 Torch，峰值显存不超过 Torch 的 1.25x。
+- [ ] 运行 Torch eager、Torch compile 辅助对照和 Nsight/Chrome trace 归因。
+
+### 8.5 交付与阶段转换
+
+- [ ] 生成 shape manifest、algorithm cache、raw samples、trace、checksum 和 phase manifest。
+- [ ] 生成 `docs/flagos_v100_vendor_gemm_report.md`，说明实现、原理、收益和失败项。
+- [ ] 更新统一 `reporting/stofm-flagos-training-report.html`，所有代码链接固定到 fork SHA。
+- [ ] 推送两个 fork、打阶段 A tag，并核对远端 commit 可访问。
+- [ ] 阶段 A 完成后创建阶段 B goal：移除 cuBLAS/cuBLASLt/CUTLASS，进入纯自研
+  CUDA C++/PTX + Triton kernel 实现。

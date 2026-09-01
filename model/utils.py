@@ -113,6 +113,9 @@ class SToFMConfig(PretrainedConfig):
         flagos_backend: str = "torch",
         flagos_attention_backend: Optional[str] = None,
         flagos_training_implementation: str = "reference",
+        flagos_gaussian_training_implementation: Optional[str] = None,
+        flagos_attention_training_implementation: Optional[str] = None,
+        flagos_gemm_backend: str = "triton",
         flagos_aten_dispatch: bool = True,
         norm_type_id=0,
         cls_type_id=1,
@@ -153,6 +156,27 @@ class SToFMConfig(PretrainedConfig):
                 "flagos_training_implementation must be 'reference' or 'native'"
             )
         self.flagos_training_implementation = flagos_training_implementation
+        self.flagos_gaussian_training_implementation = (
+            flagos_training_implementation
+            if flagos_gaussian_training_implementation is None
+            else flagos_gaussian_training_implementation
+        )
+        self.flagos_attention_training_implementation = (
+            flagos_training_implementation
+            if flagos_attention_training_implementation is None
+            else flagos_attention_training_implementation
+        )
+        if self.flagos_gaussian_training_implementation not in {"reference", "native"}:
+            raise ValueError(
+                "flagos_gaussian_training_implementation must be 'reference' or 'native'"
+            )
+        if self.flagos_attention_training_implementation not in {"reference", "native"}:
+            raise ValueError(
+                "flagos_attention_training_implementation must be 'reference' or 'native'"
+            )
+        if flagos_gemm_backend not in {"triton", "vendor"}:
+            raise ValueError("flagos_gemm_backend must be 'triton' or 'vendor'")
+        self.flagos_gemm_backend = flagos_gemm_backend
         self.flagos_aten_dispatch = flagos_aten_dispatch
         self.flagos_attention_backend = (
             flagos_backend if flagos_attention_backend is None else flagos_attention_backend

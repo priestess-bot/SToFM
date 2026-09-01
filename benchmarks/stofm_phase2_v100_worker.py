@@ -30,47 +30,92 @@ for path in (ROOT, ROOT / "geneformer_001", FLAGGEMS_ROOT / "src"):
 
 from benchmarks.train_stofm_fake_flagos import FakeTrainingConfig, SyntheticSToFMDataset
 from model.flagos_optimizer import FlagOSFusedAdamW
-from model.flagos_runtime import flagos_training_scope
+from model.flagos_runtime import (
+    flagos_training_scope,
+    prepare_flagos_vendor_training_fusion,
+)
 from model.se2transformer import SToFMForMaskedLM
 from model.utils import SToFMConfig
 
 
-ROUTES: Dict[str, Dict[str, str]] = {
+ROUTES: Dict[str, Dict[str, Any]] = {
     "torch_scalar": {
         "display_name": "纯 PyTorch 原始算子 + 单张量 AdamW",
         "framework": "torch",
         "training_implementation": "reference",
         "optimizer": "scalar",
+        "gemm_backend": "triton",
     },
     "torch_fused": {
         "display_name": "纯 PyTorch 原始算子 + CUDA fused AdamW",
         "framework": "torch",
         "training_implementation": "reference",
         "optimizer": "torch_fused",
+        "gemm_backend": "triton",
     },
     "flagos_reference_scalar": {
         "display_name": "初始 FlagOS 可微参考算子 + 单张量 AdamW",
         "framework": "flagos",
         "training_implementation": "reference",
         "optimizer": "scalar",
+        "gemm_backend": "triton",
     },
     "flagos_native_scalar": {
         "display_name": "优化后 FlagOS 原生训练算子 + 单张量 AdamW（正式选用）",
         "framework": "flagos",
         "training_implementation": "native",
         "optimizer": "scalar",
+        "gemm_backend": "triton",
     },
     "flagos_reference_fused": {
         "display_name": "FlagOS 可微参考算子 + 逐参数 fused AdamW",
         "framework": "flagos",
         "training_implementation": "reference",
         "optimizer": "flagos_fused",
+        "gemm_backend": "triton",
     },
     "flagos_native_fused": {
         "display_name": "FlagOS 原生训练算子 + 逐参数 fused AdamW（候选）",
         "framework": "flagos",
         "training_implementation": "native",
         "optimizer": "flagos_fused",
+        "gemm_backend": "triton",
+    },
+    "flagos_vendor_reference_scalar": {
+        "display_name": "FlagOS 可微参考算子 + Vendor GEMM + 单张量 AdamW",
+        "framework": "flagos",
+        "training_implementation": "reference",
+        "optimizer": "scalar",
+        "gemm_backend": "vendor",
+    },
+    "flagos_vendor_native_scalar": {
+        "display_name": "FlagOS 原生训练算子 + Vendor GEMM + 单张量 AdamW",
+        "framework": "flagos",
+        "training_implementation": "native",
+        "optimizer": "scalar",
+        "gemm_backend": "vendor",
+    },
+    "flagos_vendor_native_fused": {
+        "display_name": "FlagOS 原生训练算子 + Vendor GEMM + fused AdamW",
+        "framework": "flagos",
+        "training_implementation": "native",
+        "optimizer": "flagos_fused",
+        "gemm_backend": "vendor",
+    },
+    "flagos_vendor_native_fused_v100_tuned": {
+        "display_name": (
+            "FlagOS V100 调优：Vendor GEMM/BMM + Gaussian 融合反向 + 多张量 AdamW"
+        ),
+        "framework": "flagos",
+        "training_implementation": "native",
+        "optimizer": "flagos_fused",
+        "gemm_backend": "vendor",
+        "gaussian_training_implementation": "native",
+        "attention_training_implementation": "reference",
+        # An empty ATen list deliberately leaves non-critical pointwise ops on
+        # PyTorch's device kernels while Vendor owns every GEMM/BMM.  The full
+        # registrar remains a separate route for regression and gap accounting.
+        "aten_include": (),
     },
 }
 
@@ -129,6 +174,13 @@ def _model_config(args: argparse.Namespace, route: Mapping[str, str]) -> SToFMCo
         flagos_backend="nvidia" if flagos else "torch",
         flagos_attention_backend="nvidia" if flagos else "torch",
         flagos_training_implementation=route["training_implementation"],
+        flagos_gaussian_training_implementation=route.get(
+            "gaussian_training_implementation", route["training_implementation"]
+        ),
+        flagos_attention_training_implementation=route.get(
+            "attention_training_implementation", route["training_implementation"]
+        ),
+        flagos_gemm_backend=route.get("gemm_backend", "triton"),
     )
 
 
@@ -271,6 +323,10 @@ def _benchmark(
     allocated_before = torch.cuda.memory_allocated()
     samples = []
     for _ in range(repetitions):
+        # Application clocks cannot be locked on the shared host. A fixed
+        # device-side spin immediately before every sample keeps P-state from
+        # becoming a route/order confound; it is outside the CUDA-event region.
+        torch.cuda._sleep(50_000_000)
         samples.append(_timed_step(model, optimizer, batch))
     metrics = {
         key: _summarize([sample[key] for sample in samples])
@@ -312,6 +368,69 @@ def _kernel_summary(trace_path: Path) -> Dict[str, Any]:
     }
 
 
+def _gemm_provenance(events: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
+    """Audit the dispatcher-level GEMM owner from profiler operator events."""
+    native_names = {
+        "aten::mm",
+        "aten::addmm",
+        "aten::bmm",
+        "aten::baddbmm",
+    }
+    aten_events = [event for event in events if event.get("name") in native_names]
+    dispatcher_ownership = {}
+    for operator in sorted(native_names):
+        table = torch._C._dispatch_dump_table(operator)
+        cuda_entry = next(
+            (line for line in table.splitlines() if line.startswith("CUDA:")), "missing"
+        )
+        autograd_entry = next(
+            (
+                line
+                for line in table.splitlines()
+                if line.startswith("AutogradCUDA:")
+            ),
+            "missing",
+        )
+        dispatcher_ownership[operator] = {
+            "cuda_entry": cuda_entry,
+            "autograd_cuda_entry": autograd_entry,
+            "vendor_cpp_cuda_kernel": "stofm_vendor_gemm.cu" in cuda_entry,
+        }
+    native_events = [
+        event
+        for event in aten_events
+        if not dispatcher_ownership[event["name"]]["vendor_cpp_cuda_kernel"]
+    ]
+    vendor_events = [
+        event
+        for event in events
+        if str(event.get("name", "")).startswith("flagos_stofm_vendor::")
+    ]
+    vendor_kernels = [
+        event
+        for event in events
+        if any(
+            marker in str(event.get("name", "")).lower()
+            for marker in ("sgemm", "gemmex", "gemmstrided", "cublas")
+        )
+    ]
+    return {
+        "aten_gemm_operator_events": aten_events,
+        "aten_gemm_operator_event_count": len(aten_events),
+        "dispatcher_ownership": dispatcher_ownership,
+        "native_aten_gemm_events": native_events,
+        "native_aten_gemm_event_count": len(native_events),
+        "vendor_dispatch_events": vendor_events,
+        "vendor_dispatch_event_count": len(vendor_events),
+        "vendor_kernel_events": vendor_kernels,
+        "native_gemm_absent": not native_events,
+        "all_profiled_aten_gemm_owned_by_vendor_cpp": all(
+            dispatcher_ownership[event["name"]]["vendor_cpp_cuda_kernel"]
+            for event in aten_events
+        ),
+    }
+
+
 def _profile_step(model, optimizer, batch, output: Path) -> Dict[str, Any]:
     trace_path = output / "training_trace.json"
     with torch.profiler.profile(
@@ -342,6 +461,7 @@ def _profile_step(model, optimizer, batch, output: Path) -> Dict[str, Any]:
         "trace": trace_path.name,
         "events": events,
         "kernel_summary": _kernel_summary(trace_path),
+        "gemm_provenance": _gemm_provenance(events),
     }
     (output / "profile_summary.json").write_text(
         json.dumps(profile, indent=2), encoding="utf-8"
@@ -363,6 +483,39 @@ def _environment() -> Dict[str, Any]:
         "tf32_matmul": torch.backends.cuda.matmul.allow_tf32,
         "tf32_cudnn": torch.backends.cudnn.allow_tf32,
         "cudnn_benchmark": torch.backends.cudnn.benchmark,
+    }
+
+
+def _prime_cuda_clock(device: torch.device, milliseconds: int = 500) -> Dict[str, Any]:
+    """Run a short compute-bound kernel before every route's measured phase.
+
+    This host does not permit application-clock locking.  Without priming, a
+    launch-bound route can enter timing at 135 MHz while a GEMM-heavy route
+    enters at boost clocks, which is a framework-order bias rather than model
+    performance.  The prime is outside the CUDA-event timed region and applies
+    identically to every route.
+    """
+    size = 1024
+    left = torch.randn(size, size, device=device)
+    right = torch.randn(size, size, device=device)
+    start = torch.cuda.Event(enable_timing=True)
+    end = torch.cuda.Event(enable_timing=True)
+    iterations = 0
+    elapsed = 0.0
+    while elapsed < milliseconds:
+        start.record()
+        for _ in range(10):
+            left = torch.mm(left, right)
+            left.mul_(1.0 / size)
+        end.record()
+        end.synchronize()
+        elapsed += start.elapsed_time(end)
+        iterations += 10
+    return {
+        "target_ms": milliseconds,
+        "actual_ms": float(elapsed),
+        "gemm_iterations": iterations,
+        "timed_region": False,
     }
 
 
@@ -431,12 +584,35 @@ def main() -> None:
     if len(initial_hashes) != 1:
         raise AssertionError("deterministic model initialization failed")
 
+    preparation_records = []
+    for preparation_name, preparation_model in (
+        ("correctness", correctness_model),
+        ("warmup", warmup_model),
+        ("benchmark", benchmark_model),
+    ):
+        elapsed = prepare_flagos_vendor_training_fusion(preparation_model, batch)
+        if elapsed is not None:
+            preparation_records.append(
+                {"model": preparation_name, "elapsed_ms": float(elapsed)}
+            )
+    preparation_ms = (
+        float(sum(row["elapsed_ms"] for row in preparation_records))
+        if preparation_records
+        else None
+    )
+
     scope = (
-        flagos_training_scope(mode="optimized", strict=True)
+        flagos_training_scope(
+            mode="optimized",
+            strict=True,
+            gemm_backend=route.get("gemm_backend", "triton"),
+            include=route.get("aten_include"),
+        )
         if route["framework"] == "flagos"
         else nullcontext(None)
     )
     with scope as runtime:
+        clock_prime = _prime_cuda_clock(device)
         correctness = _correctness_step(
             correctness_model, correctness_optimizer, batch, output
         )
@@ -460,6 +636,14 @@ def main() -> None:
             if args.profile
             else {"status": "not_requested"}
         )
+        if (
+            route.get("gemm_backend") == "vendor"
+            and profile.get("gemm_provenance", {}).get("native_aten_gemm_event_count", 0)
+            > 0
+        ):
+            raise RuntimeError(
+                "Vendor route profile observed native ATen GEMM events; see profile_summary.json"
+            )
         runtime_dispatch = asdict(runtime) if runtime is not None else None
 
     median_step_ms = timing["metrics"]["step_ms"]["median_ms"]
@@ -505,13 +689,39 @@ def main() -> None:
             "repetitions": args.repetitions,
             "timer": "CUDA events; one synchronization after each complete sample",
             "timed_region": "forward + backward + optimizer; zero_grad excluded",
+            "per_sample_clock_control": {
+                "method": "torch.cuda._sleep",
+                "cycles": 50_000_000,
+                "inside_timed_region": False,
+                "reason": "application clock locking is unavailable on this shared V100 host",
+            },
             "compile_policy": (
                 "a disposable model warms every measured optimizer step index; "
                 "timing restarts from identical initial weights and optimizer state"
             ),
+            "vendor_training_fusion_preparation_ms": preparation_ms,
+            "vendor_training_fusion_preparation_records": preparation_records,
+            "vendor_training_fusion_prepared_outside_full_aten_scope": bool(preparation_records),
+            "cuda_clock_prime": clock_prime,
         },
         "batch_sha256": batch_sha,
         "runtime_dispatch": runtime_dispatch,
+        "gemm_contract": {
+            "backend": route.get("gemm_backend", "triton"),
+            "native_torch_gemm_allowed": False
+            if route.get("gemm_backend") == "vendor"
+            else None,
+            "vendor_library": (
+                runtime_dispatch.get("vendor_gemm_library")
+                if runtime_dispatch is not None
+                else None
+            ),
+        },
+        "preparation": {
+            "gaussian_backward_fusion_ms": preparation_ms,
+            "gaussian_backward_fusion_ready": bool(preparation_records),
+            "records": preparation_records,
+        },
         "correctness": correctness,
         "timing": timing,
         "profile": profile,
