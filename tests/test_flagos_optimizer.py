@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -63,4 +64,44 @@ def test_flagos_fused_adamw_matches_torch_fused_state_and_parameters():
         )
         torch.testing.assert_close(
             actual_state["step"], reference_state["step"], rtol=0.0, atol=0.0
+        )
+
+
+@pytest.mark.skipif(
+    not torch.cuda.is_available() or not os.environ.get("FLAGGEMS_STOFM_VENDOR_LIBRARY"),
+    reason="built Vendor library is required",
+)
+def test_vendor_adamw_splits_parameter_lists_larger_than_kernel_pack():
+    torch.manual_seed(71)
+    reference_parameters = [
+        torch.nn.Parameter(torch.randn(3, device="cuda")) for _ in range(70)
+    ]
+    actual_parameters = [
+        torch.nn.Parameter(parameter.detach().clone())
+        for parameter in reference_parameters
+    ]
+    reference = torch.optim.AdamW(
+        reference_parameters, lr=1e-3, weight_decay=0.01, fused=True
+    )
+    actual = FlagOSFusedAdamW(
+        actual_parameters, lr=1e-3, weight_decay=0.01
+    )
+    with flagos_training_scope(strict=True, include=(), gemm_backend="vendor"):
+        for _ in range(2):
+            gradients = [torch.randn_like(parameter) for parameter in reference_parameters]
+            for reference_parameter, actual_parameter, gradient in zip(
+                reference_parameters, actual_parameters, gradients
+            ):
+                reference_parameter.grad = gradient.clone()
+                actual_parameter.grad = gradient.clone()
+            reference.step()
+            actual.step()
+            reference.zero_grad(set_to_none=True)
+            actual.zero_grad(set_to_none=True)
+    torch.cuda.synchronize()
+    for reference_parameter, actual_parameter in zip(
+        reference_parameters, actual_parameters
+    ):
+        torch.testing.assert_close(
+            actual_parameter, reference_parameter, rtol=0.0, atol=2e-6
         )

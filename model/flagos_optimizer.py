@@ -128,20 +128,22 @@ class FlagOSFusedAdamW(torch.optim.Optimizer):
                     for index, host_step in enumerate(host_steps):
                         grouped[host_step].append(index)
                     for host_step, indices in grouped.items():
-                        vendor_adamw_multi(
-                            [params[index] for index in indices],
-                            [grads[index] for index in indices],
-                            [exp_avgs[index] for index in indices],
-                            [exp_avg_sqs[index] for index in indices],
-                            [state_steps[index] for index in indices],
-                            lr=group["lr"],
-                            beta1=beta1,
-                            beta2=beta2,
-                            weight_decay=group["weight_decay"],
-                            eps=group["eps"],
-                            step=float(host_step),
-                            maximize=group["maximize"],
-                        )
+                        for start in range(0, len(indices), 64):
+                            chunk = indices[start : start + 64]
+                            vendor_adamw_multi(
+                                [params[index] for index in chunk],
+                                [grads[index] for index in chunk],
+                                [exp_avgs[index] for index in chunk],
+                                [exp_avg_sqs[index] for index in chunk],
+                                [state_steps[index] for index in chunk],
+                                lr=group["lr"],
+                                beta1=beta1,
+                                beta2=beta2,
+                                weight_decay=group["weight_decay"],
+                                eps=group["eps"],
+                                step=float(host_step),
+                                maximize=group["maximize"],
+                            )
                 else:
                     torch.ops.aten._fused_adamw_(
                         params,
